@@ -3,6 +3,7 @@ package com.wetube.wetube_service.dto.post;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -10,8 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PostDto {
-    private Long id;
-    private Long userId;
+    private UUID userId;
     private String content;
     private String imageUrl;
     private Integer likeCount;

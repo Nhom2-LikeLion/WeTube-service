@@ -2,12 +2,13 @@ package com.wetube.wetube_service.service;
 
 import com.wetube.wetube_service.dto.post.PostDto;
 import java.util.List;
+import java.util.UUID;
 
 public interface PostService {
-    List<PostDto> getPostsByUser(Long userId);
-    PostDto getPostById(Long id);
+    List<PostDto> getPostsByUser(UUID userId);
+    PostDto getPostById(UUID id);
     PostDto createPost(PostDto postDto);
-    PostDto updatePost(Long id, PostDto postDto);
-    void deletePost(Long id);
+    PostDto updatePost(UUID id, PostDto postDto);
+    void deletePost(UUID id);
 }
 

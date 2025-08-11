@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
-    public List<PostDto> getPostsByUser(Long userId) {
+    public List<PostDto> getPostsByUser(UUID userId) {
         return postRepository.findByUserId(userId)
                 .stream()
                 .map(postMapper::toDto)
@@ -27,7 +28,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDto getPostById(Long id) {
+    public PostDto getPostById(UUID id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         return postMapper.toDto(post);
@@ -43,7 +44,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostDto updatePost(Long id, PostDto postDto) {
+    public PostDto updatePost(UUID id, PostDto postDto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         post.setContent(postDto.getContent());
@@ -55,7 +56,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(UUID id) {
         if (!postRepository.existsById(id)) {
             throw new RuntimeException("Post not found");
         }

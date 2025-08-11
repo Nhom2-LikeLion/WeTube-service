@@ -4,8 +4,9 @@ import com.wetube.wetube_service.entity.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByUserId(Long userId);
+public interface PostRepository extends JpaRepository<Post, UUID> {
+    List<Post> findByUserId(UUID userId);
 }
 
