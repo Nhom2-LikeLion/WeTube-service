@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.dto;
 
+import com.wetube.wetube_service.entity.Comment;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,5 +19,6 @@ public class CommentDto {
     private Integer dislikeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Comment.TargetType targetType;
 }
 
