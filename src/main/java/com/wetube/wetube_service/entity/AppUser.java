@@ -34,4 +34,7 @@ public class AppUser {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @CreationTimestamp
+    private LocalDateTime updatedAt;
 }

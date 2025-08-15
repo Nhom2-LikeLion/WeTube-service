@@ -1,5 +1,8 @@
 package com.wetube.wetube_service.service;
 
-public class UserService {
-    
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.wetube.wetube_service.entity.AppUser;
+
+public interface UserService {
+    AppUser findOrCreateUser(JWTClaimsSet claims);
 }
