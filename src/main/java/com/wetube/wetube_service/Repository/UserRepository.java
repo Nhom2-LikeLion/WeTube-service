@@ -1,5 +1,9 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.Repository;
 
-public class UserRepository {
-    
+import com.wetube.wetube_service.entity.AppUser;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.UUID;
+
+public interface UserRepository extends CrudRepository<AppUser, UUID> {
 }
