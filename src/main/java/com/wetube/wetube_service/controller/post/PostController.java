@@ -1,7 +1,7 @@
-package com.wetube.wetube_service.controller;
+package com.wetube.wetube_service.controller.post;
 
 import com.wetube.wetube_service.dto.post.PostDto;
-import com.wetube.wetube_service.service.PostService;
+import com.wetube.wetube_service.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,10 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable UUID id) {
+    public ResponseEntity<PostDto> getPostById(
+            @PathVariable UUID id,
+            @RequestParam(required = false) UUID viewerId
+    ) {
         return ResponseEntity.ok(postService.getPostById(id));
     }
 

@@ -19,32 +19,36 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "target_id", nullable = false)
     private UUID targetId;
 
-    @Column(nullable = false)
-    private UUID userId; // user khác comment
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
-    @Column(nullable = true)
+    @Column(name = "parent_comment_id")
     private UUID parentCommentId;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "like_count")
     private Integer likeCount;
-    private Integer dislikeCount;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "target_type", nullable = false)
     private TargetType targetType;
 
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        if (createdAt == null) createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+        if (likeCount == null) likeCount = 0;
     }
 
     @PreUpdate
@@ -57,4 +61,3 @@ public class Comment {
         VIDEO
     }
 }
-

@@ -1,16 +1,20 @@
 package com.wetube.wetube_service.service.impl;
 
-import com.wetube.wetube_service.dto.CommentDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentRequestDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
 import com.wetube.wetube_service.entity.Comment;
+import com.wetube.wetube_service.entity.Like;
 import com.wetube.wetube_service.mapper.CommentMapper;
 import com.wetube.wetube_service.repository.CommentRepository;
+import com.wetube.wetube_service.repository.post.PostRepository;
 import com.wetube.wetube_service.service.CommentService;
+import com.wetube.wetube_service.service.LikeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,43 +22,135 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final PostRepository postRepository;
+    private final LikeService likeService;
 
     @Override
-    public List<Comment> getCommentsByTargetId(UUID targetId) {
-        return commentRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(Comment.TargetType.POST, targetId);
+    public List<CommentResponseDto> getCommentsByTargetId(UUID targetId, Comment.TargetType type) {
+        List<Comment> roots = commentRepository.findByTargetTypeAndTargetIdAndParentCommentIdIsNullOrderByCreatedAtDesc(type, targetId);
+
+        return roots.stream()
+                .map(this::toResponseWithReplies)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public CommentDto getCommentById(Long id) {
+    public CommentResponseDto getCommentById(UUID id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
-        return commentMapper.toDto(comment);
+
+        return toResponseWithReplies(comment);
     }
 
     @Override
     @Transactional
-    public CommentDto createComment(CommentDto commentDto) {
-        Comment comment = commentMapper.toEntity(commentDto);
-        Comment saved = commentRepository.save(comment);
-        return commentMapper.toDto(saved);
-    }
+    public CommentResponseDto createComment(CommentRequestDto request) {
+        Comment comment = commentMapper.toEntity(request);
 
-    @Override
-    @Transactional
-    public CommentDto updateComment(Long id, CommentDto commentDto) {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        comment.setContent(commentDto.getContent());
-        return commentMapper.toDto(commentRepository.save(comment));
-    }
-
-    @Override
-    @Transactional
-    public void deleteComment(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new RuntimeException("Comment not found");
+        if (request.getParentCommentId() != null) {
+            Comment parent = commentRepository.findById(request.getParentCommentId())
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+            comment.setParentCommentId(parent.getId());
+            comment.setTargetId(parent.getTargetId());
+            comment.setTargetType(parent.getTargetType());
+        } else {
+            if (request.getTargetId() == null || request.getTargetType() == null) {
+                throw new RuntimeException("targetId and targetType are required for root comments");
+            }
+            comment.setTargetId(request.getTargetId());
+            comment.setTargetType(request.getTargetType());
         }
-        commentRepository.deleteById(id);
+
+        comment.setUserId(request.getUserId());
+        Comment saved = commentRepository.save(comment);
+
+        if (saved.getTargetType() == Comment.TargetType.POST) {
+            postRepository.findById(saved.getTargetId()).ifPresent(post -> {
+                Integer total = commentRepository.countByTargetTypeAndTargetId(Comment.TargetType.POST, post.getId());
+                post.setCommentCount(total);
+                postRepository.save(post);
+            });
+        }
+
+        return toResponseWithReplies(saved);
+    }
+
+    @Override
+    @Transactional
+    public CommentResponseDto updateComment(UUID id, CommentRequestDto request) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (request.getContent() != null) {
+            comment.setContent(request.getContent());
+        }
+
+        Comment updated = commentRepository.save(comment);
+        return toResponseWithReplies(updated);
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(UUID id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        deleteRecursively(comment.getId());
+
+        if (comment.getTargetType() == Comment.TargetType.POST) {
+            postRepository.findById(comment.getTargetId()).ifPresent(post -> {
+                Integer total = commentRepository.countByTargetTypeAndTargetId(Comment.TargetType.POST, post.getId());
+                post.setCommentCount(total);
+                postRepository.save(post);
+            });
+        }
+    }
+
+    @Override
+    public List<CommentResponseDto> getReplies(UUID parentId) {
+        List<Comment> replies = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(parentId);
+        return replies.stream()
+                .map(this::toResponseBasic)
+                .collect(Collectors.toList());
+    }
+
+    private CommentResponseDto toResponseWithReplies(Comment comment) {
+        CommentResponseDto dto = toResponseBasic(comment);
+
+        Integer replyCount = commentRepository.countByParentCommentId(comment.getId());
+        dto.setReplyCount(replyCount);
+
+        List<Comment> replies = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
+        List<CommentResponseDto> replyDtos = replies.stream()
+                .map(this::toResponseBasic)
+                .collect(Collectors.toList());
+        dto.setReplies(replyDtos);
+
+        return dto;
+    }
+
+    private CommentResponseDto toResponseBasic(Comment comment) {
+        CommentResponseDto dto = commentMapper.toResponseDto(comment);
+
+        dto.setReplyCount(0);
+        dto.setReplies(Collections.emptyList());
+
+        try {
+            Integer likes = likeService.getLikeInfo(comment.getId(), Like.TargetType.COMMENT, null).getLikeCount();
+            dto.setLikeCount(likes);
+        } catch (Exception ex) {
+
+            dto.setLikeCount(Optional.ofNullable(comment.getLikeCount()).orElse(0));
+        }
+
+        return dto;
+    }
+
+    private void deleteRecursively(UUID commentId) {
+        List<Comment> children = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(commentId);
+        for (Comment child : children) {
+            deleteRecursively(child.getId());
+        }
+        commentRepository.deleteById(commentId);
     }
 }
-

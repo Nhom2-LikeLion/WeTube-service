@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,10 +26,12 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(nullable = false)
+    private Integer commentCount = 0;
+
     private String imageUrl;
 
     private Integer likeCount;
-    private Integer dislikeCount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -43,5 +46,6 @@ public class Post {
     public void updateTimeStamp() {
         updatedAt = LocalDateTime.now();
     }
+
 }
 

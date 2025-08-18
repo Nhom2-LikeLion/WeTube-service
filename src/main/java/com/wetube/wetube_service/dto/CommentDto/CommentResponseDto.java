@@ -1,9 +1,9 @@
-package com.wetube.wetube_service.dto;
+package com.wetube.wetube_service.dto.CommentDto;
 
-import com.wetube.wetube_service.entity.Comment;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -11,14 +11,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommentDto {
-    private UUID targetId;
-    private UUID userId;
+public class CommentResponseDto {
+    private UUID id;
     private String content;
+    private UUID userId;
     private Integer likeCount;
-    private Integer dislikeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Comment.TargetType targetType;
+    private Integer replyCount;
+    private List<CommentResponseDto> replies;
 }
-

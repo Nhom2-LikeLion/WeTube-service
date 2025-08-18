@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.controller;
 
-import com.wetube.wetube_service.dto.CommentDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentRequestDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
 import com.wetube.wetube_service.entity.Comment;
 import com.wetube.wetube_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -18,27 +19,35 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/post/{targetId}")
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable UUID targetId) {
-        return ResponseEntity.ok(commentService.getCommentsByTargetId(targetId));
+    public ResponseEntity<List<CommentResponseDto>> getCommentsByPost(
+            @PathVariable UUID targetId,
+            @RequestParam(name = "type", required = false, defaultValue = "POST") Comment.TargetType type
+    ) {
+        return ResponseEntity.ok(commentService.getCommentsByTargetId(targetId, type));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id) {
+    public ResponseEntity<CommentResponseDto> getCommentById(@PathVariable UUID id) {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }
 
+    @GetMapping("/reply/{parentId}")
+    public ResponseEntity<List<CommentResponseDto>> getReplies(@PathVariable UUID parentId) {
+        return ResponseEntity.ok(commentService.getReplies(parentId));
+    }
+
     @PostMapping
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok(commentService.createComment(commentDto));
+    public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto request) {
+        return ResponseEntity.ok(commentService.createComment(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long id, @RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok(commentService.updateComment(id, commentDto));
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable UUID id, @RequestBody CommentRequestDto request) {
+        return ResponseEntity.ok(commentService.updateComment(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteComment(@PathVariable UUID id) {
         commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }

@@ -6,7 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByTargetTypeAndTargetIdOrderByCreatedAtDesc(Comment.TargetType targetType, UUID targetId);
+public interface CommentRepository extends JpaRepository<Comment, UUID> {
+
+    List<Comment> findByTargetTypeAndTargetIdAndParentCommentIdIsNullOrderByCreatedAtDesc(Comment.TargetType targetType, UUID targetId);
+
+    Integer countByTargetTypeAndTargetId(Comment.TargetType targetType, UUID targetId);
+
+    List<Comment> findByParentCommentIdOrderByCreatedAtAsc(UUID parentCommentId);
+
+    Integer countByParentCommentId(UUID parentCommentId);
+
 }
+
 

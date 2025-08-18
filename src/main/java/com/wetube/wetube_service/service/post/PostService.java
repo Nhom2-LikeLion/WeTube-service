@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.service;
+package com.wetube.wetube_service.service.post;
 
 import com.wetube.wetube_service.dto.post.PostDto;
 import java.util.List;

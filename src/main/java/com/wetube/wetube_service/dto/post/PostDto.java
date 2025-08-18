@@ -11,12 +11,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class PostDto {
+    private UUID id;
     private UUID userId;
     private String content;
     private String imageUrl;
+    private Integer commentCount;
     private Integer likeCount;
-    private Integer dislikeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private PollSummaryDto poll;
 }
 
