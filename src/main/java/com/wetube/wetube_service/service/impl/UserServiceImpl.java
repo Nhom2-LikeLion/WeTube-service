@@ -1,7 +1,9 @@
 package com.wetube.wetube_service.service.impl;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.mapper.UserMapper;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.service.UserService;
 import org.springframework.stereotype.Service;
@@ -10,17 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    @Override // ✅ Thêm annotation @Override
+    @Override
     @Transactional
-    public AppUser findOrCreateUser(JWTClaimsSet claims) {
+    public UserDto findOrCreateUser(JWTClaimsSet claims) {
         String clerkId = claims.getSubject();
 
-        return userRepository.findByClerkId(clerkId)
+        AppUser userEntity = userRepository.findByClerkId(clerkId)
                 .orElseGet(() -> {
                     AppUser newAppUser = new AppUser();
                     newAppUser.setClerkId(clerkId);
@@ -30,5 +34,7 @@ public class UserServiceImpl implements UserService {
 
                     return userRepository.save(newAppUser);
                 });
+
+        return userMapper.toDto(userEntity);
     }
 }

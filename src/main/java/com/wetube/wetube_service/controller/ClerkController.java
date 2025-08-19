@@ -1,7 +1,7 @@
 package com.wetube.wetube_service.controller;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,15 +22,11 @@ public class ClerkController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AppUser> getCurrentUser(Authentication authentication) {
-        // Spring Security sẽ tự động inject đối tượng Authentication
-        // sau khi filter của chúng ta xác thực thành công.
-
-        // Lấy lại đối tượng claims mà chúng ta đã đặt trong filter
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {// Lấy lại đối tượng claims mà chúng ta đã đặt trong filter
         JWTClaimsSet claims = (JWTClaimsSet) authentication.getPrincipal();
 
         // Gọi service như cũ
-        AppUser currentAppUser = userService.findOrCreateUser(claims);
+        UserDto currentAppUser = userService.findOrCreateUser(claims);
 
         return ResponseEntity.ok(currentAppUser);
     }

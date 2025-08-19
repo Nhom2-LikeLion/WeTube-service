@@ -23,8 +23,8 @@ public class WebCorsConfiguration {
     @Value("${management.endpoints.web.cors.allowed-methods}")
     private List<String> allowedMethods;
 
-    @Value("${management.endpoints.web.cors.allowed-credentials}")
-    private Boolean allowedCredentials;
+    @Value("${management.endpoints.web.cors.allow-credentials}")
+    private Boolean allowCredentials;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -32,7 +32,7 @@ public class WebCorsConfiguration {
         corsConfig.setAllowedOrigins(allowedOrigins);
         corsConfig.setAllowedHeaders(allowedHeaders);
         corsConfig.setAllowedMethods(allowedMethods);
-        corsConfig.setAllowCredentials(allowedCredentials);
+        corsConfig.setAllowCredentials(allowCredentials);
         corsConfig.setExposedHeaders(exposedHeaders);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
