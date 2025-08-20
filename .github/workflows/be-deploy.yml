@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd my-app
+            cd WeTube-service
             
             # Xuất các biến môi trường từ job 'build'
             export IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
