@@ -11,7 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class PollSummaryDto {
-//    private UUID postId;
     private List<PollOptionDto> options;
     private Integer totalVotes;
     private UUID userVotedOptionId;

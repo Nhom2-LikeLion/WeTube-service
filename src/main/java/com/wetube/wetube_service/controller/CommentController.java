@@ -18,12 +18,12 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @GetMapping("/post/{targetId}")
-    public ResponseEntity<List<CommentResponseDto>> getCommentsByPost(
-            @PathVariable UUID targetId,
-            @RequestParam(name = "type", required = false, defaultValue = "POST") Comment.TargetType type
+    @GetMapping("/{targetType}/{targetId}")
+    public ResponseEntity<List<CommentResponseDto>> getCommentsByTarget(
+            @PathVariable("targetId") UUID targetId,
+            @PathVariable("targetType") Comment.TargetType targetType
     ) {
-        return ResponseEntity.ok(commentService.getCommentsByTargetId(targetId, type));
+        return ResponseEntity.ok(commentService.getCommentsByTargetId(targetId, targetType));
     }
 
     @GetMapping("/{id}")

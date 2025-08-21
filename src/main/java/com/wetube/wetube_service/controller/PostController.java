@@ -1,6 +1,9 @@
-package com.wetube.wetube_service.controller.post;
+package com.wetube.wetube_service.controller;
 
+import com.wetube.wetube_service.dto.post.PollSummaryDto;
 import com.wetube.wetube_service.dto.post.PostDto;
+import com.wetube.wetube_service.dto.post.VoteRequestDto;
+import com.wetube.wetube_service.service.post.PollVoteService;
 import com.wetube.wetube_service.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import java.util.UUID;
 public class PostController {
 
     private final PostService postService;
+    private final PollVoteService pollVoteService;
 
     @GetMapping("/{userId}/posts")
     public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable UUID userId) {
@@ -43,6 +47,15 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable UUID id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{postId}/polls/vote")
+    public ResponseEntity<PollSummaryDto> vote(
+            @PathVariable UUID postId,
+            @RequestBody VoteRequestDto request
+    ) {
+        request.setPostId(postId);
+        return ResponseEntity.ok(pollVoteService.vote(request));
     }
 }
 

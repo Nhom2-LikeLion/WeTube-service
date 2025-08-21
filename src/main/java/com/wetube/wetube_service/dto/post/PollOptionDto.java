@@ -10,10 +10,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class PollOptionDto {
-    private UUID optionId;     // trả về
-    private String optionText; // gửi lên khi tạo post+poll
-    private Integer voteCount; // trả về
-    private Double percentage; // trả về
+    private UUID optionId;
+    private String optionText;
+    private Integer voteCount;
+    private Double percentage;
 }
 
 
