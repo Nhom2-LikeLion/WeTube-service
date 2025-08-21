@@ -83,9 +83,28 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Debug: Show what we're receiving from build job
+            echo "=== DEBUG: Build job outputs ==="
+            echo "Raw IMAGE_NAME output: '${{ needs.build.outputs.IMAGE_NAME }}'"
+            echo "Raw IMAGE_TAG output: '${{ needs.build.outputs.IMAGE_TAG }}'"
+            
             # Set environment variables explicitly
             IMAGE_NAME="${{ needs.build.outputs.IMAGE_NAME }}"
             IMAGE_TAG="${{ needs.build.outputs.IMAGE_TAG }}"
+            
+            # Fallback: Reconstruct IMAGE_NAME if empty
+            if [[ -z "$IMAGE_NAME" ]]; then
+              echo "⚠️ IMAGE_NAME is empty, reconstructing..."
+              IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
+              echo "Reconstructed IMAGE_NAME: $IMAGE_NAME"
+            fi
+            
+            # Fallback: Use commit SHA if IMAGE_TAG is empty
+            if [[ -z "$IMAGE_TAG" ]]; then
+              echo "⚠️ IMAGE_TAG is empty, using GitHub SHA..."
+              IMAGE_TAG="${{ github.sha }}"
+              echo "Using IMAGE_TAG: $IMAGE_TAG"
+            fi
             
             echo "Deploying with:"
             echo "IMAGE_NAME: $IMAGE_NAME"
