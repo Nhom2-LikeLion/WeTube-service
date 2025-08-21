@@ -193,7 +193,7 @@ jobs:
   build:
     name: Build Backend Service
     runs-on: ubuntu-latest
-    outputs: # <-- FIX: Re-enabled job outputs to pass data to the deploy job
+    outputs:
       IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
@@ -276,11 +276,11 @@ jobs:
             echo "Creating production environment file..."
             cat > .env.prod << EOF
             SPRING_PROFILES_ACTIVE=prod
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
-            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_URL=${{ secrets.DB_URL }}
+            DATABASE_USERNAME=${{ secrets.DB_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }}
             DATABASE_DIALECT=${{ secrets.DB_DIALECT }}
-            DATABASE_DRIVER=${{ secrets.DB_DRIVER }} # This is the crucial variable
+            DATABASE_DRIVER=${{ secrets.DB_DRIVER }} 
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
