@@ -48,9 +48,6 @@ jobs:
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
           
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          
 
   deploy:
     name: Deploy to EC2 Instance
@@ -83,24 +80,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             # Set environment variables explicitly with fallback
-            export IMAGE_NAME="$DOCKERHUB_USERNAME/wetube-service"
-            export IMAGE_TAG="$IMAGE_TAG"
+            export IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
+            export IMAGE_TAG="${{ github.sha }}"
             
             echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
-            
-            # Fallback: Reconstruct IMAGE_NAME if empty
-            if [[ -z "$IMAGE_NAME" ]]; then
-              echo "⚠️ IMAGE_NAME is empty, reconstructing..."
-              IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
-              echo "Reconstructed IMAGE_NAME: $IMAGE_NAME"
-            fi
-            
-            # Fallback: Use commit SHA if IMAGE_TAG is empty
-            if [[ -z "$IMAGE_TAG" ]]; then
-              echo "⚠️ IMAGE_TAG is empty, using GitHub SHA..."
-              IMAGE_TAG="${{ github.sha }}"
-              echo "Using IMAGE_TAG: $IMAGE_TAG"
-            fi
             
             echo "Final deployment values:"
             echo "IMAGE_NAME: $IMAGE_NAME"
@@ -108,7 +91,7 @@ jobs:
             
             # Verify variables are set
             if [[ -z "$IMAGE_NAME" || -z "$IMAGE_TAG" ]]; then
-              echo "❌ Environment variables still not set correctly"
+              echo "❌ Environment variables not set correctly"
               echo "IMAGE_NAME: '$IMAGE_NAME'"
               echo "IMAGE_TAG: '$IMAGE_TAG'"
               exit 1
@@ -177,22 +160,18 @@ jobs:
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
             # Stop and remove existing containers
-            sudo docker-compose stop backend || true
-            sudo docker-compose rm -f backend || true
-            
-            # Export variables for docker-compose
-            export IMAGE_NAME="$IMAGE_NAME"
-            export IMAGE_TAG="$IMAGE_TAG"
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose rm -f backend || true
             
             # Pull latest image
-            sudo docker-compose pull backend
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose pull backend
             
             # Start new containers
-            sudo docker-compose up -d --remove-orphans
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose up -d --remove-orphans
             
             # Show running containers
-            sudo docker-compose ps
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose ps
 
             # Show logs for debugging
             echo "Container logs:"
-            sudo docker-compose logs backend --tail=50
+            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose logs backend --tail=50
