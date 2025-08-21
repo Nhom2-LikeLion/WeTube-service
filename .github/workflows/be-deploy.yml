@@ -156,6 +156,8 @@ jobs:
             CORS_EXPOSED_HEADERS=${{ secrets.CORS_EXPOSED_HEADERS }}
             CORS_ALLOW_CREDENTIALS=${{ secrets.CORS_ALLOW_CREDENTIALS }}
             JWKS_URL=${{ secrets.JWKS_URL }}
+            IMAGE_NAME=${IMAGE_NAME}
+            IMAGE_TAG=${IMAGE_TAG}
             EOF
 
             echo "✅ Environment file created"
@@ -166,23 +168,32 @@ jobs:
             
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          
+            echo "✅ Dừng và xóa container cũ (nếu có)"
+            sudo docker-compose --env-file .env.prod down || true
+            
+            echo "✅ Pull image mới"
+            sudo docker-compose --env-file .env.prod pull
+            
+            echo "✅ Chạy container mới"
+            sudo docker-compose --env-file .env.prod up -d --remove-orphans
 
-            # Stop and remove existing containers
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose rm -f backend || true
-
-            # Create the external network if it doesn't exist (new addition to fix the error)
-            sudo docker network create web-network || true
-
-            # Pull latest image
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose pull backend
-
-            # Start new containers
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose up -d --remove-orphans
-
-            # Show running containers
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose ps
-
-            # Show logs for debugging
-            echo "Container logs:"
-            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose logs backend --tail=50
+#            # Stop and remove existing containers
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose rm -f backend || true
+#
+#            # Create the external network if it doesn't exist (new addition to fix the error)
+#            sudo docker network create web-network || true
+#
+#            # Pull latest image
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose pull backend
+#
+#            # Start new containers
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose up -d --remove-orphans
+#
+#            # Show running containers
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose ps
+#
+#            # Show logs for debugging
+#            echo "Container logs:"
+#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose logs backend --tail=50
