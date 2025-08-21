@@ -8,13 +8,13 @@ jobs:
   build:
     name: Build Backend Service
     runs-on: ubuntu-latest
-#    outputs:
-#      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
-#      IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
+    outputs:
+      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
+      IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
-      - name: Print Image Info
-        run: |
-          echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service, IMAGE_TAG=${{ github.sha }}"
+#      - name: Print Image Info
+#        run: |
+#          echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service, IMAGE_TAG=${{ github.sha }}"
 #          echo "IMAGE_NAME=$IMAGE_NAME, IMAGE_TAG=$IMAGE_TAG"
 
       - name: Checkout code
@@ -48,6 +48,8 @@ jobs:
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
           
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy to EC2 Instance
