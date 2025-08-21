@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 for consistency
 
       - name: Verify files exist
         run: |
@@ -83,21 +83,19 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            export IMAGE_NAME="$DOCKERHUB_USERNAME/wetube-service"
-            export IMAGE_TAG="$IMAGE_TAG"
+            # Set variables from build outputs (resolved by GitHub)
+            export IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
+            export IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
             
-            # Fallback: Reconstruct IMAGE_NAME if empty
+            # Fallbacks (should rarely trigger)
             if [[ -z "$IMAGE_NAME" ]]; then
               echo "⚠️ IMAGE_NAME is empty, reconstructing..."
               IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
-              echo "Reconstructed IMAGE_NAME: $IMAGE_NAME"
             fi
             
-            # Fallback: Use commit SHA if IMAGE_TAG is empty
             if [[ -z "$IMAGE_TAG" ]]; then
               echo "⚠️ IMAGE_TAG is empty, using GitHub SHA..."
               IMAGE_TAG="${{ github.sha }}"
-              echo "Using IMAGE_TAG: $IMAGE_TAG"
             fi
             
             echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
@@ -122,17 +120,18 @@ jobs:
             fi
             
             # Install Docker Compose if not present
-            if ! command -v docker-compose &> /dev/null; then
+            if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
               echo "Installing Docker Compose..."
               sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
+              sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose  # For compatibility
               echo "Docker Compose installed successfully"
             fi
             
-            # Use sudo for Docker commands since user might not be in docker group yet
+            # Use sudo for Docker commands (user may not be in group yet; relogin needed otherwise)
             echo "Checking Docker status..."
             sudo docker --version
-            sudo docker-compose --version || sudo docker compose version
+            sudo docker compose version || sudo docker-compose --version
             
             # Navigate to project directory
             cd WeTube-service
@@ -168,19 +167,15 @@ jobs:
             
             echo "✅ Environment file created"
             
-            # Export environment variables from build job
-            export IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
-            export IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
-            
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
             # Stop and remove existing containers
-            sudo docker-compose stop backend || true
-            sudo docker-compose rm -f backend || true
+            sudo docker compose stop backend || true
+            sudo docker compose rm -f backend || true
             
             # Pull latest image
-            sudo docker-compose pull backend
+            sudo docker compose pull backend
             
             # Start new containers
-            sudo docker-compose up -d --remove-orphans
+            sudo docker compose up -d --remove-orphans
