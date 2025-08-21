@@ -72,19 +72,41 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Install Docker if not present
+            if ! command -v docker &> /dev/null; then
+              echo "Installing Docker..."
+              sudo yum update -y
+              sudo yum install docker -y
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -a -G docker $USER
+              echo "Docker installed successfully"
+            fi
+            
+            # Install Docker Compose if not present
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Installing Docker Compose..."
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              echo "Docker Compose installed successfully"
+            fi
+            
+            # Navigate to project directory
             cd WeTube-service
             
-            # Xuất các biến môi trường từ job 'build'
+            # Export environment variables from build job
             export IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
             export IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
             
+            # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             
-            sudo docker compose stop backend || true
-            sudo docker compose rm -f backend || true
+            # Stop and remove existing containers
+            sudo docker-compose stop backend || true
+            sudo docker-compose rm -f backend || true
             
-            # Kéo image mới nhất
-            sudo docker compose pull backend
+            # Pull latest image
+            sudo docker-compose pull backend
             
-            # Khởi động container mới
-            sudo docker compose up -d --remove-orphans
+            # Start new containers
+            sudo docker-compose up -d --remove-orphans
