@@ -160,6 +160,10 @@ jobs:
 
             echo "✅ Environment file created"
 
+            echo "--- Displaying .env.prod contents for verification ---"
+            cat .env.prod
+            echo "------------------------------------------------------"
+            
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
