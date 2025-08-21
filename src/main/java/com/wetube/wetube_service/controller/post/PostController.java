@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}/posts")
     public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(postService.getPostsByUser(userId));
     }

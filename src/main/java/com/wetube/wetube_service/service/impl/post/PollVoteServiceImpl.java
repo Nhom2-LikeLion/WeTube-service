@@ -23,7 +23,6 @@ public class PollVoteServiceImpl implements PollVoteService {
     @Override
     @Transactional
     public PollSummaryDto vote(VoteRequestDto request) {
-        // Kiểm tra option thuộc post
         PollOption option = pollOptionRepository.findById(request.getOptionId())
                 .orElseThrow(() -> new RuntimeException("Option not found"));
 
@@ -31,18 +30,15 @@ public class PollVoteServiceImpl implements PollVoteService {
             throw new RuntimeException("Option does not belong to the given post");
         }
 
-        // Nếu user đã vote post này trước đó → xóa phiếu cũ (đổi lựa chọn)
         pollVoteRepository.deleteByPostIdAndUserId(request.getPostId(), request.getUserId());
 
-        // Tạo vote mới
-        PollVote v = PollVote.builder()
+        PollVote v = PollVote.builder() //newvote
                 .postId(request.getPostId())
-                .optionId(request.getOptionId()) // Đặt đúng tên field trong entity PollVote
+                .optionId(request.getOptionId())
                 .userId(request.getUserId())
                 .build();
         pollVoteRepository.save(v);
 
-        // Trả về summary mới nhất
         return postPollService.getPollSummary(request.getPostId(), request.getUserId());
     }
 }

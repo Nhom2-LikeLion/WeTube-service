@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +54,6 @@ public class PostPollServiceImpl implements PostPollService {
     @Override
     @Transactional
     public void vote(UUID postId, UUID optionId, UUID userId) {
-        // 1 user chỉ được 1 phiếu trong 1 post
         pollVoteRepository.findByPostIdAndUserId(postId, userId).ifPresentOrElse(
                 existing -> {
                     if (!existing.getOptionId().equals(optionId)) {
