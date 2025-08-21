@@ -143,7 +143,7 @@ jobs:
             DATABASE_USERNAME=${{ secrets.DB_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }}
             DATABASE_DIALECT=${{ secrets.DB_DIALECT }}
-            DATABASE_DRIVER=${{ secrets.DB_DRIVER }}
+            DATABASE_DRIVER=com.mysql.cj.jdbc.Driver
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
@@ -160,22 +160,7 @@ jobs:
             IMAGE_TAG=${IMAGE_TAG}
             EOF
 
-            echo "✅ Environment file created"
-
-            # =======================================================
-            # SAFE DEBUG: Check secrets without exposing them
-            # =======================================================
-            echo "--- Verifying secrets (safe method) ---"
-            DB_URL_VAR="$DB_URL_SECRET"
-            DB_USER_VAR="$DB_USERNAME_SECRET"
-            JWT_SECRET_VAR="$JWT_SECRET_VALUE"
-
-            echo "DATABASE_URL length: ${#DB_URL_VAR}"
-            echo "DATABASE_USERNAME length: ${#DB_USER_VAR}"
-            echo "JWT_SECRET length: ${#JWT_SECRET_VAR}"
-            echo "JWT_SECRET starts with: ${JWT_SECRET_VAR:0:4}..." # Shows first 4 characters
-            echo "----------------------------------------"
-            
+            echo "✅ Environment file created"       
             
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
