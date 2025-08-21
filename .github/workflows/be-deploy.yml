@@ -163,6 +163,9 @@ jobs:
             sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
             sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose rm -f backend || true
             
+            # Create the external network if it doesn't exist (new addition to fix the error)
+            sudo docker network create web-network || true
+            
             # Pull latest image
             sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose pull backend
             
