@@ -83,14 +83,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Debug: Show what we're receiving from build job
-            echo "=== DEBUG: Build job outputs ==="
-            echo "Raw IMAGE_NAME output: '${{ needs.build.outputs.IMAGE_NAME }}'"
-            echo "Raw IMAGE_TAG output: '${{ needs.build.outputs.IMAGE_TAG }}'"
-            
-            # Set environment variables explicitly
-            IMAGE_NAME="${{ needs.build.outputs.IMAGE_NAME }}"
-            IMAGE_TAG="${{ needs.build.outputs.IMAGE_TAG }}"
+            export IMAGE_NAME="$DOCKERHUB_USERNAME/wetube-service"
+            export IMAGE_TAG="$IMAGE_TAG"
             
             # Fallback: Reconstruct IMAGE_NAME if empty
             if [[ -z "$IMAGE_NAME" ]]; then
@@ -106,9 +100,7 @@ jobs:
               echo "Using IMAGE_TAG: $IMAGE_TAG"
             fi
             
-            echo "Deploying with:"
-            echo "IMAGE_NAME: $IMAGE_NAME"
-            echo "IMAGE_TAG: $IMAGE_TAG"
+            echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
             
             # Verify variables are set
             if [[ -z "$IMAGE_NAME" || -z "$IMAGE_TAG" ]]; then
