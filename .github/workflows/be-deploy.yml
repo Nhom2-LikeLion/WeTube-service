@@ -9,7 +9,6 @@ jobs:
     name: Build Backend Service
     runs-on: ubuntu-latest
     outputs:
-      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
       - name: Checkout code
@@ -76,19 +75,20 @@ jobs:
 
       - name: Deploy with Docker Compose
         uses: appleboy/ssh-action@master
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_TAG: ${{ needs.build.outputs.IMAGE_TAG }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Debug: Show what we're receiving from build job
-            echo "=== DEBUG: Build job outputs ==="
-            echo "Raw IMAGE_NAME output: '${{ needs.build.outputs.IMAGE_NAME }}'"
-            echo "Raw IMAGE_TAG output: '${{ needs.build.outputs.IMAGE_TAG }}'"
-            
             # Set environment variables explicitly with fallback
-            IMAGE_NAME="${{ needs.build.outputs.IMAGE_NAME }}"
-            IMAGE_TAG="${{ needs.build.outputs.IMAGE_TAG }}"
+            export IMAGE_NAME="$DOCKERHUB_USERNAME/wetube-service"
+            export IMAGE_TAG="$IMAGE_TAG"
+            
+            echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
             
             # Fallback: Reconstruct IMAGE_NAME if empty
             if [[ -z "$IMAGE_NAME" ]]; then
