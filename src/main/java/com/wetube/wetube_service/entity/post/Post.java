@@ -26,8 +26,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private Integer commentCount = 0;
+    private Integer commentCount;
 
     private String imageUrl;
 

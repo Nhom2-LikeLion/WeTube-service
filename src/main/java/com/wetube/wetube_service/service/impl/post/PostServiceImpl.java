@@ -68,7 +68,16 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostDto createPost(PostDto postDto) {
-        Post saved = postRepository.save(postMapper.toEntity(postDto));
+        Post post = postMapper.toEntity(postDto);
+
+        if (post.getCommentCount() == null) {
+            post.setCommentCount(0);
+        }
+        if (post.getLikeCount() == null) {
+            post.setLikeCount(0);
+        }
+
+        Post saved = postRepository.save(post);
 
         if (postDto.getPoll() != null
                 && postDto.getPoll().getOptions() != null
