@@ -140,6 +140,8 @@ jobs:
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_DIALECT=${{ secrets.DB_DIALECT }}
+            DATABASE_DRIVER=${{ secrets.DB_DRIVER }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
