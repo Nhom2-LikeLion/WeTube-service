@@ -2,7 +2,7 @@ name: CI/CD pipeline for WeTube Backend Service
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ feature/Deploy-to-aws ]
 
 jobs:
   build:
@@ -13,7 +13,9 @@ jobs:
 #      IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
       - name: Print Image Info
-        run: echo "IMAGE_NAME=$IMAGE_NAME, IMAGE_TAG=$IMAGE_TAG"
+        run: |
+          echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service, IMAGE_TAG=${{ github.sha }}"
+#          echo "IMAGE_NAME=$IMAGE_NAME, IMAGE_TAG=$IMAGE_TAG"
 
       - name: Checkout code
         uses: actions/checkout@v4
