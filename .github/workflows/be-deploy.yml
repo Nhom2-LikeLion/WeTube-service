@@ -162,9 +162,20 @@ jobs:
 
             echo "✅ Environment file created"
 
-            echo "--- Displaying .env.prod contents for verification ---"
-            cat .env.prod
-            echo "------------------------------------------------------"
+            # =======================================================
+            # SAFE DEBUG: Check secrets without exposing them
+            # =======================================================
+            echo "--- Verifying secrets (safe method) ---"
+            DB_URL_VAR="$DB_URL_SECRET"
+            DB_USER_VAR="$DB_USERNAME_SECRET"
+            JWT_SECRET_VAR="$JWT_SECRET_VALUE"
+
+            echo "DATABASE_URL length: ${#DB_URL_VAR}"
+            echo "DATABASE_USERNAME length: ${#DB_USER_VAR}"
+            echo "JWT_SECRET length: ${#JWT_SECRET_VAR}"
+            echo "JWT_SECRET starts with: ${JWT_SECRET_VAR:0:4}..." # Shows first 4 characters
+            echo "----------------------------------------"
+            
             
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
