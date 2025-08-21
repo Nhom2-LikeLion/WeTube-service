@@ -91,6 +91,11 @@ jobs:
               echo "Docker Compose installed successfully"
             fi
             
+            # Use sudo for Docker commands since user might not be in docker group yet
+            echo "Checking Docker status..."
+            sudo docker --version
+            sudo docker-compose --version || sudo docker compose version
+            
             # Navigate to project directory
             cd WeTube-service
             
