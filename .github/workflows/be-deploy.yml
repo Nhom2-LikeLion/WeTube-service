@@ -56,6 +56,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Verify files exist
+        run: |
+          echo "Checking if required files exist..."
+          ls -la
+          if [[ -f "compose.yml" ]]; then
+            echo "✅ compose.yml found"
+          else
+            echo "❌ compose.yml not found"
+            exit 1
+          fi
+          if [[ -f ".env.prod.properties" ]]; then
+            echo "✅ .env.prod.properties found"
+          else
+            echo "❌ .env.prod.properties not found"
+            exit 1
+          fi
+
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
         with:
@@ -72,6 +89,22 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Set environment variables explicitly
+            IMAGE_NAME="${{ needs.build.outputs.IMAGE_NAME }}"
+            IMAGE_TAG="${{ needs.build.outputs.IMAGE_TAG }}"
+            
+            echo "Deploying with:"
+            echo "IMAGE_NAME: $IMAGE_NAME"
+            echo "IMAGE_TAG: $IMAGE_TAG"
+            
+            # Verify variables are set
+            if [[ -z "$IMAGE_NAME" || -z "$IMAGE_TAG" ]]; then
+              echo "❌ Environment variables not set correctly"
+              echo "IMAGE_NAME: '$IMAGE_NAME'"
+              echo "IMAGE_TAG: '$IMAGE_TAG'"
+              exit 1
+            fi
+            
             # Install Docker if not present
             if ! command -v docker &> /dev/null; then
               echo "Installing Docker..."
