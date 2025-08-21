@@ -40,12 +40,21 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
           IMAGE_TAG=${{ github.sha }}
           
+          echo "Building with:"
+          echo "IMAGE_NAME: $IMAGE_NAME"
+          echo "IMAGE_TAG: $IMAGE_TAG"
+          
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
           
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-  
+          
+          # Debug: Verify outputs were set
+          echo "=== Build job outputs set ==="
+          echo "IMAGE_NAME output: ${IMAGE_NAME}"
+          echo "IMAGE_TAG output: ${IMAGE_TAG}"
+          
 
   deploy:
     name: Deploy to EC2 Instance
@@ -54,21 +63,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # Updated to v4 for consistency
-
-      - name: Verify files exist
-        run: |
-          echo "Checking if required files exist..."
-          ls -la
-          if [[ -f "compose.yml" ]]; then
-            echo "✅ compose.yml found"
-          else
-            echo "❌ compose.yml not found"
-            exit 1
-          fi
+        uses: actions/checkout@v4
 
       - name: Copy files to EC2
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -83,26 +81,36 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Set variables from build outputs (resolved by GitHub)
-            export IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
-            export IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
+            # Debug: Show what we're receiving from build job
+            echo "=== DEBUG: Build job outputs ==="
+            echo "Raw IMAGE_NAME output: '${{ needs.build.outputs.IMAGE_NAME }}'"
+            echo "Raw IMAGE_TAG output: '${{ needs.build.outputs.IMAGE_TAG }}'"
             
-            # Fallbacks (should rarely trigger)
+            # Set environment variables explicitly with fallback
+            IMAGE_NAME="${{ needs.build.outputs.IMAGE_NAME }}"
+            IMAGE_TAG="${{ needs.build.outputs.IMAGE_TAG }}"
+            
+            # Fallback: Reconstruct IMAGE_NAME if empty
             if [[ -z "$IMAGE_NAME" ]]; then
               echo "⚠️ IMAGE_NAME is empty, reconstructing..."
               IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
+              echo "Reconstructed IMAGE_NAME: $IMAGE_NAME"
             fi
             
+            # Fallback: Use commit SHA if IMAGE_TAG is empty
             if [[ -z "$IMAGE_TAG" ]]; then
               echo "⚠️ IMAGE_TAG is empty, using GitHub SHA..."
               IMAGE_TAG="${{ github.sha }}"
+              echo "Using IMAGE_TAG: $IMAGE_TAG"
             fi
             
-            echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
+            echo "Final deployment values:"
+            echo "IMAGE_NAME: $IMAGE_NAME"
+            echo "IMAGE_TAG: $IMAGE_TAG"
             
             # Verify variables are set
             if [[ -z "$IMAGE_NAME" || -z "$IMAGE_TAG" ]]; then
-              echo "❌ Environment variables not set correctly"
+              echo "❌ Environment variables still not set correctly"
               echo "IMAGE_NAME: '$IMAGE_NAME'"
               echo "IMAGE_TAG: '$IMAGE_TAG'"
               exit 1
@@ -174,8 +182,19 @@ jobs:
             sudo docker-compose stop backend || true
             sudo docker-compose rm -f backend || true
             
+            # Export variables for docker-compose
+            export IMAGE_NAME="$IMAGE_NAME"
+            export IMAGE_TAG="$IMAGE_TAG"
+            
             # Pull latest image
             sudo docker-compose pull backend
             
             # Start new containers
             sudo docker-compose up -d --remove-orphans
+            
+            # Show running containers
+            sudo docker compose ps
+
+            # Show logs for debugging
+            echo "Container logs:"
+            sudo docker compose logs backend --tail=50
