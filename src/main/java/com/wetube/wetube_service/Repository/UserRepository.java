@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.Repository;
 
 public class UserRepository {
     
