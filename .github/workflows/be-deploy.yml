@@ -139,11 +139,11 @@ jobs:
             echo "Creating production environment file..."
             cat > .env.prod << EOF
             SPRING_PROFILES_ACTIVE=prod
-            DATABASE_URL=${{ secrets.DB_URL }}
-            DATABASE_USERNAME=${{ secrets.DB_USERNAME }}
-            DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DATABASE_DIALECT=${{ secrets.DB_DIALECT }}
-            DATABASE_DRIVER=com.mysql.cj.jdbc.Driver
+            DB_URL=${{ secrets.DB_URL }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_DIALECT=${{ secrets.DB_DIALECT }}
+            DB_DRIVER=${{secrets.DB_DRIVER}}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
