@@ -36,8 +36,8 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public VideoDto createVideo(MultipartFile videoFile,
-                                MultipartFile thumbnailFile,
-                                VideoDto videoDto) throws Exception {
+            MultipartFile thumbnailFile,
+            VideoDto videoDto) throws Exception {
 
         if (videoFile == null || videoFile.isEmpty()) {
             throw new IllegalArgumentException("Video file is required");
@@ -49,15 +49,14 @@ public class VideoServiceImpl implements VideoService {
                 : null;
 
         Video entity = videoMapper.toEntity(videoDto);
-        if (entity.getId() == null) entity.setId(UUID.randomUUID());
-
         entity.setVideoUrl(videoUrl);
         entity.setThumbnailUrl(thumbnailUrl);
 
         LocalDateTime now = LocalDateTime.now();
-        if (entity.getCreatedAt() == null) entity.setCreatedAt(now);
+        if (entity.getCreatedAt() == null)
+            entity.setCreatedAt(now);
         if (entity.getVideosStatus() == null || entity.getVideosStatus().isBlank()) {
-            entity.setVideosStatus("pending"); 
+            entity.setVideosStatus("pending");
         }
         entity.setUpdatedAt(now);
 
@@ -79,27 +78,30 @@ public class VideoServiceImpl implements VideoService {
         for (String name : names) {
             Tag tag = tagRepository.findByNameIgnoreCase(name).orElseGet(() -> {
                 Tag t = new Tag();
-                t.setId(UUID.randomUUID());
                 t.setName(name);
                 t.setCount(0);
                 t.setCreatedAt(LocalDateTime.now());
-                return tagRepository.saveAndFlush(t);
+                return tagRepository.save(t); // không saveAndFlush
             });
 
-            if (!videoTagRepository.existsByVideosIdAndTagsId(video.getId(), tag.getId())) {
+            if (!videoTagRepository.existsByVideo_IdAndTag_Id(video.getId(), tag.getId())) {
                 VideoTag vt = new VideoTag();
                 vt.setVideo(video);
                 vt.setTag(tag);
                 videoTagRepository.save(vt);
 
+                // để object 'video' đang cầm có liên kết ngay:
+                video.getVideoTags().add(vt);
+
+                // tăng count (hoặc dùng tagRepository.incrementCount(tag.getId()))
                 tag.setCount((tag.getCount() == null ? 0 : tag.getCount()) + 1);
-                tagRepository.save(tag);
             }
         }
-        videoTagRepository.flush();
-        tagRepository.flush();
 
-        return videoMapper.toDto(videoRepository.findById(id).orElse(video));
+        // map từ entity đã fetch‑join để tránh lazy-init/CME
+        Video dtoSource = videoRepository.findByIdWithTags(id)
+                .orElseThrow(() -> new IllegalArgumentException("Video not found with id: " + videoId));
+        return videoMapper.toDto(dtoSource);
     }
 
     @Override
@@ -119,15 +121,19 @@ public class VideoServiceImpl implements VideoService {
     }
 
     private Set<String> parseHashtagText(String hashtagText) {
-        if (hashtagText == null || hashtagText.isBlank()) return java.util.Collections.emptySet();
+        if (hashtagText == null || hashtagText.isBlank())
+            return java.util.Collections.emptySet();
         String[] parts = hashtagText.split("\\s+");
         Set<String> out = new LinkedHashSet<>();
         for (String raw : parts) {
-            if (raw == null) continue;
+            if (raw == null)
+                continue;
             String s = raw.trim();
-            if (s.startsWith("#")) s = s.substring(1);
+            if (s.startsWith("#"))
+                s = s.substring(1);
             s = s.trim().toLowerCase(Locale.ROOT);
-            if (!s.isBlank()) out.add(s);
+            if (!s.isBlank())
+                out.add(s);
         }
         return out;
     }

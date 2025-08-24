@@ -14,11 +14,14 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 @Table(name = "tags", indexes = @Index(name = "uk_tag_name", columnList = "name", unique = true))
 public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(16)")
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 64)
@@ -29,6 +32,7 @@ public class Tag {
 
     @Builder.Default
     private Integer count = 0;
+
 
     @PrePersist
     void prePersist() {

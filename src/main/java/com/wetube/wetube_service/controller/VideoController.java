@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.controller;
 
-    import java.util.Map;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,45 +20,41 @@ public class VideoController {
 
     private final VideoService videoService;
 
-@PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<?> uploadFile(
-    @RequestParam("videoFile") MultipartFile videoFile,
-    @RequestParam("usersId") String usersId,
-    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-    @RequestParam("title") String title,
-    @RequestParam(value = "videoStatus", defaultValue = "pending") String videosStatus
-) {
-    try {
-        VideoDto meta = VideoDto.builder()
-                .usersId(usersId)
-                .title(title)
-                .videosStatus(videosStatus)
-                .build();
+    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(
+            @RequestParam("videoFile") MultipartFile videoFile,
+            @RequestParam("usersId") String usersId,
+            @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+            @RequestParam("title") String title,
+            @RequestParam(value = "videoStatus", defaultValue = "pending") String videosStatus) {
+        try {
+            VideoDto meta = VideoDto.builder()
+                    .usersId(usersId)
+                    .title(title)
+                    .videosStatus(videosStatus)
+                    .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(videoService.createVideo(videoFile, thumbnailFile, meta));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(videoService.createVideo(videoFile, thumbnailFile, meta));
 
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", "Bad Request", "message", e.getMessage()));
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Server Error", "message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Bad Request", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Server Error", "message", e.getMessage()));
+        }
     }
-}
 
-    @PostMapping(value = "/{id}/tags", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<VideoDto> addTagsToVideo(
-        @PathVariable("id") String videoId,
-        @RequestBody Map<String, Object> body
+            @PathVariable("id") String videoId,
+            @RequestParam("hashtags") String hashtags 
     ) {
-        Object t = (body != null) ? body.get("hashtags") : null;
-        String hashtagText = (t == null ) ? null : String.valueOf(t);
-        if (hashtagText == null || hashtagText.isBlank()) {
+        if (hashtags == null || hashtags.isBlank()) {
             return ResponseEntity.badRequest().body(null);
         }
-
-        return ResponseEntity.ok(videoService.addTags(videoId, hashtagText));
+        return ResponseEntity.ok(videoService.addTags(videoId, hashtags));
     }
 
     @GetMapping

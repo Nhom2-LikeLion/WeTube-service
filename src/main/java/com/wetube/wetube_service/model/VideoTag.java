@@ -9,6 +9,7 @@ import java.util.UUID;
 @AllArgsConstructor 
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(
   name = "video_tags",
   uniqueConstraints = @UniqueConstraint(name="uk_video_tag", columnNames = {"video_id","tag_id"})
@@ -17,6 +18,7 @@ public class VideoTag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(columnDefinition = "CHAR(16)")
   private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)

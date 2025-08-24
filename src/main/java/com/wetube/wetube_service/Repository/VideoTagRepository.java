@@ -13,6 +13,6 @@ public interface VideoTagRepository extends JpaRepository<VideoTag, UUID> {
         FROM VideoTag vt
         WHERE vt.video.id = :videoId AND vt.tag.id = :tagId
     """)
-    boolean existsByVideosIdAndTagsId(@Param("videoId") UUID videoId,
+    boolean existsByVideo_IdAndTag_Id(@Param("videoId") UUID videoId,
                                       @Param("tagId")   UUID tagId);
 }

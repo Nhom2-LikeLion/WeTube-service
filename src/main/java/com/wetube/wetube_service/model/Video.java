@@ -13,12 +13,14 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "videos")
 public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(16)")
     private UUID id;
 
     private String usersId;
@@ -26,12 +28,14 @@ public class Video {
     private String title;
     private String thumbnailUrl;
     private String videoUrl;
-    private String videosStatus; 
+    private String videosStatus;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
     @CreationTimestamp
     private LocalDateTime updatedAt;
+    @Version
+    private Long version;
 
     @PrePersist
     void prePersist() {

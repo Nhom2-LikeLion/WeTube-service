@@ -2,7 +2,6 @@ package com.wetube.wetube_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
 import com.wetube.wetube_service.dto.TagDto;
@@ -15,10 +14,9 @@ public interface TagMapper {
     TagDto toDto(Tag tag);
 
     // dto -> entity: bỏ qua các field do JPA/service set
-    @Mappings({
-        @Mapping(target = "id",        ignore = true),
-        @Mapping(target = "createdAt", ignore = true),
-        @Mapping(target = "count",     ignore = true)
-    })
+    @Mapping(target = "id",        source = "id")
+    @Mapping(target = "name",      source = "name")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "count",     source = "count")
     Tag toEntity(TagDto dto);
 }
