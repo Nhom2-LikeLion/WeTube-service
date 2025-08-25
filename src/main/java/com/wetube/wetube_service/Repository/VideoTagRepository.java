@@ -4,7 +4,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.wetube.wetube_service.model.VideoTag;
+
+import com.wetube.wetube_service.entity.VideoTag;
 
 public interface VideoTagRepository extends JpaRepository<VideoTag, UUID> {
 

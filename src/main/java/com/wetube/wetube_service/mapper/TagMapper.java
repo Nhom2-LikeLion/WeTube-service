@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.wetube.wetube_service.dto.TagDto;
-import com.wetube.wetube_service.model.Tag;
+import com.wetube.wetube_service.entity.Tag;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TagMapper {

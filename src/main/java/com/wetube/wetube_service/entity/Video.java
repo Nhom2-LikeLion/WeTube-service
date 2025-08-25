@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.model;
+package com.wetube.wetube_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,37 +13,42 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-
-@Table(name = "tags", indexes = @Index(name = "uk_tag_name", columnList = "name", unique = true))
-public class Tag {
+@Entity
+@Table(name = "videos")
+public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "CHAR(16)")
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 64)
-    private String name;
+    private String usersId;
+    @Column(nullable = false)
+    private String title;
+    private String thumbnailUrl;
+    private String videoUrl;
+    private String videosStatus;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @Builder.Default
-    private Integer count = 0;
-
+    @CreationTimestamp
+    private LocalDateTime updatedAt;
+    @Version
+    private Long version;
 
     @PrePersist
     void prePersist() {
-        if (createdAt == null)
-            createdAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
 
-        if (count == null)
-            count = 0;
+    @PreUpdate
+    void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     @Builder.Default
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<VideoTag> videoTags = new HashSet<>();
 }

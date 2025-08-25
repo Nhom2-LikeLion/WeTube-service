@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.config;
+package com.wetube.wetube_service.configuration;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

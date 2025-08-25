@@ -14,10 +14,10 @@ import com.wetube.wetube_service.Repository.TagRepository;
 import com.wetube.wetube_service.Repository.VideoRepository;
 import com.wetube.wetube_service.Repository.VideoTagRepository;
 import com.wetube.wetube_service.dto.VideoDto;
+import com.wetube.wetube_service.entity.Tag;
+import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.VideoTag;
 import com.wetube.wetube_service.mapper.VideoMapper;
-import com.wetube.wetube_service.model.Tag;
-import com.wetube.wetube_service.model.Video;
-import com.wetube.wetube_service.model.VideoTag;
 import com.wetube.wetube_service.service.CloudinaryService;
 import com.wetube.wetube_service.service.VideoService;
 
