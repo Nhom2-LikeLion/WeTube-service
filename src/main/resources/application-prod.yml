@@ -5,7 +5,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name:  ${DB_DRIVER}
+    driver-class-name: ${DB_DRIVER}
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,15 +26,21 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: -1ms
-    servlet:
-      multipart:
-        enabled: true
-        max-file-size: 100MB
-        max-request-size: 120MB
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 120MB
 
 clerk:
   jwks-url: ${JWKS_URL}
+  issuer: ${CLERK_ISSUER}
+
+cloudinary:
+  url: ${CLOUDINARY_URL}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 management:
   endpoints:
@@ -46,10 +52,3 @@ management:
         exposed-headers: ${CORS_EXPOSED_HEADERS}
         allow-credentials: ${CORS_ALLOW_CREDENTIALS}
         max-age: 3600
-  cloudinary:
-    url: ${CLOUDINARY_URL}
-    cloud-name: ${CLOUDINARY_CLOUD_NAME}
-    api-key: ${CLOUDINARY_API_KEY}
-    api-secret: ${CLOUDINARY_API_SECRET}
-
-

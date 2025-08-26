@@ -1,10 +1,10 @@
 package com.wetube.wetube_service.service.impl;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.wetube.wetube_service.Repository.UserRepository;
 import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.mapper.UserMapper;
+import com.wetube.wetube_service.Repository.UserRepository;
 import com.wetube.wetube_service.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

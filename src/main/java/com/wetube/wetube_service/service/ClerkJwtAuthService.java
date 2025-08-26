@@ -1,3 +1,4 @@
+
 package com.wetube.wetube_service.service;
 
 import com.nimbusds.jose.JWSAlgorithm;
@@ -36,7 +37,7 @@ public class ClerkJwtAuthService {
 
             JWTClaimsSet claimsSet = jwtProcessor.process(token, null);
 
-            if (claimsSet.getIssuer() == null || !claimsSet.getIssuer().equals( expectedIssuer)) {
+            if (claimsSet.getIssuer() == null || !claimsSet.getIssuer().contains(this.expectedIssuer)) {
                 throw new InvalidClerkTokenException("Invalid token issuer.");
             }
 

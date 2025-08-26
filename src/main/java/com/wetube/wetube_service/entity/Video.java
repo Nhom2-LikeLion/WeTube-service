@@ -20,7 +20,7 @@ public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "CHAR(16)")
+    @Column(length = 36)
     private UUID id;
 
     private String usersId;
