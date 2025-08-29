@@ -6,14 +6,9 @@ import com.wetube.wetube_service.dto.post.VoteRequestDto;
 import com.wetube.wetube_service.service.post.PollVoteService;
 import com.wetube.wetube_service.service.post.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,26 +33,8 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id));
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PostDto> createPost(
-            @RequestPart("postDto") PostDto postDto,
-            @RequestPart(value = "image", required = false) MultipartFile image
-    ) {
-        try {
-            if (image != null && !image.isEmpty()) {
-                String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                Path filePath = Paths.get("uploads").resolve(filename);
-
-                Files.createDirectories(filePath.getParent());
-
-                image.transferTo(filePath.toFile());
-
-                postDto.setImageUrl("/uploads/" + filename);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Upload file thất bại", e);
-        }
-
+    @PostMapping
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.createPost(postDto));
     }
 
