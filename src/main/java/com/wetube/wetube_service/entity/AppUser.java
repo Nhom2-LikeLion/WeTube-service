@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.entity;
 
 import com.wetube.wetube_service.entity.Channel.Channel;
-import com.wetube.wetube_service.entity.Channel.Subscription;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,11 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

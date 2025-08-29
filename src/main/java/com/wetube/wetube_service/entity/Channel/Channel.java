@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -25,6 +24,7 @@ public class Channel {
     private UUID id;
 
     private String backgroundImgUrl;
+    private String avatarUrl;
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -45,6 +45,6 @@ public class Channel {
 
     private String name;
 
-//    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<MembershipTier> membershipTiers;
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MembershipTier> membershipTiers;
 }

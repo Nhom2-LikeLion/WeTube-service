@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -11,15 +11,25 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+logging:
+  level:
+    # Log câu SQL
+    org.hibernate.SQL: DEBUG
+    # Log parameter binding
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+
 ---
 spring:
   config:
+    import: optional:file:.env.local.properties
     activate:
-      on-profile: dev
+      on-profile: local
   datasource:
-    url: ${DB_URL_DEV}
-    username: ${DB_USERNAME_DEV}
-    password: ${DB_PASSWORD_DEV}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
 
 ---
 spring:

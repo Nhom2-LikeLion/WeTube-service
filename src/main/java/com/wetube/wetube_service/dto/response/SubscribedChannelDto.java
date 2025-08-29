@@ -5,16 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponseDto {
-    private String email;
-    private String name;
+public class SubscribedChannelDto {
+    private UUID channelId;
+    private String channelName;
     private String avatarUrl;
-    private LocalDateTime createdAt;
-    private ChannelResponseDto channel;
 }
