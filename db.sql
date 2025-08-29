@@ -31,16 +31,18 @@ CREATE TABLE videos (
 
 CREATE TABLE comments (
     id VARCHAR(36) PRIMARY KEY,
-    content TEXT,
-    comment_type ENUM('Post', 'Video') NOT NULL,
-    users_id VARCHAR(36),
-    video_id VARCHAR(36),
+    content TEXT NOT NULL,
+    target_type ENUM('POST', 'VIDEO') NOT NULL,
+    target_id VARCHAR(36) NOT NULL,
+    user_id VARCHAR(36) NOT NULL,
     parent_comment_id VARCHAR(36),
-    
+
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (users_id) REFERENCES users(id),
-    FOREIGN KEY (video_id) REFERENCES videos(id),
-    FOREIGN KEY (parent_comment_id) REFERENCES comments(id)
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (target_id) REFERENCES videos(id),
+    FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE posts (
@@ -53,13 +55,30 @@ CREATE TABLE posts (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE post_polls (
+CREATE TABLE likes (
     id VARCHAR(36) PRIMARY KEY,
-    image_url VARCHAR(255),
-    percentage FLOAT,
-    post_id VARCHAR(36),
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    target_id VARCHAR(36),
+    target_type ENUM('POST', 'COMMENT', 'VIDEO'),
+    user_id VARCHAR(36),
+    status BOOLEAN DEFAULT TRUE
 );
+
+CREATE TABLE poll_options (
+    id VARCHAR(36) PRIMARY KEY,
+    post_id VARCHAR(36),
+    option_text TEXT,
+    created_at TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE votes (
+    id VARCHAR(36) PRIMARY KEY,
+    poll_option_id VARCHAR(36),
+    user_id VARCHAR(36),
+    created_at TIMESTAMP,
+    FOREIGN KEY (poll_option_id) REFERENCES poll_options(id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE playlists (
     id VARCHAR(36) PRIMARY KEY,
