@@ -4,13 +4,14 @@ import com.wetube.wetube_service.enumeration.Country;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ChannelResponseDto {
-    private int id;
+    private UUID id;
     private String backgroundImgUrl;
     private String name;
     private int totalSubscribers;

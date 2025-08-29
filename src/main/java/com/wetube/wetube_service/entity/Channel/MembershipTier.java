@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,8 +19,10 @@ import java.util.UUID;
 @Builder
 public class MembershipTier {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(value = SqlTypes.VARCHAR)
+    private UUID id;
 
     private String title;
     private float price;

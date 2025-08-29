@@ -19,8 +19,10 @@ import java.util.UUID;
 @Table(name = "users")
 public class AppUser {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(value = SqlTypes.VARCHAR)
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String clerkId;

@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class SubscribedChannelDto {
-    private int id;
+    private UUID id;
     private String name;
     private String avatarUrl;
 }

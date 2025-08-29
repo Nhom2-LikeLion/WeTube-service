@@ -5,7 +5,9 @@ import com.wetube.wetube_service.enumeration.Country;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,8 +21,10 @@ import java.util.UUID;
 @Table(name = "channels")
 public class Channel {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(value = SqlTypes.VARCHAR)
+    private UUID id;
 
     private String backgroundImgUrl;
     private String avatarUrl;

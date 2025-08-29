@@ -25,7 +25,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     private final ChannelMapper channelMapper;
 
     @Override
-    public List<SubscribedChannelDto> getSubscribedChannels(int userId) {
+    public List<SubscribedChannelDto> getSubscribedChannels(UUID userId) {
         List<SubscribedChannelDto> result = new ArrayList<>();
         List<Channel> channels = new ArrayList<>();
         List<Subscription> sub = (List<Subscription>) subscriptionRepository.findByIdSubscriberId(userId);
@@ -55,7 +55,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void unsubscribe(int subscriptionId) {
+    public void unsubscribe(UUID subscriptionId) {
 
     }
 }

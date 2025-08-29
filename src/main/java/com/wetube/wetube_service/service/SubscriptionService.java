@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SubscriptionService {
-    List<SubscribedChannelDto> getSubscribedChannels(int userId);
+    List<SubscribedChannelDto> getSubscribedChannels(UUID userId);
 
     void subscribe(SubscriptionRequest req);
-    void unsubscribe(int subscriptionId);
+    void unsubscribe(UUID subscriptionId);
 }

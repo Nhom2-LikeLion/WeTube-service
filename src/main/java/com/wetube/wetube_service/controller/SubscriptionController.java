@@ -28,7 +28,7 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping("/user/{userId}/channels")
-    public ResponseEntity<List<SubscribedChannelDto>> getSubscribedChannels(@PathVariable int userId) {
+    public ResponseEntity<List<SubscribedChannelDto>> getSubscribedChannels(@PathVariable UUID userId) {
         return ResponseEntity.ok(subscriptionService.getSubscribedChannels(userId));
     }
 }

@@ -12,6 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SubscriptionRepository extends CrudRepository<Subscription, SubscriptionId> {
-    List<Subscription> findByIdSubscriberId(int subscriberId);
+    List<Subscription> findByIdSubscriberId(UUID subscriberId);
 
 }
