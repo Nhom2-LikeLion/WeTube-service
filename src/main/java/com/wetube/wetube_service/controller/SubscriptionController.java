@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
-    @GetMapping("/user/{userId}/channels")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<SubscribedChannelDto>> getSubscribedChannels(@PathVariable UUID userId) {
         return ResponseEntity.ok(subscriptionService.getSubscribedChannels(userId));
     }
