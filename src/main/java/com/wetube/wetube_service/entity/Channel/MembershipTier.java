@@ -17,9 +17,8 @@ import java.util.UUID;
 @Builder
 public class MembershipTier {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "VARCHAR(36)")
-    private UUID id;
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private int id;
 
     private String title;
     private float price;
@@ -32,6 +31,6 @@ public class MembershipTier {
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
-    @OneToMany(mappedBy = "tier")
+    @OneToMany(mappedBy = "id.tier")
     private List<Subscription> subscriptions;
 }

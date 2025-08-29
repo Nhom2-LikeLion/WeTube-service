@@ -13,9 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class MemberTierDto {
-    private UUID id;
+    private int id;
     private String title;
     private float price;
     private String description;
-    private boolean isDefault = false;
+    private boolean isDefault;
 }

@@ -2,6 +2,7 @@ package com.wetube.wetube_service.service.impl;
 
 import com.wetube.wetube_service.Repository.SubscriptionRepository;
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
+import com.wetube.wetube_service.dto.response.ChannelResponseDto;
 import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
 import com.wetube.wetube_service.entity.Channel.Channel;
 import com.wetube.wetube_service.entity.Channel.Subscription;
@@ -24,8 +25,18 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     private final ChannelMapper channelMapper;
 
     @Override
-    public List<SubscribedChannelDto> getSubscribedChannels(UUID userId) {
+    public List<SubscribedChannelDto> getSubscribedChannels(int userId) {
         List<SubscribedChannelDto> result = new ArrayList<>();
+        List<Channel> channels = new ArrayList<>();
+        List<Subscription> sub = (List<Subscription>) subscriptionRepository.findByIdSubscriberId(userId);
+                for (Subscription subb : sub) {
+            //result.add(subscriptionMapper.toSubscribedChannelDto(subb));
+                    channels.add(subb.getChannel());
+        }
+
+            for(Channel chan : channels){
+                result.add(channelMapper.toSubChannelDto(chan));
+            }
 //        List<Subscription> subs = subscriptionRepository.findBySubscriberId(userId);
 //        List<Subscription> subs2 = subscriptionRepository.findBySubscriber_Id(userId);
 //        List<Subscription> subs3 = subscriptionRepository.findBySubscriberIdFixed(userId);
@@ -44,7 +55,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void unsubscribe(UUID subscriptionId) {
+    public void unsubscribe(int subscriptionId) {
 
     }
 }

@@ -9,8 +9,5 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface SubscriptionMapper {
-    @Mapping(source = "tier.channel.id", target = "channelId")
-    @Mapping(source = "tier.channel.name", target = "channelName")
-    @Mapping(source = "tier.channel.avatarUrl", target = "avatarUrl")
-    SubscribedChannelDto toSubscribedChannelDto(Subscription subscription);
+
 }

@@ -19,9 +19,8 @@ import java.util.UUID;
 @Table(name = "channels")
 public class Channel {
     @Id
-    @GeneratedValue(strategy =  GenerationType.UUID)
-    @Column(columnDefinition = "VARCHAR(36)")
-    private UUID id;
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private int id;
 
     private String backgroundImgUrl;
     private String avatarUrl;

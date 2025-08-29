@@ -3,7 +3,9 @@ package com.wetube.wetube_service.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.wetube.wetube_service.dto.response.ChannelResponseDto;
 import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
+import com.wetube.wetube_service.entity.Channel.Channel;
 import com.wetube.wetube_service.service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +28,7 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @GetMapping("/user/{userId}/channels")
-    public ResponseEntity<List<SubscribedChannelDto>> getSubscribedChannels(@PathVariable UUID userId) {
+    public ResponseEntity<List<SubscribedChannelDto>> getSubscribedChannels(@PathVariable int userId) {
         return ResponseEntity.ok(subscriptionService.getSubscribedChannels(userId));
     }
 }

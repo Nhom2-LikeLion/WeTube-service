@@ -20,20 +20,13 @@ public class Subscription {
     @EmbeddedId
     private SubscriptionId id;
 
-//    @ManyToOne
-//    @MapsId("subscriberId")
-//    @JoinColumn(name = "user_id")
-//    private AppUser subscriber;
-//
-//    @ManyToOne
-//    @MapsId("tierId")
-//    @JoinColumn(name = "tier_id")
-//    private MembershipTier tier; // Free or Membership
-
     @Enumerated(EnumType.STRING)
     private SubscriptionType notificationMode;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public Channel getChannel() {
+        return id.getTier().getChannel();
+    }
 }

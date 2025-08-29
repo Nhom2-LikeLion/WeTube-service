@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ChannelResponseDto {
-    private String id;
+    private int id;
     private String backgroundImgUrl;
     private String name;
     private int totalSubscribers;
