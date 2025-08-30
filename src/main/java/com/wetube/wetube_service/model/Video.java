@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +22,12 @@ public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+<<<<<<< Updated upstream:src/main/java/com/wetube/wetube_service/model/Video.java
     @Column(columnDefinition = "CHAR(16)")
+=======
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+>>>>>>> Stashed changes:src/main/java/com/wetube/wetube_service/entity/Video.java
     private UUID id;
 
     private String usersId;
@@ -34,8 +41,6 @@ public class Video {
     private LocalDateTime createdAt;
     @CreationTimestamp
     private LocalDateTime updatedAt;
-    @Version
-    private Long version;
 
     @PrePersist
     void prePersist() {

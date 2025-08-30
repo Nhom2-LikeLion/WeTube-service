@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +23,12 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+<<<<<<< Updated upstream:src/main/java/com/wetube/wetube_service/model/Tag.java
     @Column(columnDefinition = "CHAR(16)")
+=======
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+>>>>>>> Stashed changes:src/main/java/com/wetube/wetube_service/entity/Tag.java
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 64)

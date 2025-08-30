@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.Repository;
 
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,4 +21,5 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
         WHERE v.id = :id
     """)
     Optional<Video> findByIdWithTags(@Param("id") UUID id);
+    List<Video> findAllByVideosStatusOrderByCreatedAtDesc(String status);
 }

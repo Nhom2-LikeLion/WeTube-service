@@ -68,9 +68,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public VideoDto addTags(String videoId, String hashtagText) {
-        UUID id = UUID.fromString(videoId);
-        Video video = videoRepository.findById(id)
+    public VideoDto addTags(UUID videoId, String hashtagText) {
+        Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new IllegalArgumentException("Video not found with id: " + videoId));
 
         Set<String> names = parseHashtagText(hashtagText);
@@ -81,7 +80,7 @@ public class VideoServiceImpl implements VideoService {
                 t.setName(name);
                 t.setCount(0);
                 t.setCreatedAt(LocalDateTime.now());
-                return tagRepository.save(t); // không saveAndFlush
+                return tagRepository.save(t); 
             });
 
             if (!videoTagRepository.existsByVideo_IdAndTag_Id(video.getId(), tag.getId())) {
@@ -90,16 +89,13 @@ public class VideoServiceImpl implements VideoService {
                 vt.setTag(tag);
                 videoTagRepository.save(vt);
 
-                // để object 'video' đang cầm có liên kết ngay:
                 video.getVideoTags().add(vt);
 
-                // tăng count (hoặc dùng tagRepository.incrementCount(tag.getId()))
                 tag.setCount((tag.getCount() == null ? 0 : tag.getCount()) + 1);
             }
         }
 
-        // map từ entity đã fetch‑join để tránh lazy-init/CME
-        Video dtoSource = videoRepository.findByIdWithTags(id)
+        Video dtoSource = videoRepository.findByIdWithTags(videoId)
                 .orElseThrow(() -> new IllegalArgumentException("Video not found with id: " + videoId));
         return videoMapper.toDto(dtoSource);
     }

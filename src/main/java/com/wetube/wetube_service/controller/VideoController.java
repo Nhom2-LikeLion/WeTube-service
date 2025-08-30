@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.controller;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +49,7 @@ public class VideoController {
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<VideoDto> addTagsToVideo(
-            @PathVariable("id") String videoId,
+            @PathVariable("id") UUID videoId,
             @RequestParam("hashtags") String hashtags 
     ) {
         if (hashtags == null || hashtags.isBlank()) {
