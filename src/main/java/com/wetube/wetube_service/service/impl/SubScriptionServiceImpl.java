@@ -8,6 +8,7 @@ import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.Channel.Channel;
 import com.wetube.wetube_service.entity.Channel.Subscription;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.ChannelMapper;
 import com.wetube.wetube_service.mapper.SubscriptionMapper;
 import com.wetube.wetube_service.service.SubscriptionService;
@@ -31,17 +32,17 @@ public class SubScriptionServiceImpl implements SubscriptionService {
                 .orElseThrow(() -> new IllegalArgumentException("UserID is empty"));
 
         AppUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not founddd"));
 
         List<Subscription> subscriptions = Optional.ofNullable(subscriptionRepository.findByIdSubscriberId(userId))
                 .orElseGet(Collections::emptyList);
 
         return subscriptions.stream()
-                .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt())) // gần đây nhất lên đầu
+                .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))
                 .map(Subscription::getChannel)
                 .distinct() // loại trùng channel
                 .map(channelMapper::toSubChannelDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

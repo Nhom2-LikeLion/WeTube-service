@@ -4,6 +4,7 @@ import com.wetube.wetube_service.Repository.UserRepository;
 import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.UserMapper;
 import com.wetube.wetube_service.service.UserService;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserById(UUID userId) {
         Optional<AppUser> userOptional = userRepository.findById(userId);
 
-        AppUser user = userOptional.orElseThrow(() -> new RuntimeException ("Can't find user with id: " + userId));
+        AppUser user = userOptional.orElseThrow(() -> new ResourceNotFoundException("Can't find user with id: " + userId));
 
         return userMapper.toDto(user);
     }
