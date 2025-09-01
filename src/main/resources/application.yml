@@ -1,42 +1,14 @@
 spring:
   profiles:
-    active: local
+    default: local
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-logging:
-  level:
-    # Log câu SQL
-    org.hibernate.SQL: DEBUG
-    # Log parameter binding
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-
----
-spring:
-  config:
-    import: optional:file:.env.local.properties
-    activate:
-      on-profile: local
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
