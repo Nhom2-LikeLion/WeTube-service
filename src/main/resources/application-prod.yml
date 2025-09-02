@@ -27,8 +27,6 @@ spring:
           min-idle: 0
           max-wait: -1ms
 
-clerk:
-  jwks-url: ${JWKS_URL}
 
 management:
   endpoints:

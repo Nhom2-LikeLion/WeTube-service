@@ -1,13 +1,15 @@
 package com.wetube.wetube_service.service.impl;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.mapper.UserMapper;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.service.UserService;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,16 +23,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto findOrCreateUser(JWTClaimsSet claims) {
-        String clerkId = claims.getSubject();
+    public UserDto findOrCreateUser(Jwt principal) {
+        UUID userId = UUID.fromString(principal.getSubject());
 
-        AppUser userEntity = userRepository.findByClerkId(clerkId)
+        AppUser userEntity = userRepository.findById(userId)
                 .orElseGet(() -> {
                     AppUser newAppUser = new AppUser();
-                    newAppUser.setClerkId(clerkId);
-                    newAppUser.setEmail((String) claims.getClaim("email"));
-                    newAppUser.setName((String) claims.getClaim("name"));
-                    newAppUser.setAvatarUrl((String) claims.getClaim("picture"));
+                    newAppUser.setId(userId);
+                    newAppUser.setEmail(principal.getClaimAsString("email"));
+                    newAppUser.setName(principal.getClaimAsString("name"));
+                    newAppUser.setAvatarUrl(principal.getClaimAsString("picture"));
 
                     return userRepository.save(newAppUser);
                 });

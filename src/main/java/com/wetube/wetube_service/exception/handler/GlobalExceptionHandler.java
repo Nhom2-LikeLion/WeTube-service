@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.exception.handler;
 
-import com.wetube.wetube_service.exception.InvalidClerkTokenException;
+import com.wetube.wetube_service.exception.InvalidTokenException;
 import com.wetube.wetube_service.exception.error.ApiError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,8 +65,8 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", safePath));
     }
 
-    @ExceptionHandler(InvalidClerkTokenException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(InvalidClerkTokenException ex,
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(InvalidTokenException ex,
                                                        HttpServletRequest req) {
         String safeMessage = HtmlUtils.htmlEscape(ex.getMessage());
         String safePath = HtmlUtils.htmlEscape(req.getRequestURI());
