@@ -12,5 +12,4 @@ public class Application {
 		SpringApplication.run(Application.class, args);
         logger.info("SpringApplication.run() method has completed.");
 	}
-
 }
