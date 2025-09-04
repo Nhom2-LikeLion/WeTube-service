@@ -14,5 +14,5 @@ public interface ChannelService {
     void addTierToChannel(UUID channelId, MemberTierDto dto);
     List<UserDto> getSubscribers(UUID channelId);
     List<UserDto> getPremiumSubscribers(UUID channelId);
-    void initiateChannel(UUID userID);
+    void initiateChannel(UUID userID, String ip);
 }

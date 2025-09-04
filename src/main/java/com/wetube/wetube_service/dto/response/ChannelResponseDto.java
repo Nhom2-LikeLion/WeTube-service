@@ -17,7 +17,7 @@ public class ChannelResponseDto {
     private int totalSubscribers;
     private int totalVideos;
     private String description;
-    private Country country;
+    private String countryCode;
     private LocalDateTime createdAt;
     private int totalViews;
     //private List<MembershipTierResponseDto> membershipTiers;

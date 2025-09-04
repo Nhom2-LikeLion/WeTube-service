@@ -24,6 +24,7 @@ import java.util.UUID;
 @Transactional
 public class ChannelServiceImpl implements ChannelService {
     private final UserRepository userRepository;
+    private final GeoIPService geoIPService;
 
     @Override
     public ChannelResponseDto getChannel(UUID channelId) {
@@ -51,7 +52,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public void initiateChannel(UUID userID) {
+    public void initiateChannel(UUID userID, String ip) {
         AppUser user = userRepository.findById(userID)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userID.toString()));
 
@@ -59,11 +60,12 @@ public class ChannelServiceImpl implements ChannelService {
             throw new ChannelAlreadyExistsException("User with id " + userID + " already has a channel.");
         }
 
+        String countryCode = geoIPService.getCountryCode(ip).orElse("UN"); // UN = Unknown
         Channel channel = Channel.builder()
                 .name(user.getName() != null ? user.getName() : "New Channel")
                 .avatarUrl(user.getAvatarUrl())
-                .status(ActiveStatus.ACTIVE) // giả định trạng thái mặc định là ACTIVE
-                .country(Country.NONE)   // hoặc null/default tuỳ yêu cầu
+                .status(ActiveStatus.ACTIVE)
+                .countryCode(countryCode)
                 .totalSubscribers(0)
                 .totalVideos(0)
                 .totalViews(0)

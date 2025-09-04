@@ -30,8 +30,8 @@ public class Channel {
     private String avatarUrl;
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private Country country;
+    @Column(length = 2)
+    private String countryCode;
     @Enumerated(EnumType.STRING)
     private ActiveStatus status;
 
