@@ -9,5 +9,5 @@ public interface LikeService {
 
     LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId);
 
-    void toggleLike(UUID targetId, Like.TargetType targetType, UUID userId);
+    LikeDto toggleLike(UUID targetId, Like.TargetType targetType, UUID userId);
 }

@@ -40,7 +40,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public void toggleLike(UUID targetId, Like.TargetType targetType, UUID userId) {
+    public LikeDto toggleLike(UUID targetId, Like.TargetType targetType, UUID userId) {
         boolean alreadyLiked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
 
         if (alreadyLiked) {
@@ -58,5 +58,22 @@ public class LikeServiceImpl implements LikeService {
                     .build();
             likeRepository.save(like);
         }
+
+        int likeCount = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
+        List<UUID> likedUserIds = likeRepository.findByTargetTypeAndTargetId(targetType, targetId)
+                .stream()
+                .map(Like::getUserId)
+                .toList();
+
+        boolean isNowLiked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
+
+        return LikeDto.builder()
+                .targetId(targetId)
+                .targetType(targetType)
+                .likeCount(likeCount)
+                .likedUserIds(likedUserIds)
+                .liked(isNowLiked)
+                .build();
     }
 }
+

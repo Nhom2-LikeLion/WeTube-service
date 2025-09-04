@@ -26,12 +26,11 @@ public class LikeController {
     }
 
     @PostMapping("/toggle")
-    public ResponseEntity<Void> toggleLike(
+    public ResponseEntity<LikeDto> toggleLike(
             @RequestParam UUID targetId,
             @RequestParam Like.TargetType targetType,
             @RequestParam UUID userId
     ) {
-        likeService.toggleLike(targetId, targetType, userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(likeService.toggleLike(targetId, targetType, userId));
     }
 }

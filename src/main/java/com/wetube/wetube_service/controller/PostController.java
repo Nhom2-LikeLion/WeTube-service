@@ -6,6 +6,7 @@ import com.wetube.wetube_service.dto.post.VoteRequestDto;
 import com.wetube.wetube_service.service.post.PollVoteService;
 import com.wetube.wetube_service.service.post.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id));
     }
 
-    @PostMapping
+    @PostMapping(value = "/posts", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.createPost(postDto));
     }
