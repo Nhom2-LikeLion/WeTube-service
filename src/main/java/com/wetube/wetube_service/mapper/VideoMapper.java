@@ -2,8 +2,9 @@ package com.wetube.wetube_service.mapper;
 
 import com.wetube.wetube_service.dto.TagDto;
 import com.wetube.wetube_service.dto.VideoDto;
-import com.wetube.wetube_service.model.Video;
-import com.wetube.wetube_service.model.VideoTag;
+import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.VideoTag;
+
 import org.mapstruct.*;
 
 import java.util.Collections;

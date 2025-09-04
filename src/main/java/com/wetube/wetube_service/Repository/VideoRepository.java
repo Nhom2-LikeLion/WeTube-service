@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.wetube.wetube_service.model.Video;
+import com.wetube.wetube_service.entity.Video;
 
 public interface VideoRepository extends JpaRepository<Video, UUID> {
     Video findByIdAndUsersId(UUID id, String usersId);

@@ -6,5 +6,5 @@ import java.util.UUID;
 import com.wetube.wetube_service.dto.VideoDto;
 
 public interface RecService {
-    List<VideoDto> recommend (UUID userId, int limit);
+    List<VideoDto> recommendVideos (UUID userId, int limit);
 }

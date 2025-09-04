@@ -14,10 +14,10 @@ import com.wetube.wetube_service.Repository.TagRepository;
 import com.wetube.wetube_service.Repository.VideoRepository;
 import com.wetube.wetube_service.Repository.VideoTagRepository;
 import com.wetube.wetube_service.dto.VideoDto;
+import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.VideoTag;
 import com.wetube.wetube_service.mapper.VideoMapper;
-import com.wetube.wetube_service.model.Tag;
-import com.wetube.wetube_service.model.Video;
-import com.wetube.wetube_service.model.VideoTag;
+import com.wetube.wetube_service.entity.Tag;
 import com.wetube.wetube_service.service.CloudinaryService;
 import com.wetube.wetube_service.service.VideoService;
 
@@ -75,13 +75,14 @@ public class VideoServiceImpl implements VideoService {
         Set<String> names = parseHashtagText(hashtagText);
 
         for (String name : names) {
-            Tag tag = tagRepository.findByNameIgnoreCase(name).orElseGet(() -> {
-                Tag t = new Tag();
-                t.setName(name);
-                t.setCount(0);
-                t.setCreatedAt(LocalDateTime.now());
-                return tagRepository.save(t); 
-            });
+            Tag tag = tagRepository.findByNameIgnoreCase(name).orElse(null);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(name);
+                tag.setCount(0);
+                tag.setCreatedAt(LocalDateTime.now());
+                tag = tagRepository.save(tag);
+            }
 
             if (!videoTagRepository.existsByVideo_IdAndTag_Id(video.getId(), tag.getId())) {
                 VideoTag vt = new VideoTag();
@@ -92,6 +93,7 @@ public class VideoServiceImpl implements VideoService {
                 video.getVideoTags().add(vt);
 
                 tag.setCount((tag.getCount() == null ? 0 : tag.getCount()) + 1);
+                tagRepository.save(tag);
             }
         }
 

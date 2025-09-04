@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.model;
+package com.wetube.wetube_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,12 +22,8 @@ public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-<<<<<<< Updated upstream:src/main/java/com/wetube/wetube_service/model/Video.java
-    @Column(columnDefinition = "CHAR(16)")
-=======
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(SqlTypes.VARCHAR)
->>>>>>> Stashed changes:src/main/java/com/wetube/wetube_service/entity/Video.java
     private UUID id;
 
     private String usersId;

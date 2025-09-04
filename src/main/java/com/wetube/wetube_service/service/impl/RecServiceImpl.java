@@ -2,7 +2,6 @@ package com.wetube.wetube_service.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class RecServiceImpl implements RecService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VideoDto> recommend(UUID userId, int limit) {
+    public List<VideoDto> recommendVideos(UUID userId, int limit) {
         limit = Math.max(1, Math.min(50, limit));
 
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
