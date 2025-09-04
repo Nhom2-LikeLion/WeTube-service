@@ -1,7 +1,13 @@
 package com.wetube.wetube_service.service;
 
-import com.wetube.wetube_service.dto.UserDto;
-import org.springframework.security.oauth2.jwt.Jwt;
+//import com.wetube.wetube_service.dto.UserDto;
+import com.wetube.wetube_service.dto.response.UserResponseDto;
+//import org.springframework.security.oauth2.jwt.Jwt;
+
+import java.util.UUID;
+
 public interface UserService {
-    UserDto findOrCreateUser(Jwt principal);
+//    UserResponseDto findOrCreateUser(Jwt principal);
+    UserResponseDto getUserById(UUID userId);
+
 }

@@ -5,14 +5,10 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: ${DB_DRIVER}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        dialect: ${DB_DIALECT}
   data:
     redis:
       host: ${REDIS_HOST}

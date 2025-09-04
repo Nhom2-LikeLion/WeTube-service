@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
+
+import com.wetube.wetube_service.entity.channel.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,9 +21,9 @@ import java.util.UUID;
 @Table(name = "users")
 public class AppUser {
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @JdbcTypeCode(value = SqlTypes.VARCHAR)
     private UUID id;
 
     @Column(unique = true, nullable = false)
@@ -35,6 +38,10 @@ public class AppUser {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id",unique = true)
+    private Channel channel;
 }

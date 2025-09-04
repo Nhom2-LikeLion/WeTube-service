@@ -1,6 +1,8 @@
 package com.wetube.wetube_service.exception.handler;
 
+import com.wetube.wetube_service.dto.response.ErrorResponse;
 import com.wetube.wetube_service.exception.InvalidTokenException;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.exception.error.ApiError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.util.HtmlUtils;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -55,15 +58,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiError(HttpStatus.CONFLICT, safeMessage, safePath));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleUnknown(Exception ex,
-                                                  HttpServletRequest req) {
-        String safePath = HtmlUtils.htmlEscape(req.getRequestURI());
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", safePath));
-    }
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ApiError> handleUnauthorized(InvalidTokenException ex,
@@ -74,5 +68,38 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiError(HttpStatus.UNAUTHORIZED, safeMessage, safePath));
+    }
+
+    // 400 Bad Request
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    // 404 Not Found
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    // 500 - Internal Server Error (các lỗi khác chưa bắt)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
+        ErrorResponse error = new ErrorResponse(
+                "Something went wrong: " + ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
