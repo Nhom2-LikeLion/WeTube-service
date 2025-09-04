@@ -15,4 +15,5 @@ public class SubscribedChannelDto {
     private UUID id;
     private String name;
     private String avatarUrl;
+    private UUID subscriptionId;
 }

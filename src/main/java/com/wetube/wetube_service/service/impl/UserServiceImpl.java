@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserById(UUID userId) {
         Optional<AppUser> userOptional = userRepository.findById(userId);
 
-        AppUser user = userOptional.orElseThrow(() -> new ResourceNotFoundException("Can't find user with id: " + userId));
+        AppUser user = userOptional.orElseThrow(() -> new ResourceNotFoundException("User","Id", userId.toString()));
 
         return userMapper.toDto(user);
     }

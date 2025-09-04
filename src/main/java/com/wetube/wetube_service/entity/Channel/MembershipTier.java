@@ -1,10 +1,7 @@
 package com.wetube.wetube_service.entity.Channel;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -13,7 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tiers")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -29,7 +27,7 @@ public class MembershipTier {
     private String description;
 
     @Column(name = "is_default", nullable = false)
-    private boolean isDefault = false;
+    private boolean isDefault;
 
     @ManyToOne
     @JoinColumn(name = "channel_id")

@@ -9,8 +9,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubscriptionRequest {
+public class UnsubscribeRequest {
     private UUID subscriberId;
-    private UUID channelId;
-    private UUID tierId;    //Nullable
+    private UUID tierId;
 }

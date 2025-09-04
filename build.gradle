@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.wetube'
@@ -13,7 +14,22 @@ java {
     }
 }
 
+ext {
+    versions = [
+            nimbusJwt       : '9.47',
+            dotenv          : '4.0.0',
+            mapstruct       : '1.5.5.Final',
+            lombokMapstruct : '0.2.0',
+            mockitoJupiter  : '5.12.0',
+            h2              : '2.2.224'
+    ]
+}
+
+
 configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
     configureEach {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
@@ -24,31 +40,87 @@ repositories {
 }
 
 dependencies {
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // Spring Boot starters
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    // implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-    implementation 'com.nimbusds:nimbus-jose-jwt:9.47'
+    // JWT
+    implementation "com.nimbusds:nimbus-jose-jwt:${versions.nimbusJwt}"
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Dotenv
+    implementation "me.paulschwarz:spring-dotenv:${versions.dotenv}"
 
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-//    implementation "org.springframework.boot:spring-boot-starter-security"
-
+    // MapStruct + Lombok
+    implementation "org.mapstruct:mapstruct:${versions.mapstruct}"
     compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    annotationProcessor(
+            'org.projectlombok:lombok',
+            "org.mapstruct:mapstruct-processor:${versions.mapstruct}",
+            "org.projectlombok:lombok-mapstruct-binding:${versions.lombokMapstruct}"
+    )
+
+    // Devtools
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+
+    // Testing
+    testImplementation "org.springframework.boot:spring-boot-starter-test"   // JUnit 5, Mockito, AssertJ
+    testImplementation "org.mockito:mockito-junit-jupiter:${versions.mockitoJupiter}"
+    testImplementation "com.h2database:h2:${versions.h2}"
+
+    // MapStruct in test
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstruct}"
+    testCompileOnly 'org.projectlombok:lombok'
+
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    testLogging {
+        events 'FAILED', 'SKIPPED', 'PASSED'
+        exceptionFormat 'FULL'
+        showStandardStreams = false
+    }
+    finalizedBy jacocoTestReport         // run report after finalizing test
 }
+
+jacoco {
+    toolVersion = versions.jacoco
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required  = true               // required for CI/Sonar
+        csv.required  = false
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+                    'com.wetube.dto.**',
+                    'com.wetube.configuration.**',
+                    'com.wetube.exception.**',
+                    'com.wetube.Application'
+            ]  // exclusion packages
+            limit {
+                counter = 'LINE'
+                value   = 'COVEREDRATIO'
+                minimum = 0                      // minimum coverage threshold
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
