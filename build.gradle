@@ -13,33 +13,68 @@ java {
     }
 }
 
+configurations {
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.47'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'redis.clients:jedis'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
+    // Security + JWT (nếu bạn verify JWKS bằng Nimbus)
+    // implementation 'org.springframework.boot:spring-boot-starter-security'
+    // implementation 'com.nimbusds:nimbus-jose-jwt:9.37.3'
+
+    // MapStruct + Lombok
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     annotationProcessor 'org.projectlombok:lombok'
-    
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
+    // Cloudinary (httpclient 4.x) — sẽ exclude commons-logging ở dưới
     implementation 'com.cloudinary:cloudinary-http44:1.32.2'
 
-     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    // MongoDB (chỉ để lại khi bạn thật sự dùng)
+    // implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Dotenv
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    // Dev + Test
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+// Loại bỏ commons-logging để không đụng với spring-jcl
+configurations.configureEach {
+    exclude group: 'commons-logging', module: 'commons-logging'
+}
+
+// Nếu không dùng repository Mongo/Redis, có thể tắt scan bằng application.yml,
+// hoặc đơn giản là bỏ hẳn các starter như ở trên.
 
 tasks.named('test') {
     useJUnitPlatform()
