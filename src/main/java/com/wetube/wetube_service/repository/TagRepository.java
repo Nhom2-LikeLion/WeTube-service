@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.Repository;
+package com.wetube.wetube_service.repository;
 
 import java.util.Optional;
 import java.util.UUID;

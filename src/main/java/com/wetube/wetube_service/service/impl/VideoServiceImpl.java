@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wetube.wetube_service.Repository.TagRepository;
-import com.wetube.wetube_service.Repository.VideoRepository;
-import com.wetube.wetube_service.Repository.VideoTagRepository;
+import com.wetube.wetube_service.repository.TagRepository;
+import com.wetube.wetube_service.repository.VideoRepository;
+import com.wetube.wetube_service.repository.VideoTagRepository;
 import com.wetube.wetube_service.dto.VideoDto;
 import com.wetube.wetube_service.entity.Video;
 import com.wetube.wetube_service.entity.VideoTag;

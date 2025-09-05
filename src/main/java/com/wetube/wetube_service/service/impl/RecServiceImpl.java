@@ -3,12 +3,13 @@ package com.wetube.wetube_service.service.impl;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.wetube.wetube_service.dto.response.RecResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wetube.wetube_service.Repository.UserTagRepository;
-import com.wetube.wetube_service.Repository.VideoRepository;
-import com.wetube.wetube_service.Repository.VideoTagRepository;
+import com.wetube.wetube_service.repository.UserTagRepository;
+import com.wetube.wetube_service.repository.VideoRepository;
+import com.wetube.wetube_service.repository.VideoTagRepository;
 import com.wetube.wetube_service.dto.VideoDto;
 import com.wetube.wetube_service.entity.UserTag;
 import com.wetube.wetube_service.entity.Video;
@@ -29,20 +30,21 @@ public class RecServiceImpl implements RecService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VideoDto> recommendVideos(UUID userId, int limit) {
+    public RecResponse recommendVideos(UUID userId, int limit) {
         limit = Math.max(1, Math.min(50, limit));
 
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
         if (affinities.isEmpty()) {
-            List<Video> latest = videoRepo.findAllByVideosStatusOrderByCreatedAtDesc("public");
-            return videoMapper.toDtoList(latest.stream().limit(limit).toList());
+           return new RecResponse(
+                   "Vui lòng tìm kiếm video và xem video để được gợi ý",
+                   List.of()
+           );
         }
 
         Map<UUID, Double> tag2point = new HashMap<>();
         for (UserTag ut : affinities) tag2point.put(ut.getTagId(), ut.getPoint());
 
         List<Video> candidates = videoRepo.findAllByVideosStatusOrderByCreatedAtDesc("public");
-
         double maxTagSum = 1.0;
         Map<UUID, Double> videoTagSum = new HashMap<>();
         for (Video v : candidates) {
@@ -57,11 +59,11 @@ public class RecServiceImpl implements RecService {
         record Scored(Video v, double score) {}
         List<Scored> scored = new ArrayList<>();
         for (Video v : candidates) {
-            double tagAffinity = videoTagSum.get(v.getId()) / maxTagSum; // [0..1]
+            double tagAffinity = videoTagSum.get(v.getId()) / maxTagSum;
 
             long ageDays = java.time.Duration.between(
                     v.getCreatedAt(), LocalDateTime.now()).toDays();
-            double freshness = Math.exp(-0.08 * Math.max(0, ageDays)); // [0..1]
+            double freshness = Math.exp(-0.08 * Math.max(0, ageDays));
 
             double score = 0.70 * tagAffinity + 0.30 * freshness;
             scored.add(new Scored(v, score));
@@ -70,6 +72,7 @@ public class RecServiceImpl implements RecService {
         scored.sort((a, b) -> Double.compare(b.score, a.score));
         List<Video> top = scored.stream().limit(limit).map(Scored::v).toList();
 
-        return videoMapper.toDtoList(top);
+        return new RecResponse("Đề xuất thành công", videoMapper.toDtoList(top));
+
     }
 }

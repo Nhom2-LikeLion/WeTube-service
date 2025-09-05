@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.wetube.wetube_service.Repository.UserTagRepository;
-import com.wetube.wetube_service.Repository.VideoRepository;
-import com.wetube.wetube_service.Repository.VideoTagRepository;
+import com.wetube.wetube_service.repository.UserTagRepository;
+import com.wetube.wetube_service.repository.VideoRepository;
+import com.wetube.wetube_service.repository.VideoTagRepository;
 import com.wetube.wetube_service.entity.UserTag;
 import com.wetube.wetube_service.entity.VideoTag;
 import com.wetube.wetube_service.enumeration.InteractionType;

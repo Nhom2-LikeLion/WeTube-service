@@ -5,13 +5,15 @@ import com.wetube.wetube_service.enumeration.Country;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -19,11 +21,13 @@ import java.util.UUID;
 @Table(name = "channels")
 public class Channel {
     @Id
-    @GeneratedValue(strategy =  GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(value = SqlTypes.VARCHAR)
     private UUID id;
 
     private String backgroundImgUrl;
+    private String avatarUrl;
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -43,4 +47,7 @@ public class Channel {
     private LocalDateTime updatedAt;
 
     private String name;
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MembershipTier> membershipTiers;
 }

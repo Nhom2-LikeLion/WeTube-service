@@ -23,7 +23,7 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> uploadFile(
             @RequestParam("videoFile") MultipartFile videoFile,
             @RequestParam("usersId") String usersId,
@@ -50,7 +50,7 @@ public class VideoController {
     }
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<VideoDto> addTagsToVideo(
             @PathVariable("id") UUID videoId,
             @RequestParam("hashtags") String hashtags 
