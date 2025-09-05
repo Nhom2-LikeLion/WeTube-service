@@ -88,5 +88,41 @@ public class CloudinaryService {
                 .generate(publicId);
     }
 
+    public String uploadImage(MultipartFile imageFile) {
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new IllegalArgumentException("File thumbnail is required");
+        }
+
+        final Map<?, ?> result;
+        try {
+            result = cloudinary.uploader().upload(
+                    imageFile.getBytes(),
+                    ObjectUtils.asMap(
+                            "resource_type", "image"
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Upload to Cloudinary failed", e);
+        }
+
+        final Object publicIdObj = result.get("public_id");
+        if (publicIdObj == null) {
+            throw new IllegalStateException("No public_id returned from Cloudinary");
+        }
+        String publicId = publicIdObj.toString();
+
+        return cloudinary.url()
+                .resourceType("image")
+                .format("webp")
+                .transformation(
+                        new Transformation()
+                                .width(300)
+                                .height(200)
+                                .crop("fill")
+                )
+                .secure(true)
+                .generate(publicId);
+    }
+
 
 }
