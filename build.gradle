@@ -46,7 +46,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //    implementation 'redis.clients:jedis'
-//     implementation "org.springframework.boot:spring-boot-starter-security"
+     implementation "org.springframework.boot:spring-boot-starter-security"
 
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -79,6 +79,8 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstruct}"
     testCompileOnly 'org.projectlombok:lombok'
+
+    implementation 'com.cloudinary:cloudinary-http44:1.32.2'
 
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }

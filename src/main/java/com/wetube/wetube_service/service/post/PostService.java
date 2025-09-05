@@ -10,5 +10,6 @@ public interface PostService {
     PostDto createPost(PostDto postDto);
     PostDto updatePost(UUID id, PostDto postDto);
     void deletePost(UUID id);
+
 }
 

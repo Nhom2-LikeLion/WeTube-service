@@ -10,7 +10,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChannelResponseDto {
+public class
+ChannelResponseDto {
     private UUID id;
     private String backgroundImgUrl;
     private String name;
