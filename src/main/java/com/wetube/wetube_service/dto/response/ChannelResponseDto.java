@@ -26,5 +26,5 @@ public class ChannelResponseDto {
     private int totalViews;
     private LocalDateTime createdAt;
 
-    private List<MemberTierDto> membershipTiers;
+    private List<MemberTierResponseDto> membershipTiers;
 }

@@ -11,9 +11,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscribedChannelDto {
+public class MemberTierResponseDto {
     private UUID id;
-    private String name;
-    private String avatarUrl;
-    private UUID subscriptionId;
+    private String title;
+    private float price;
+    private boolean isDefault;
+    private String description;
 }

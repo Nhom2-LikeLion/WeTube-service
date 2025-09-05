@@ -6,7 +6,7 @@ import com.wetube.wetube_service.repository.SubscriptionRepository;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
 import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
-import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
+import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.channel.MembershipTier;
@@ -35,7 +35,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     private final ChannelMapper channelMapper;
 
     @Override
-    public List<SubscribedChannelDto> getSubscribedChannels(UUID userId) {
+    public List<SubscribedChannelResponseDto> getSubscribedChannels(UUID userId) {
         Optional.ofNullable(userId)
                 .orElseThrow(() -> new IllegalArgumentException("UserID is empty"));
 

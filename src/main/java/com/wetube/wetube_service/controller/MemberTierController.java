@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.request.MemberTierRequest;
-import com.wetube.wetube_service.dto.response.MemberTierDto;
 import com.wetube.wetube_service.mapper.MemberTierMapper;
 import com.wetube.wetube_service.service.MemberTierService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 @RestController
 @RequestMapping("/api/tiers")

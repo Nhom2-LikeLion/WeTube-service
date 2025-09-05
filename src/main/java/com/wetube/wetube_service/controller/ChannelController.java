@@ -1,12 +1,10 @@
 package com.wetube.wetube_service.controller;
 
+import com.wetube.wetube_service.dto.response.ChannelResponseDto;
 import com.wetube.wetube_service.service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -15,4 +13,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChannelController {
     private final ChannelService channelService;
+
+    @GetMapping("/{channelId}")
+    public ResponseEntity<ChannelResponseDto> getChannelById(@PathVariable UUID channelId) {
+        ChannelResponseDto response = channelService.getChannelById(channelId);
+        return ResponseEntity.ok(response);
+    }
 }
