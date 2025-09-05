@@ -29,7 +29,7 @@ public class MemberTierServiceImpl implements MemberTierService {
 
         MembershipTier tier = mapper.toEntity(dto);
         tier.setChannel(channel);
-        tier.setDefault(false);
+        tier.setDefaultTier(false);
 
         MembershipTier saved = tierRepository.save(tier);
         return saved.getId();
@@ -43,7 +43,7 @@ public class MemberTierServiceImpl implements MemberTierService {
         tier.setTitle(dto.getTitle());
         tier.setDescription(dto.getDescription());
         tier.setPrice(dto.getPrice());
-        tier.setDefault(false);
+        tier.setDefaultTier(false);
 
         tierRepository.save(tier);
     }

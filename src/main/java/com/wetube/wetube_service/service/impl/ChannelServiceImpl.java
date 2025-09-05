@@ -62,7 +62,7 @@ public class ChannelServiceImpl implements ChannelService {
                 .title("Default Tier")
                 .description("Default membership tier")
                 .price(0f)
-                .isDefault(true)
+                .defaultTier(true)
                 .channel(channel)
                 .build();
 

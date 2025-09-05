@@ -14,5 +14,6 @@ public interface  MemberTierMapper {
     MembershipTier toEntity(MemberTierResponseDto dto);
 
     // Request -> DTO
+    @Mapping(target = "defaultTier", ignore = true) // Always false
     MemberTierResponseDto requestToDto(MemberTierRequest request);
 }

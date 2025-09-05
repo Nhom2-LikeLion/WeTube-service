@@ -120,7 +120,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
                     .orElseThrow(() -> new ResourceNotFoundException("Channel", "id", channelId.toString()));
 
             tier = channel.getMembershipTiers().stream()
-                    .filter(MembershipTier::isDefault)
+                    .filter(MembershipTier::isDefaultTier)
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("MembershipTier", "channelId", channel.getId().toString()));
         } else {

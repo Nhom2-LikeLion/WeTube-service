@@ -27,7 +27,7 @@ public class MembershipTier {
     private String description;
 
     @Column(name = "is_default")
-    private boolean isDefault;
+    private boolean defaultTier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")

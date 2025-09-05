@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.entity.channel;
 
 import com.wetube.wetube_service.enumeration.ActiveStatus;
-import com.wetube.wetube_service.enumeration.Country;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
