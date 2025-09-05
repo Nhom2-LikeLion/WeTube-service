@@ -1,16 +1,19 @@
-package com.wetube.wetube_service.entity.CompositeKey;
+package com.wetube.wetube_service.entity.compositeKey;
 
+
+import java.io.Serializable;
 
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.MembershipTier;
+
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
-
-
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
