@@ -6,7 +6,6 @@ import com.wetube.wetube_service.repository.SubscriptionRepository;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
 import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
-import com.wetube.wetube_service.dto.response.ChannelResponseDto;
 import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.Channel;
@@ -20,12 +19,13 @@ import com.wetube.wetube_service.mapper.SubscriptionMapper;
 import com.wetube.wetube_service.service.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class SubScriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;

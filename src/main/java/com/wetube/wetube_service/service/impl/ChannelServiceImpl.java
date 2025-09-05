@@ -1,13 +1,12 @@
 package com.wetube.wetube_service.service.impl;
 
 import com.wetube.wetube_service.dto.UserDto;
-import com.wetube.wetube_service.dto.response.ChannelResponseDto;
+import com.wetube.wetube_service.dto.response.UserChannelResponseDto;
 import com.wetube.wetube_service.dto.response.MemberTierDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.channel.MembershipTier;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
-import com.wetube.wetube_service.enumeration.Country;
 import com.wetube.wetube_service.exception.ChannelAlreadyExistsException;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.repository.UserRepository;
@@ -27,7 +26,7 @@ public class ChannelServiceImpl implements ChannelService {
     private final GeoIPService geoIPService;
 
     @Override
-    public ChannelResponseDto getChannel(UUID channelId) {
+    public UserChannelResponseDto getChannel(UUID channelId) {
         return null;
     }
 

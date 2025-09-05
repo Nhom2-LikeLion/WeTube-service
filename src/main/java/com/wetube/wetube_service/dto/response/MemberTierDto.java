@@ -16,6 +16,6 @@ public class MemberTierDto {
     private UUID id;
     private String title;
     private float price;
-    private String description;
     private boolean isDefault;
+    private String description;
 }

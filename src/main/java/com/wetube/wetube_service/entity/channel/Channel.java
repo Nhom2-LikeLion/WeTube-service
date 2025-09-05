@@ -25,9 +25,9 @@ public class Channel {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(value = SqlTypes.VARCHAR)
     private UUID id;
-
-    private String backgroundImgUrl;
+    private String name;
     private String avatarUrl;
+    private String backgroundImgUrl;
     private String description;
 
     @Column(length = 2)
@@ -46,8 +46,8 @@ public class Channel {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private String name;
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "channel", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembershipTier> membershipTiers;
 }

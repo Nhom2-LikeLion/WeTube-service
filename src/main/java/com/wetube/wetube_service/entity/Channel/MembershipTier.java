@@ -26,7 +26,7 @@ public class MembershipTier {
     private float price;
     private String description;
 
-    @Column(name = "is_default", nullable = false)
+    @Column(name = "is_default")
     private boolean isDefault;
 
     @ManyToOne

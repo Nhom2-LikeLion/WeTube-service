@@ -15,10 +15,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChannelController {
     private final ChannelService channelService;
-
-    @PostMapping("/init/{userId}/{ip}")
-    public ResponseEntity<Void> initiateChannel(@PathVariable UUID userId, @PathVariable String ip) {
-        channelService.initiateChannel(userId,ip);
-        return ResponseEntity.ok().build();
-    }
 }
