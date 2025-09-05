@@ -30,7 +30,7 @@ public class OAuthAccount {
     private String picture;
     @Column(columnDefinition = "text")
     private String scopes;
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "json")
     private String rawInfo;
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
