@@ -36,7 +36,7 @@ public class PlaylistController {
         ));
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<PlaylistDto>> getAllPlaylistsByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(pls.getAllPlaylistByUserId(userId));
     }
@@ -59,7 +59,7 @@ public class PlaylistController {
         return ResponseEntity.ok(pls.addVideoToPlaylist(playlistId, videoId, historyDuration));
     }
 
-    @DeleteMapping("/video/{playlistVideoId}")
+    @DeleteMapping("/{videoId}/{playlistVideoId}")
     public ResponseEntity<Void> removeVideoFromPlaylist(@PathVariable UUID playlistVideoId) {
         pls.removeVideoFromPlaylist(playlistVideoId);
         return ResponseEntity.noContent().build();

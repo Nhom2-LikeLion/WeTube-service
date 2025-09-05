@@ -47,14 +47,14 @@ public class PlaylistServiceImpl implements PlaylistService {
         throw new RuntimeException("No playlists found for user " + userId);
     }
         return playlist.stream()
-            .map(pl -> PlaylistDto.builder()
-                .playlistVideoId(null) 
-                .videoId(null)
-                .videoUrl(null)
-                .thumbnailUrl(null)
-                .historyDuration(0)
-                .build())
-            .collect(Collectors.toList());
+        .map(pl -> PlaylistDto.builder()
+            .playlistId(pl.getId())
+            .playlistTitle(pl.getTitle())
+            .playlistType(pl.getPlaylistType())
+            .totalVideos(pl.getPlaylistVideos() != null ? pl.getPlaylistVideos().size() : 0)
+            .createdAt(pl.getCreatedAt())
+            .build())
+        .collect(Collectors.toList());
     }
 
     @Override
