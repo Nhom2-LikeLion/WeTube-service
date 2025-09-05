@@ -1,0 +1,23 @@
+package com.wetube.wetube_service.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@Embeddable
+public class UserRoleId implements Serializable {
+
+    @Column(name = "user_id", length = 36, nullable = false)
+    private String userId;
+
+    @Column(name = "role_id", nullable = false)
+    private Long roleId;
+}

@@ -11,3 +11,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+app:
+  jwt:
+    issuer: "oauth2-service-v2"
+    access-token-ttl-hour: 1
+    refresh-token-ttl-days: 14
+    private-key-pem: "classpath:keys/private_key.pem"
+    public-key-pem: "classpath:keys/public_key.pem"
