@@ -49,8 +49,7 @@ CREATE TABLE posts (
     id VARCHAR(36) PRIMARY KEY,
     content TEXT,
     image_url VARCHAR(255),
-    like_count INT DEFAULT 0,
-    dislike_count INT DEFAULT 0,
+    like_count INT,
     user_id VARCHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
