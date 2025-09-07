@@ -28,6 +28,6 @@ public class UserRole {
     public UserRole(AppUser user, Role role) {
         this.user = user;
         this.role = role;
-        this.id = new UserRoleId(user.getId().toString(), role.getId());
+        this.id = new UserRoleId(user.getId(), role.getId());
     }
 }

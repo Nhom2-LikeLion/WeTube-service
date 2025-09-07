@@ -32,11 +32,11 @@ public class AppUser {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
+//    @Column(nullable = false)
+//    private String password;
 
     private String name;
-    private String avatarUrl;
+    private String picture;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

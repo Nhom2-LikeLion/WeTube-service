@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByTokenHash(String tokenHash);
@@ -23,7 +24,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
                 where r.user.id = :userId and r.sessionId = :sid
             """)
     Optional<RefreshToken> findByUserIdAndSessionIdForUpdate(
-            @Param("userId") String userId,
+            @Param("userId") UUID userId,
             @Param("sid") String sid);
 
     @Modifying

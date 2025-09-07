@@ -24,14 +24,4 @@ public class UserController {
     public UserResponseDto getUserById(@PathVariable UUID id) {
         return userService.getUserById(id);
     }
-
-//    @GetMapping("/me")
-//    public ResponseEntity<UserResponseDto> getCurrentUser(Authentication authentication) {
-//        // Principal bây giờ là một đối tượng Jwt
-//        Jwt principal = (Jwt) authentication.getPrincipal();
-//
-//        UserResponseDto currentAppUser = userService.findOrCreateUser(principal);
-//
-//        return ResponseEntity.ok(currentAppUser);
-//    }
 }

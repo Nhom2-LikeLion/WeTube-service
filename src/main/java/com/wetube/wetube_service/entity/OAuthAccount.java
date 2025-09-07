@@ -21,17 +21,23 @@ public class OAuthAccount {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
+
     @Column(nullable = false)
     private String provider; // 'google'
+
     @Column(name = "provider_user_id", nullable = false)
     private String providerUserId; // sub
+
     private String email;
     private String name;
     private String picture;
+
     @Column(columnDefinition = "text")
     private String scopes;
+
     @Column(columnDefinition = "json")
     private String rawInfo;
+
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
 
