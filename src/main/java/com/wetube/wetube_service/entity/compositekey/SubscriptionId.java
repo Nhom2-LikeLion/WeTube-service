@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.entity.CompositeKey;
+package com.wetube.wetube_service.entity.compositekey;
 
 
 import com.wetube.wetube_service.entity.AppUser;
@@ -17,6 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
+@EqualsAndHashCode
 public class SubscriptionId implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
