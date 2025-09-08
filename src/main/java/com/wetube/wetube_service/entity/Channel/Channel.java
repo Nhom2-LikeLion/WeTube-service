@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,7 +28,7 @@ public class Channel {
     private UUID id;
 
     private String backgroundImgUrl;
-    private String avatarUrl;
+    private String picture;
     private String description;
 
     @Enumerated(EnumType.STRING)
