@@ -1,9 +1,9 @@
-package com.wetube.wetube_service.service.token;
+package com.wetube.wetube_service.service.auth;
 
 import com.wetube.wetube_service.dto.IssueResult;
 import com.wetube.wetube_service.dto.RotateResult;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.RefreshToken;
+import com.wetube.wetube_service.entity.auth.RefreshToken;
 import org.springframework.lang.Nullable;
 
 public interface RefreshTokenService {

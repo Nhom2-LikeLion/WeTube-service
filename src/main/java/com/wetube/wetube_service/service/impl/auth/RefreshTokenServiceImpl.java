@@ -1,11 +1,13 @@
-package com.wetube.wetube_service.service.impl.token;
+package com.wetube.wetube_service.service.impl.auth;
 
 import com.wetube.wetube_service.dto.IssueResult;
 import com.wetube.wetube_service.dto.RotateResult;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.RefreshToken;
-import com.wetube.wetube_service.repository.RefreshTokenRepository;
-import com.wetube.wetube_service.service.token.RefreshTokenService;
+import com.wetube.wetube_service.entity.auth.RefreshToken;
+import com.wetube.wetube_service.exception.InvalidTokenException;
+import com.wetube.wetube_service.exception.SystemConfigurationException;
+import com.wetube.wetube_service.repository.auth.RefreshTokenRepository;
+import com.wetube.wetube_service.service.auth.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
@@ -37,9 +39,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(raw.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hashBytes); // Trả về String
+            return Base64.getEncoder().encodeToString(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error while hashing", e);
+            throw new SystemConfigurationException("Error while hashing", e);
         }
     }
 
@@ -51,7 +53,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 ? existingSid
                 : UUID.randomUUID().toString();
 
-        // Khóa bản ghi theo session_id để tránh race
         RefreshToken rt = refreshTokenRepository.findByUserIdAndSessionIdForUpdate(user.getId(), sid)
                 .orElseGet(() -> {
                     RefreshToken n = new RefreshToken();
@@ -69,37 +70,35 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         rt.setParentTokenHash(null);
         rt.setRevoked(false);
         rt.setExpiresAt(Instant.now().plus(Duration.ofDays(ttlDays)));
-        refreshTokenRepository.saveAndFlush(rt); // UPDATE nếu đã có, INSERT nếu chưa có
+        refreshTokenRepository.saveAndFlush(rt);
 
-        return new IssueResult(sid, raw); // raw giữ ở server; client chỉ nhận SID cookie
+        return new IssueResult(sid, raw);
     }
 
     @Override
     @Transactional(readOnly = true)
     public RefreshToken validateBySession(String sessionId) {
         return refreshTokenRepository.findBySessionIdAndRevokedFalse(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("invalid_session"));
+                .orElseThrow(() -> new InvalidTokenException("invalid_session"));
     }
 
     @Override
     @Transactional
     public RotateResult rotateBySession(String sessionId) {
         RefreshToken current = refreshTokenRepository.findBySessionIdAndRevokedFalse(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("invalid_session"));
+                .orElseThrow(() -> new InvalidTokenException("invalid_session"));
 
         if (current.getExpiresAt().isBefore(Instant.now())) {
             current.setRevoked(true);
-            throw new IllegalArgumentException("session_expired");
+            throw new InvalidTokenException("session_expired");
         }
 
-        // Single-use semantics cho refresh token: revoke cũ, tạo token mới cùng
-        // sessionId
         current.setRevoked(true);
 
         String raw = newRaw();
         RefreshToken next = new RefreshToken();
         next.setUser(current.getUser());
-        next.setSessionId(sessionId); // GIỮ nguyên SID (đỡ set cookie lại)
+        next.setSessionId(sessionId);
         next.setTokenHash(hash(raw));
         next.setParentTokenHash(current.getTokenHash());
         next.setRevoked(false);

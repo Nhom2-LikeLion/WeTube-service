@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.service.token;
+package com.wetube.wetube_service.service.auth;
 
 import jakarta.servlet.http.HttpServletResponse;
 

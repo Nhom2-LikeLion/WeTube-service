@@ -1,7 +1,7 @@
-package com.wetube.wetube_service.service.impl.token;
+package com.wetube.wetube_service.service.impl.auth;
 
 
-import com.wetube.wetube_service.service.token.CookieService;
+import com.wetube.wetube_service.service.auth.CookieService;
 import com.wetube.wetube_service.utility.CookieUtility;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

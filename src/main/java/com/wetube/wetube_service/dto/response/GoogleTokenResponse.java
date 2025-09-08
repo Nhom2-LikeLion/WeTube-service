@@ -1,13 +1,23 @@
 package com.wetube.wetube_service.dto.response;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-public class GoogleTokenResponse {
-    private String access_token;
-    private String id_token;
-    private String refresh_token; // only have when access_type=offline & prompt=consent
-    private String scope;
-    private String token_type;
-    private Long expires_in;
+public record GoogleTokenResponse(
+        @JsonProperty("access_token")
+        String accessToken,
+
+        @JsonProperty("id_token")
+        String idToken,
+
+        @JsonProperty("refresh_token")
+        String refreshToken,
+
+        String scope,
+
+        @JsonProperty("token_type")
+        String tokenType,
+
+        @JsonProperty("expires_in")
+        Long expiresIn
+) {
 }

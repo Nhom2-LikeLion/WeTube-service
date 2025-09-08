@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.service.impl.token;
+package com.wetube.wetube_service.service.impl.auth;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -7,7 +7,8 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.wetube.wetube_service.service.token.JwtService;
+import com.wetube.wetube_service.exception.TokenGenerationException;
+import com.wetube.wetube_service.service.auth.JwtService;
 import com.wetube.wetube_service.utility.KeyLoader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ import java.util.UUID;
 @Service
 public class JwtServiceImpl implements JwtService {
     private final RSAPrivateKey privateKey;
-    private final RSAPublicKey publicKey;
     private final String issuer;
     private final long accessTtlHours;
 
@@ -31,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
                           @Value("${app.jwt.issuer}") String issuer,
                           @Value("${app.jwt.access-token-ttl-hour}") long accessTtl) {
         this.privateKey = loader.loadPrivateKey();
-        this.publicKey = loader.loadPublicKey();
+//        RSAPublicKey publicKey = loader.loadPublicKey();
         this.issuer = issuer;
         this.accessTtlHours = accessTtl;
     }
@@ -53,7 +53,7 @@ public class JwtServiceImpl implements JwtService {
             jwt.sign(new RSASSASigner(privateKey));
             return jwt.serialize();
         } catch (JOSEException e) {
-            throw new RuntimeException(e);
+            throw new TokenGenerationException("Failed to sign the JWT", e);
         }
     }
 }

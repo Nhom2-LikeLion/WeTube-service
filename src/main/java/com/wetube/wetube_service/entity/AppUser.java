@@ -1,5 +1,7 @@
 package com.wetube.wetube_service.entity;
 
+import com.wetube.wetube_service.entity.auth.Role;
+import com.wetube.wetube_service.entity.auth.UserRole;
 import com.wetube.wetube_service.entity.post.PollVote;
 import com.wetube.wetube_service.entity.post.Post;
 import jakarta.persistence.*;
@@ -32,9 +34,6 @@ public class AppUser {
     @Column(unique = true, nullable = false)
     private String email;
 
-//    @Column(nullable = false)
-//    private String password;
-
     private String name;
     private String picture;
 
@@ -44,8 +43,8 @@ public class AppUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(unique = true)
-    private String googleSub;
+    @Column(nullable = true)
+    private String password;
 
     @OneToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id",unique = true)

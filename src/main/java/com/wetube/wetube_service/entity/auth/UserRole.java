@@ -1,5 +1,6 @@
-package com.wetube.wetube_service.entity;
+package com.wetube.wetube_service.entity.auth;
 
+import com.wetube.wetube_service.entity.AppUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

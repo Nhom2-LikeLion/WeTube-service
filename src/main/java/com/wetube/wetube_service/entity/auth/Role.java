@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.entity;
+package com.wetube.wetube_service.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.Getter;

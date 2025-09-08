@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.controller;
 
-import com.wetube.wetube_service.service.token.RefreshTokenService;
+import com.wetube.wetube_service.service.auth.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +17,10 @@ import java.util.Map;
 @RequestMapping("/api/me")
 @AllArgsConstructor
 public class MeController {
-    //    @GetMapping
-//    public Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {
-//        if (jwt == null) {
-//            return Map.of(
-//                    "error_code", "unauthenticated"
-//            );
-//        }
-//        return Map.of(
-//                "userId", jwt.getSubject(),
-//                "email", jwt.getClaim("email"),
-//                "roles", jwt.getClaim("roles"));
-//    }
+    private static final String ERROR = "error";
+    private static final String ERROR_CODE = "error_code";
+    private static final String MESSAGE = "message";
+
     private final RefreshTokenService refreshTokenService;
 
     @GetMapping
@@ -41,29 +33,29 @@ public class MeController {
                     var session = refreshTokenService.validateBySession(sid);
                     if (session.isRevoked()) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                                "error", "Đã đăng xuất",
-                                "error_code", "session_revoked",
-                                "message", "Session has been revoked"
+                                ERROR, "Already logged out",
+                                ERROR_CODE, "session_revoked",
+                                MESSAGE, "Session has been revoked"
                         ));
                     }
                     // Nếu session hợp lệ, gợi ý làm mới token
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                            "error", "Yêu cầu làm mới token",
-                            "error_code", "token_required",
-                            "message", "Valid session found, please refresh token"
+                            ERROR, "Request new token",
+                            ERROR_CODE, "token_required",
+                            MESSAGE, "Valid session found, please refresh token"
                     ));
                 } catch (IllegalArgumentException e) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                            "error", "Phiên không hợp lệ",
-                            "error_code", "invalid_session",
-                            "message", e.getMessage() != null ? e.getMessage() : "Invalid session"
+                            ERROR, "Invalid session",
+                            ERROR_CODE, "invalid_session",
+                            MESSAGE, e.getMessage() != null ? e.getMessage() : "Invalid session"
                     ));
                 }
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    "error", "Chưa đăng nhập",
-                    "error_code", "unauthenticated",
-                    "message", "No valid JWT or session provided"
+                    ERROR, "Chưa đăng nhập",
+                    ERROR_CODE, "unauthenticated",
+                    MESSAGE, "No valid JWT or session provided"
             ));
         }
         return ResponseEntity.ok(Map.of(

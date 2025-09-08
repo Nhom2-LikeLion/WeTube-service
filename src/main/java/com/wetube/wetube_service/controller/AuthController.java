@@ -3,13 +3,14 @@ package com.wetube.wetube_service.controller;
 import com.wetube.wetube_service.dto.GoogleUser;
 import com.wetube.wetube_service.dto.response.GoogleTokenResponse;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.RefreshToken;
+import com.wetube.wetube_service.entity.auth.RefreshToken;
 import com.wetube.wetube_service.service.UserService;
-import com.wetube.wetube_service.service.token.GoogleTokenService;
-import com.wetube.wetube_service.service.token.JwtService;
-import com.wetube.wetube_service.service.token.RefreshTokenService;
+import com.wetube.wetube_service.service.auth.GoogleTokenService;
+import com.wetube.wetube_service.service.auth.JwtService;
+import com.wetube.wetube_service.service.auth.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,129 +23,131 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 
+@Slf4j
 @CrossOrigin(value = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-  private final GoogleTokenService googleToken;
-  private final UserService userService; // find-or-create user
-  private final JwtService jwtService;
-  private final RefreshTokenService refreshService;
+    private static final String AT_COOKIE = "AT";
+    private static final String SID_COOKIE = "SID";
+    private static final String SAME_SITE_STRICT = "Strict";
+    private static final String SAME_SITE_LAX = "Lax";
 
-  @Value("${spring.security.oauth2.client.registration.google.client-id}")
-  private String clientId;
-  @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-  private String clientSecret;
-  @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-  private String redirectUri;
+    private final GoogleTokenService googleToken;
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshService;
 
-  // Dành cho web app: bạn có thể redirect trực tiếp
-  @GetMapping("/login/google")
-  public void redirectToGoogle(HttpServletResponse response) throws IOException {
-    String url = UriComponentsBuilder
-        .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
-        .queryParam("client_id", clientId)
-        .queryParam("redirect_uri", redirectUri)
-        .queryParam("response_type", "code")
-        .queryParam("scope", "openid email profile")
-        .queryParam("access_type", "offline") // để Google cấp refresh_token (lần đầu)
-        .queryParam("prompt", "consent") // buộc consent để nhận refresh_token
-        .build().toUriString();
-    response.sendRedirect(url);
-  }
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String redirectUri;
 
-  // Callback nhận code từ Google
-  @GetMapping("/login/google/callback")
-  public ResponseEntity<?> googleCallback(@RequestParam String code) {
-    GoogleTokenResponse gtr = googleToken.exchangeCode(code);
-    GoogleUser googleUser = googleToken.parseAndVerify(gtr.getId_token());
-
-    AppUser user = userService.upsertGoogleUser(googleUser);
-
-    // 1) Issue session (server-side refresh)
-    var issue = refreshService.issue(user, null); // sid + rawRefresh (server only)
-
-    // 2) Create short-lived Access Token
-    String access = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
-
-    // 3) Set cookies
-    ResponseCookie at = ResponseCookie.from("AT", access)
-        .httpOnly(true).secure(true).sameSite("Strict")
-        .path("/").maxAge(Duration.ofMinutes(15)).build();
-
-    ResponseCookie sid = ResponseCookie.from("SID", issue.sessionId())
-        .httpOnly(true).secure(true).sameSite("Strict")
-        .path("/").maxAge(Duration.ofDays(14)).build();
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, at.toString())
-        .header(HttpHeaders.SET_COOKIE, sid.toString())
-        .body(Map.of(
-            "access_token", access,
-            "session_id", issue.sessionId(),
-            "token_type", "Bearer",
-            "expires_in", 900));
-  }
-
-  @PostMapping("/refresh-login")
-  public ResponseEntity<?> refresh(@CookieValue(name = "SID", required = false) String sid) {
-    if (sid == null || sid.isBlank()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "No session"));
-    }
-    var session = refreshService.validateBySession(sid); // kiểm tra còn hạn/chưa revoke
-    if (session == null) {
-        // clear cookies
-        ResponseCookie at0  = ResponseCookie.from("AT","").maxAge(0).path("/").httpOnly(true).build();
-        ResponseCookie sid0 = ResponseCookie.from("SID","").maxAge(0).path("/").httpOnly(true).build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .header(HttpHeaders.SET_COOKIE, at0.toString(), sid0.toString())
-                .body(Map.of("error","Invalid session"));
+    @GetMapping("/login/google")
+    public void redirectToGoogle(HttpServletResponse response) throws IOException {
+        String url = UriComponentsBuilder
+                .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
+                .queryParam("response_type", "code")
+                .queryParam("scope", "openid email profile")
+                .queryParam("access_type", "offline")
+                .queryParam("prompt", "consent")
+                .build().toUriString();
+        response.sendRedirect(url);
     }
 
-    var user = session.getUser();
-    var issued = refreshService.issue(user, sid); // <<--- PASS SID HIỆN TẠI để UPDATE
+    @GetMapping("/login/google/callback")
+    public ResponseEntity<Map<String, Object>> googleCallback(@RequestParam String code) {
+        GoogleTokenResponse gtr = googleToken.exchangeCode(code);
+        GoogleUser googleUser = googleToken.parseAndVerify(gtr.idToken());
+        AppUser user = userService.upsertGoogleUser(googleUser, gtr.scope());
 
-    String newAT = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
+        // 1) Issue session (server-side refresh)
+        var issue = refreshService.issue(user, null); // sid + rawRefresh (server only)
 
-    ResponseCookie at = ResponseCookie.from("AT", newAT)
-            .httpOnly(true).secure(false) // dev
-            .sameSite("Lax").path("/")
-            .maxAge(Duration.ofMinutes(15)).build();
+        // 2) Create short-lived Access Token
+        String access = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
 
-    // giữ nguyên SID (không rotate) ở mô hình 1-record-per-session
-    ResponseCookie sidCookie = ResponseCookie.from("SID", sid)
-            .httpOnly(true).secure(false) // dev
-            .sameSite("Lax").path("/")
-            .maxAge(Duration.ofDays(14)).build();
+        // 3) Set cookies
+        ResponseCookie atCookie = ResponseCookie.from(AT_COOKIE, access)
+                .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
+                .path("/").maxAge(Duration.ofHours(1)).build();
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, at.toString(), sidCookie.toString())
-            .body(Map.of(
-                    "refreshed", true,
-                    "access_token", newAT,
-                    "token_type", "Bearer",
-                    "expires_in", 900));
-  }
+        ResponseCookie sidCookie = ResponseCookie.from(SID_COOKIE, issue.sessionId())
+                .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
+                .path("/").maxAge(Duration.ofDays(14)).build();
 
-  @PostMapping("/logout")
-  public ResponseEntity<?> logout(@CookieValue(value = "SID", required = false) String sid) {
-    if (sid != null) {
-      try {
-        RefreshToken rt = refreshService.validateBySession(sid);
-        rt.setRevoked(true);
-      } catch (IllegalArgumentException ignore) {
-      }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, atCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, sidCookie.toString())
+                .body(Map.of(
+                        "access_token", access,
+                        "session_id", issue.sessionId(),
+                        "token_type", "Bearer",
+                        "expires_in", 86400
+                ));
     }
-    ResponseCookie clearAt = ResponseCookie.from("AT", "").httpOnly(true).secure(true)
-        .sameSite("Strict").path("/").maxAge(0).build();
-    ResponseCookie clearSid = ResponseCookie.from("SID", "").httpOnly(true).secure(true)
-        .sameSite("Strict").path("/").maxAge(0).build();
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, clearAt.toString())
-        .header(HttpHeaders.SET_COOKIE, clearSid.toString())
-        .build();
-  }
+    @PostMapping("/refresh-login")
+    public ResponseEntity<Map<String, Object>> refresh(@CookieValue(name = "SID", required = false) String sid) {
+        if (sid == null || sid.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "No session"));
+        }
+        var session = refreshService.validateBySession(sid);
+        if (session == null) {
+            // clear cookies
+            ResponseCookie at0 = ResponseCookie.from("AT", "").maxAge(0).path("/").httpOnly(true).build();
+            ResponseCookie sid0 = ResponseCookie.from("SID", "").maxAge(0).path("/").httpOnly(true).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .header(HttpHeaders.SET_COOKIE, at0.toString(), sid0.toString())
+                    .body(Map.of("error", "Invalid session"));
+        }
+
+        var user = session.getUser();
+        refreshService.issue(user, sid);
+
+        String newAT = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
+
+        ResponseCookie atCookie = ResponseCookie.from(AT_COOKIE, newAT)
+                .httpOnly(true).secure(false)
+                .sameSite(SAME_SITE_LAX).path("/")
+                .maxAge(Duration.ofHours(1)).build();
+
+        ResponseCookie sidCookie = ResponseCookie.from(SID_COOKIE, sid)
+                .httpOnly(true).secure(false)
+                .sameSite(SAME_SITE_LAX).path("/")
+                .maxAge(Duration.ofDays(14)).build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, atCookie.toString(), sidCookie.toString())
+                .body(Map.of(
+                        "refreshed", true,
+                        "access_token", newAT,
+                        "token_type", "Bearer",
+                        "expires_in", 86400));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(value = "SID", required = false) String sid) {
+        if (sid != null) {
+            try {
+                RefreshToken rt = refreshService.validateBySession(sid);
+                rt.setRevoked(true);
+            } catch (Exception e) {
+                log.warn("Error while revoking session [{}]: {}", sid, e.getMessage());
+            }
+        }
+        ResponseCookie clearAt = ResponseCookie.from("AT", "").httpOnly(true).secure(true)
+                .sameSite(SAME_SITE_STRICT).path("/").maxAge(0).build();
+        ResponseCookie clearSid = ResponseCookie.from("SID", "").httpOnly(true).secure(true)
+                .sameSite(SAME_SITE_STRICT).path("/").maxAge(0).build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, clearAt.toString())
+                .header(HttpHeaders.SET_COOKIE, clearSid.toString())
+                .build();
+    }
 
 }

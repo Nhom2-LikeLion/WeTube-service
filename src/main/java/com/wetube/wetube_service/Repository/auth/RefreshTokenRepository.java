@@ -1,6 +1,6 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.repository.auth;
 
-import com.wetube.wetube_service.entity.RefreshToken;
+import com.wetube.wetube_service.entity.auth.RefreshToken;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -12,11 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByTokenHash(String tokenHash);
-
     Optional<RefreshToken> findBySessionIdAndRevokedFalse(String sessionId);
-
-    Optional<RefreshToken> findBySessionId(String sessionId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""

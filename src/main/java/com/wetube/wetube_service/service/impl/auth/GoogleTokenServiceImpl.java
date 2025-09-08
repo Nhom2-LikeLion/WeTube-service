@@ -1,11 +1,12 @@
-package com.wetube.wetube_service.service.impl.token;
+package com.wetube.wetube_service.service.impl.auth;
 
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.wetube.wetube_service.dto.GoogleUser;
 import com.wetube.wetube_service.dto.response.GoogleTokenResponse;
-import com.wetube.wetube_service.service.token.GoogleTokenService;
+import com.wetube.wetube_service.exception.InvalidTokenException;
+import com.wetube.wetube_service.service.auth.GoogleTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -20,8 +21,6 @@ import java.util.Date;
 public class GoogleTokenServiceImpl implements GoogleTokenService {
     private final WebClient.Builder webClientBuilder;
 
-    // Bean này phải trùng tên @Bean trong GoogleJwtConfiguration:
-    // googleJwtProcessor
     private final ConfigurableJWTProcessor<SecurityContext> jwtProcessor;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -58,10 +57,10 @@ public class GoogleTokenServiceImpl implements GoogleTokenService {
             JWTClaimsSet claims = jwtProcessor.process(idToken, null);
 
             if (!claims.getAudience().contains(clientId)) {
-                throw new IllegalArgumentException("Invalid audience");
+                throw new InvalidTokenException("Invalid audience");
             }
             if (new Date().after(claims.getExpirationTime())) {
-                throw new IllegalArgumentException("Token expired");
+                throw new InvalidTokenException("Token expired");
             }
 
             return new GoogleUser(
@@ -70,7 +69,7 @@ public class GoogleTokenServiceImpl implements GoogleTokenService {
                     (String) claims.getClaim("name"),
                     (String) claims.getClaim("picture"));
         } catch (Exception e) {
-            throw new RuntimeException("Invalid ID token", e);
+            throw new InvalidTokenException("Invalid ID token", e);
         }
     }
 

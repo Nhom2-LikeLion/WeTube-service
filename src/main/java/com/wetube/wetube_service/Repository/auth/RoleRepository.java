@@ -1,6 +1,6 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.repository.auth;
 
-import com.wetube.wetube_service.entity.Role;
+import com.wetube.wetube_service.entity.auth.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
