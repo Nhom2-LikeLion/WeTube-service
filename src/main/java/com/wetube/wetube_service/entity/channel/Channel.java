@@ -27,7 +27,7 @@ public class Channel {
     private UUID id;
 
     private String backgroundImgUrl;
-    private String avatarUrl;
+    private String picture;
     private String description;
 
     @Enumerated(EnumType.STRING)
