@@ -9,12 +9,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tiers")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(
+        name = "tiers",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_channel_title_price",
+                columnNames = {"channel_id", "title", "price"}
+        )
+)
 public class MembershipTier {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,8 +1,6 @@
 package com.wetube.wetube_service.exception.handler;
 
-import com.wetube.wetube_service.exception.ChannelAlreadyExistsException;
-import com.wetube.wetube_service.exception.InvalidTokenException;
-import com.wetube.wetube_service.exception.ResourceNotFoundException;
+import com.wetube.wetube_service.exception.*;
 import com.wetube.wetube_service.exception.error.ApiError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,6 +69,18 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong: " + ex.getMessage(),
                 req.getRequestURI());
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiError> handleDuplicateResource(DuplicateResourceException ex,
+                                                            HttpServletRequest req) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(DefaultTierException.class)
+    public ResponseEntity<ApiError> handleDefaultTierDeletion(DefaultTierException ex,
+                                                              HttpServletRequest req) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message, String path) {
