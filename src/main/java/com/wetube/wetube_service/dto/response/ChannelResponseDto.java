@@ -13,7 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChannelResponseDto {
+public class
+ChannelResponseDto {
     private UUID id;
     private String name;
     private String avatarUrl;
