@@ -9,15 +9,16 @@ import com.wetube.wetube_service.repository.CommentRepository;
 import com.wetube.wetube_service.repository.post.PostRepository;
 import com.wetube.wetube_service.service.CommentService;
 import com.wetube.wetube_service.service.LikeService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
