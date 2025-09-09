@@ -19,10 +19,10 @@ import com.wetube.wetube_service.service.MemberTierService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/tiers")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class MemberTierController {
     private final MemberTierService memberTierService;
     private final MemberTierMapper mapper;

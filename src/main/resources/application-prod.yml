@@ -39,3 +39,4 @@ management:
         exposed-headers: ${CORS_EXPOSED_HEADERS}
         allow-credentials: ${CORS_ALLOW_CREDENTIALS}
         max-age: 3600
+
