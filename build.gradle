@@ -21,7 +21,8 @@ ext {
             mapstruct       : '1.5.5.Final',
             lombokMapstruct : '0.2.0',
             mockitoJupiter  : '5.12.0',
-            h2              : '2.2.224'
+            h2              : '2.2.224',
+            jacoco          : '0.8.12'
     ]
 }
 
@@ -86,6 +87,8 @@ dependencies {
     implementation 'com.cloudinary:cloudinary-http44:1.32.2'
 
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    annotationProcessor 'org.projectlombok:lombok'
+
 }
 
 test {
