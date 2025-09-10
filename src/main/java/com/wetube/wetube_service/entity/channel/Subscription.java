@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.entity.channel;
 
-import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 import jakarta.persistence.*;
 import lombok.*;

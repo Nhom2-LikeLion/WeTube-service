@@ -3,10 +3,11 @@ package com.wetube.wetube_service.mapper;
 import com.wetube.wetube_service.dto.PlaylistDto;
 import com.wetube.wetube_service.dto.VideoDto;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
-import com.wetube.wetube_service.entity.playlist.Video;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.wetube.wetube_service.entity.Video;
 
 public class PlaylistMapper {
 

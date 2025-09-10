@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import com.wetube.wetube_service.repository.VideoTagRepository;
 import com.wetube.wetube_service.dto.VideoDto;
 import com.wetube.wetube_service.entity.Video;
 import com.wetube.wetube_service.entity.VideoTag;
+import com.wetube.wetube_service.mapper.PlaylistMapper;
 import com.wetube.wetube_service.mapper.VideoMapper;
 import com.wetube.wetube_service.entity.Tag;
 import com.wetube.wetube_service.service.CloudinaryService;
@@ -135,18 +137,4 @@ public class VideoServiceImpl implements VideoService {
         }
         return out;
     }
-    
-        @Override
-    public VideoDto getVideoById(UUID id) {
-        Video video = videoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Video not found"));
-        return PlaylistMapper.toVideoDto(video);
-    }
-    
-        @Override
-    public List<VideoDto> getAllVideos() {
-        return videoRepository.findAll()
-                .stream()
-                .map(PlaylistMapper:: toVideoDto)
-                .collect(Collecto
 }

@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.entity.compositeKey;
+package com.wetube.wetube_service.entity.compositekey;
 
 
 import java.io.Serializable;
