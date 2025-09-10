@@ -17,10 +17,10 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @Value("${livekit.apiKey}")
+    @Value("${livekit.api-key}")
     private String livekitApiKey;
 
-    @Value("${livekit.apiSecret}")
+    @Value("${livekit.api-secret}")
     private String livekitApiSecret;
 
     @Value("${livekit.url}")
