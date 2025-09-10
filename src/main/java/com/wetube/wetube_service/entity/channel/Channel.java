@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.entity.channel;
 
 import com.wetube.wetube_service.enumeration.ActiveStatus;
-import com.wetube.wetube_service.enumeration.Country;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,13 +24,13 @@ public class Channel {
     @Column(columnDefinition = "VARCHAR(36)")
     @JdbcTypeCode(value = SqlTypes.VARCHAR)
     private UUID id;
-
-    private String backgroundImgUrl;
+    private String name;
     private String avatarUrl;
+    private String backgroundImgUrl;
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private Country country;
+    @Column(length = 2)
+    private String countryCode;
     @Enumerated(EnumType.STRING)
     private ActiveStatus status;
 
@@ -46,8 +45,8 @@ public class Channel {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private String name;
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "channel", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembershipTier> membershipTiers;
 }

@@ -1,43 +1,43 @@
 // package com.wetube.wetube_service.service.impl;
 
-// import com.wetube.wetube_service.repository.ChannelRepository;
-// import com.wetube.wetube_service.repository.MemberTierRepository;
-// import com.wetube.wetube_service.repository.SubscriptionRepository;
-// import com.wetube.wetube_service.repository.UserRepository;
-// import com.wetube.wetube_service.dto.request.SubscriptionRequest;
-// import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
-// import com.wetube.wetube_service.dto.response.ChannelResponseDto;
-// import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
-// import com.wetube.wetube_service.entity.AppUser;
-// import com.wetube.wetube_service.entity.channel.Channel;
-// import com.wetube.wetube_service.entity.channel.MembershipTier;
-// import com.wetube.wetube_service.entity.channel.Subscription;
-// import com.wetube.wetube_service.entity.compositeKey.SubscriptionId;
-// import com.wetube.wetube_service.enumeration.SubscriptionType;
-// import com.wetube.wetube_service.exception.ResourceNotFoundException;
-// import com.wetube.wetube_service.mapper.ChannelMapper;
-// import com.wetube.wetube_service.mapper.SubscriptionMapper;
-// import com.wetube.wetube_service.service.SubscriptionService;
-// import lombok.AllArgsConstructor;
-// import org.springframework.stereotype.Service;
+import com.wetube.wetube_service.repository.ChannelRepository;
+import com.wetube.wetube_service.repository.MemberTierRepository;
+import com.wetube.wetube_service.repository.SubscriptionRepository;
+import com.wetube.wetube_service.repository.UserRepository;
+import com.wetube.wetube_service.dto.request.SubscriptionRequest;
+import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
+import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
+import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.entity.channel.Channel;
+import com.wetube.wetube_service.entity.channel.MembershipTier;
+import com.wetube.wetube_service.entity.channel.Subscription;
+import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.enumeration.SubscriptionType;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
+import com.wetube.wetube_service.mapper.ChannelMapper;
+import com.wetube.wetube_service.mapper.SubscriptionMapper;
+import com.wetube.wetube_service.service.SubscriptionService;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import java.util.*;
-// import java.util.stream.Collectors;
+import java.util.*;
 
-// @Service
-// @AllArgsConstructor
-// public class SubScriptionServiceImpl implements SubscriptionService {
-//     private final SubscriptionRepository subscriptionRepository;
-//     private final UserRepository userRepository;
-//     private final ChannelRepository channelRepository;
-//     private final MemberTierRepository memberTierRepository;
-//     private final SubscriptionMapper subscriptionMapper;
-//     private final ChannelMapper channelMapper;
+@Service
+@AllArgsConstructor
+@Transactional
+public class SubScriptionServiceImpl implements SubscriptionService {
+    private final SubscriptionRepository subscriptionRepository;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
+    private final MemberTierRepository memberTierRepository;
+    private final SubscriptionMapper subscriptionMapper;
+    private final ChannelMapper channelMapper;
 
-//     @Override
-//     public List<SubscribedChannelDto> getSubscribedChannels(UUID userId) {
-//         Optional.ofNullable(userId)
-//                 .orElseThrow(() -> new IllegalArgumentException("UserID is empty"));
+    @Override
+    public List<SubscribedChannelResponseDto> getSubscribedChannels(UUID userId) {
+        Optional.ofNullable(userId)
+                .orElseThrow(() -> new IllegalArgumentException("UserID is empty"));
 
 //         if (!userRepository.existsById(userId)) {
 //             throw new ResourceNotFoundException("User","Id", userId.toString());
@@ -119,6 +119,14 @@
 //             Channel channel = channelRepository.findById(channelId)
 //                     .orElseThrow(() -> new ResourceNotFoundException("Channel", "id", channelId.toString()));
 
+            tier = channel.getMembershipTiers().stream()
+                    .filter(MembershipTier::isDefaultTier)
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("MembershipTier", "channelId", channel.getId().toString()));
+        } else {
+            tier = memberTierRepository.findById(tierId)
+                    .orElseThrow(() -> new ResourceNotFoundException("MembershipTier", "id", tierId.toString()));
+        }
 //             tier = channel.getMembershipTiers().stream()
 //                     .filter(MembershipTier::isDefault)
 //                     .findFirst()

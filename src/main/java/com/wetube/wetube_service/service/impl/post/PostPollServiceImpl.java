@@ -44,7 +44,7 @@ public class PostPollServiceImpl implements PostPollService {
         }).toList();
 
         return PollSummaryDto.builder()
-//                .postId(postId)
+                .id(postId)
                 .options(optionDtos)
                 .totalVotes(total)
                 .userVotedOptionId(userVotedOptionId)

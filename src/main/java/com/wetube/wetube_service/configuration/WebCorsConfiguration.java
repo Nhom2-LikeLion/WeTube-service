@@ -1,3 +1,4 @@
+
 package com.wetube.wetube_service.configuration;
 
 import org.springframework.beans.factory.annotation.Value;

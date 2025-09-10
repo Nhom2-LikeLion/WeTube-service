@@ -1,6 +1,6 @@
 spring:
-#  config:
-#    import: optional:file:.env.prod.properties
+  config:
+    import: optional:file:.env.prod.properties
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -23,6 +23,11 @@ spring:
           min-idle: 0
           max-wait: -1ms
 
+cloudinary:
+  url: ${CLOUDINARY_URL}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 management:
   endpoints:

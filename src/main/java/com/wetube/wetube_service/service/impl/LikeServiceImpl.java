@@ -6,6 +6,7 @@ import com.wetube.wetube_service.repository.LikeRepository;
 import com.wetube.wetube_service.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;

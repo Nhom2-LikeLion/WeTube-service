@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscribedChannelDto {
+public class SubscribedChannelResponseDto {
     private UUID id;
     private String name;
     private String avatarUrl;
