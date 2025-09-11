@@ -33,8 +33,7 @@ public class ChannelServiceImpl implements ChannelService {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Channel", "id", channelId.toString()));
 
-        ChannelResponseDto result =channelMapper.toChannelResponseDto(channel);
-        return result;
+        return channelMapper.toChannelResponseDto(channel);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class ChannelServiceImpl implements ChannelService {
         String countryCode = geoIPService.getCountryCode(ip).orElse("UN"); // UN = Unknown
         Channel channel = Channel.builder()
                 .name(user.getName() != null ? user.getName() : "New Channel")
-                .avatarUrl(user.getAvatarUrl())
+                .picture(user.getPicture())
                 .status(ActiveStatus.ACTIVE)
                 .countryCode(countryCode)
                 .totalSubscribers(0)
