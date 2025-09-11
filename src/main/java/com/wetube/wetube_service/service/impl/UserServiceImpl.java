@@ -27,6 +27,7 @@ import java.util.UUID;
 @Transactional
 public class UserServiceImpl implements UserService {
     private static final String DEFAULT_ROLE = "ROLE_USER";
+    public static final String PROVIDER_GOOGLE = "google";
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public AppUser upsertGoogleUser(GoogleUser googleUser, String scopes) {
-        Optional<OAuthAccount> oauthAccountOpt = oauthAccountRepository.findByProviderAndProviderUserId("google", googleUser.sub());
+        Optional<OAuthAccount> oauthAccountOpt = oauthAccountRepository.findByProviderAndProviderUserId(PROVIDER_GOOGLE, googleUser.sub());
 
         if (oauthAccountOpt.isPresent()) {
             AppUser existingUser = oauthAccountOpt.get().getUser();
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
     private OAuthAccount createOAuthAccount(GoogleUser googleUser, String scopes, AppUser user) {
         OAuthAccount newAuthAccount = new OAuthAccount();
-        newAuthAccount.setProvider("google");
+        newAuthAccount.setProvider(PROVIDER_GOOGLE);
         newAuthAccount.setProviderUserId(googleUser.sub());
         newAuthAccount.setUser(user);
         newAuthAccount.setScopes(scopes);
