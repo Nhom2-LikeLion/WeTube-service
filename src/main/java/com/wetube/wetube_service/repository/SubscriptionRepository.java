@@ -1,7 +1,7 @@
 package com.wetube.wetube_service.repository;
 
 import com.wetube.wetube_service.entity.channel.Subscription;
-import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

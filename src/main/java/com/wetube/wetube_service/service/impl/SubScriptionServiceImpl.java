@@ -11,7 +11,7 @@ import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.channel.MembershipTier;
 import com.wetube.wetube_service.entity.channel.Subscription;
-import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.ChannelMapper;
