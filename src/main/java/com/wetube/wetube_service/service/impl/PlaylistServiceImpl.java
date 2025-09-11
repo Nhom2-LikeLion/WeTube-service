@@ -86,12 +86,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public void removeVideoFromPlaylist(UUID playlistVideoId) {
-        if (!plvr.existsById(playlistVideoId)) {
-            throw new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString());
+    public void removeVideoFromPlaylist(UUID videoId, UUID playlistVideoId) {
+        var playlistVideo = plvr.findById(playlistVideoId)
+                .orElseThrow(() -> new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString()));
+
+        if (!playlistVideo.getVideo().getId().equals(videoId)) {
+            throw new ResourceNotFoundException("Video", "id", videoId.toString());
         }
-        plvr.deleteById(playlistVideoId);
-    }
+
+    plvr.deleteById(playlistVideoId);
+}
 
     @Override
     public void removePlaylist(UUID playlistId) {

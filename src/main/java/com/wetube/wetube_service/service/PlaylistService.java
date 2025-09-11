@@ -20,7 +20,7 @@ public interface PlaylistService {
 
     PlaylistDto addVideoToPlaylist(PlaylistaddRequest dto);
 
-    void removeVideoFromPlaylist(UUID playlistVideoId);
+    void removeVideoFromPlaylist(UUID videoId, UUID playlistVideoId);
     
     void removePlaylist(UUID playlistId);
 

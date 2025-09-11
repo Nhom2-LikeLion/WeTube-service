@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -60,9 +61,15 @@ public class PlaylistController {
     }
 
     @DeleteMapping("/{videoId}/{playlistVideoId}")
-    public ResponseEntity<Map<String, String>> removeVideoFromPlaylist(@PathVariable UUID playlistVideoId) {
-        pls.removeVideoFromPlaylist(playlistVideoId);
-        return ResponseEntity.ok(Map.of("message","video deleted successfully"));
+    public ResponseEntity<Map<String, String>> removeVideoFromPlaylist(
+            @PathVariable UUID videoId,
+            @PathVariable UUID playlistVideoId) {
+
+        pls.removeVideoFromPlaylist(videoId, playlistVideoId);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Video removed from playlist successfully");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{playlistId}")
