@@ -1,10 +1,14 @@
-package com.wetube.wetube_service.dto.playlist;
-
-import lombok.*;
+package com.wetube.wetube_service.dto.response;
 
 import java.util.UUID;
 
 import com.wetube.wetube_service.dto.VideoDto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

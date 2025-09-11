@@ -2,16 +2,20 @@ package com.wetube.wetube_service.service.impl;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.wetube.wetube_service.dto.PlaylistDetailDto;
 import com.wetube.wetube_service.dto.PlaylistDto;
+import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
+import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
+import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.Video;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.PlaylistMapper;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
@@ -19,103 +23,81 @@ import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.VideoRepository;
 import com.wetube.wetube_service.service.PlaylistService;
 
-import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PlaylistServiceImpl implements PlaylistService {
-    
+
     private final PlaylistRepository plr;
     private final PlaylistVideoRepository plvr;
     private final VideoRepository vdr;
     private final UserRepository usr;
+    private final PlaylistMapper playlistMapper; 
 
-    public PlaylistServiceImpl(PlaylistRepository plr,
-                               PlaylistVideoRepository plvr,
-                               VideoRepository vdr,
-                               UserRepository usr) {
-        this.plr = plr;
-        this.plvr = plvr;
-        this.vdr = vdr;
-        this.usr = usr;
+    @Override
+    public List<PlaylistUserDto> getAllPlaylistByUserId(UUID userId) {
+        List<Playlist> playlists = plr.findByUser_Id(userId);
+        if (playlists.isEmpty()) {
+            throw new ResourceNotFoundException("userId", "id", userId.toString());
+        }
+        return playlistMapper.toDtoList(playlists);
     }
 
     @Override
-    public List<PlaylistDto> getAllPlaylistByUserId(UUID userId) {
-        List<Playlist> playlist = plr.findByUser_Id(userId);
-
-        if (playlist.isEmpty()) {
-        throw new RuntimeException("No playlists found for user " + userId);
-    }
-        return playlist.stream()
-        .map(pl -> PlaylistDto.builder()
-            .playlistId(pl.getId())
-            .playlistTitle(pl.getTitle())
-            .playlistType(pl.getPlaylistType())
-            .totalVideos(pl.getPlaylistVideos() != null ? pl.getPlaylistVideos().size() : 0)
-            .createdAt(pl.getCreatedAt())
-            .build())
-        .collect(Collectors.toList());
+    public List<PlaylistUserDto> getAllPlaylistByTagUserId(UUID userId, PlaylistType playlistType) {
+        List<Playlist> playlists = plr.findByUser_IdAndPlaylistType(userId, playlistType);
+        if (playlists.isEmpty()) {
+            throw new ResourceNotFoundException("userId exists or playlistType error", "id", userId.toString());
+        }
+        return playlistMapper.toDtoList(playlists);
     }
 
     @Override
-    public PlaylistDto getPlaylistVideoById(UUID playlistVideoId){
+    public PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId) {
         PlaylistVideo pv = plvr.findById(playlistVideoId)
-                .orElseThrow(() -> new RuntimeException("PlaylistVideo not found"));
-        return PlaylistMapper.toPlaylistDto(pv);
+                .orElseThrow(() -> new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString()));
+        Playlist playlist = pv.getPlaylist();
+        return playlistMapper.toDetailDto(playlist);
     }
 
     @Override
-    public List<PlaylistDto> getAllPlaylistVideosByPlaylistId(UUID playlistId) {
-        Playlist playlist = plr.findById(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
-        return playlist.getPlaylistVideos()
-                .stream()
-                .map(PlaylistMapper::toPlaylistDto) 
-                .collect(Collectors.toList());
+    public PlaylistUserDto createPlaylist(CreatePlaylistRequest dto) {
+        AppUser user = usr.findById(dto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("user", "id", dto.getUserId().toString()));
+
+        Playlist playlist = playlistMapper.toEntity(dto, user);
+        Playlist saved = plr.save(playlist);
+
+        return playlistMapper.toDto(saved);
     }
 
-    @Override
-    public Playlist createPlaylist(String title, UUID userId, PlaylistType type) {
-        AppUser user = usr.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found"));
-        
-        Playlist playlist = Playlist.builder()
-                .title(title)
-                .user(user)
-                .playlistType(type)
-                .build();
+   @Override
+    public PlaylistDto addVideoToPlaylist(PlaylistaddRequest dto) {
+        Playlist playlist = plr.findById(dto.getPlaylistId())
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", dto.getPlaylistId().toString()));
+        Video video = vdr.findById(dto.getVideoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Video", "id", dto.getVideoId().toString()));
 
-        return plr.save(playlist);
-    }
-
-    @Override
-    public PlaylistDto addVideoToPlaylist(UUID playlistId, UUID videoId, float historyDuration) {
-        Playlist playlist = plr.findById(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
-        Video video = vdr.findById(videoId)
-                .orElseThrow(() -> new RuntimeException("Video not found"));
-
-        PlaylistVideo pv = PlaylistVideo.builder()
-                .playlist(playlist)
-                .video(video)
-                .historyDuration(historyDuration)
-                .build();
-
+        PlaylistVideo pv = playlistMapper.toPlaylistVideo(dto, playlist, video);
         PlaylistVideo saved = plvr.save(pv);
-        return PlaylistMapper.toPlaylistDto(saved); 
+
+        return playlistMapper.toPlaylistDto(saved);
     }
 
     @Override
     public void removeVideoFromPlaylist(UUID playlistVideoId) {
+        if (!plvr.existsById(playlistVideoId)) {
+            throw new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString());
+        }
         plvr.deleteById(playlistVideoId);
     }
 
     @Override
-    public void removePlaylist(UUID playlistId){
+    public void removePlaylist(UUID playlistId) {
         if (!plr.existsById(playlistId)) {
-        throw new EntityNotFoundException("Playlist not found");
-    }
+            throw new ResourceNotFoundException("Playlist", "id", playlistId.toString());
+        }
         plr.deleteById(playlistId);
     }
-
 }

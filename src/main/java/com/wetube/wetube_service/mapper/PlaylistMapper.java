@@ -1,50 +1,66 @@
 package com.wetube.wetube_service.mapper;
 
+import java.util.List;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.wetube.wetube_service.dto.PlaylistDetailDto;
 import com.wetube.wetube_service.dto.PlaylistDto;
-import com.wetube.wetube_service.dto.VideoDto;
+import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
+import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
+import com.wetube.wetube_service.dto.response.PlaylistUserDto;
+import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 
-import java.util.List;
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring")
+public interface PlaylistMapper {
 
-import com.wetube.wetube_service.entity.Video;
+    @Mapping(target = "id", ignore = true) 
+    @Mapping(target = "playlistVideos", ignore = true) 
+    @Mapping(source = "dto.title", target = "title")
+    @Mapping(source = "dto.type", target = "playlistType")
+    @Mapping(source = "user", target = "user") 
+    Playlist toEntity(CreatePlaylistRequest dto, AppUser user);
 
-public class PlaylistMapper {
+    // ✅ Playlist -> PlaylistUserDto (response)
+    @Mapping(target = "playlistId", source = "id")
+    @Mapping(target = "playlistTitle", source = "title")
+    @Mapping(target = "playlistType", source = "playlistType")
+    @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
+    @Mapping(target = "createdAt", source = "createdAt")
+    PlaylistUserDto toDto(Playlist playlist);
 
-    // Chuyển PlaylistVideo -> PlaylistDto
-    public static PlaylistDto toPlaylistDto(PlaylistVideo pv) {
-        if (pv == null) return null;
+    // ✅ List<Playlist> -> List<PlaylistUserDto>
+    List<PlaylistUserDto> toDtoList(List<Playlist> playlists);
 
-        Video video = pv.getVideo();
+    // ✅ PlaylistVideo -> PlaylistDto (video trong playlist)
+    @Mapping(target = "videoId", source = "video.id")
+    @Mapping(target = "videoTitle", source = "video.title")
+    @Mapping(target = "videoUrl", source = "video.videoUrl")
+    @Mapping(target = "thumbnailUrl", source = "video.thumbnailUrl")
+    @Mapping(target = "historyDuration", source = "historyDuration")
+    PlaylistDto toPlaylistDto(PlaylistVideo pv);
 
-        return PlaylistDto.builder()
-                .playlistVideoId(pv.getId())
-                .videoId(video.getId())
-                .videoTitle(video.getTitle())
-                .videoUrl(video.getVideoUrl())
-                .thumbnailUrl(video.getThumbnailUrl())
-                .historyDuration(pv.getHistoryDuration())
-                .build();
-    }
+    List<PlaylistDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos);
 
-    // Chuyển List<PlaylistVideo> -> List<PlaylistDto>
-    public static List<PlaylistDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos) {
-        return playlistVideos.stream()
-                .map(PlaylistMapper::toPlaylistDto)
-                .collect(Collectors.toList());
-    }
+    // // ✅ Video -> VideoDto
+    // VideoDto toVideoDto(Video video);
 
-    // Chuyển Video -> VideoDto
-    public static VideoDto toVideoDto(Video video) {
-        if (video == null) return null;
-
-        return VideoDto.builder()
-                .id(video.getId())
-                .title(video.getTitle())
-                .videoUrl(video.getVideoUrl())
-                .thumbnailUrl(video.getThumbnailUrl())
-                .duration(video.getDuration())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "playlist", source = "playlist")
+    @Mapping(target = "video", source = "video")
+    @Mapping(target = "historyDuration", source = "dto.historyDuration")
+    PlaylistVideo toPlaylistVideo(PlaylistaddRequest dto, Playlist playlist, Video video);
+    
+    @Mapping(target = "playlistId", source = "id")
+    @Mapping(target = "playlistTitle", source = "title")
+    @Mapping(target = "playlistType", source = "playlistType")
+    @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "videos", expression = "java(toPlaylistDtoList(playlist.getPlaylistVideos()))")
+    PlaylistDetailDto toDetailDto(Playlist playlist);
+  
 }
-
