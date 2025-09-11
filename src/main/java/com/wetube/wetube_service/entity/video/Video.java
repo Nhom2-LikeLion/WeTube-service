@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 
 @Data
 @NoArgsConstructor
@@ -35,6 +36,8 @@ public class Video {
     private String thumbnailUrl;
     private String videoUrl;
     private String videosStatus;
+    private float duration;
+
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -56,6 +59,6 @@ public class Video {
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<VideoTag> videoTags = new HashSet<>();
 
-   ;
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlaylistVideo> playlistVideos;
 }
-

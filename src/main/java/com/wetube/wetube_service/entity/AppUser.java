@@ -1,5 +1,9 @@
 package com.wetube.wetube_service.entity;
 
+import com.wetube.wetube_service.entity.auth.Role;
+import com.wetube.wetube_service.entity.auth.UserRole;
+import com.wetube.wetube_service.entity.post.PollVote;
+import com.wetube.wetube_service.entity.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,7 +14,8 @@ import org.hibernate.type.SqlTypes;
 import com.wetube.wetube_service.entity.channel.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -29,11 +34,8 @@ public class AppUser {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     private String name;
-    private String avatarUrl;
+    private String picture;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -41,7 +43,34 @@ public class AppUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(nullable = true)
+    private String password;
+
     @OneToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id",unique = true)
     private Channel channel;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<UserRole> userRoles = new HashSet<>();
+
+    public Set<String> getRoleCodes() {
+        return userRoles.stream()
+                .map(ur -> ur.getRole().getCode())
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void addRole(Role role) {
+        UserRole userRole = new UserRole(this, role);
+        this.userRoles.add(userRole);
+        role.getUserRoles().add(userRole);
+    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PollVote> votes = new ArrayList<>();
 }

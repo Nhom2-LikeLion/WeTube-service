@@ -23,6 +23,7 @@ public class VideoDto {
     private String thumbnailUrl;
     private String videoUrl;
     private String videosStatus;
+    private float duration;
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

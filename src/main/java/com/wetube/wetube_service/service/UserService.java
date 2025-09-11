@@ -1,13 +1,14 @@
 package com.wetube.wetube_service.service;
 
-//import com.wetube.wetube_service.dto.UserDto;
+import com.wetube.wetube_service.dto.GoogleUser;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
-//import org.springframework.security.oauth2.jwt.Jwt;
+import com.wetube.wetube_service.entity.AppUser;
 
 import java.util.UUID;
 
 public interface UserService {
-//    UserResponseDto findOrCreateUser(Jwt principal);
     UserResponseDto getUserById(UUID userId);
+    AppUser upsertGoogleUser(GoogleUser googleUser, String scopes);
 
+    AppUser getById(UUID id);
 }

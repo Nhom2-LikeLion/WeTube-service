@@ -2,8 +2,10 @@ package com.wetube.wetube_service.service.impl.post;
 
 import com.wetube.wetube_service.dto.post.PollSummaryDto;
 import com.wetube.wetube_service.dto.post.VoteRequestDto;
+import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.post.PollOption;
 import com.wetube.wetube_service.entity.post.PollVote;
+import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.post.PollOptionRepository;
 import com.wetube.wetube_service.repository.post.PollVoteRepository;
 import com.wetube.wetube_service.service.post.PostPollService;
@@ -19,6 +21,7 @@ public class PollVoteServiceImpl implements PollVoteService {
     private final PollVoteRepository pollVoteRepository;
     private final PollOptionRepository pollOptionRepository;
     private final PostPollService postPollService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -26,16 +29,22 @@ public class PollVoteServiceImpl implements PollVoteService {
         PollOption option = pollOptionRepository.findById(request.getOptionId())
                 .orElseThrow(() -> new RuntimeException("Option not found"));
 
+        AppUser user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (!option.getPost().getId().equals(request.getPostId())) {
             throw new RuntimeException("Option does not belong to the given post");
         }
 
-        pollVoteRepository.deleteByPostIdAndUserId(request.getPostId(), request.getUserId());
+//        pollVoteRepository.deleteByPostIdAndUserId(request.getPostId(), request.getUserId());
+        pollVoteRepository.deleteByUserAndPost(user, option.getPost());
 
-        PollVote v = PollVote.builder() //newvote
-                .postId(request.getPostId())
-                .optionId(request.getOptionId())
-                .userId(request.getUserId())
+        PollVote v = PollVote.builder()
+//                .postId(request.getPostId())
+//                .optionId(request.getOptionId())
+//                .userId(request.getUserId())
+                .user(user)
+                .pollOption(option)
                 .build();
         pollVoteRepository.save(v);
 

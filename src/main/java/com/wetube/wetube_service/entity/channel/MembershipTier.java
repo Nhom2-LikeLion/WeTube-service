@@ -9,12 +9,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tiers")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(
+        name = "tiers",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_channel_title_price",
+                columnNames = {"channel_id", "title", "price"}
+        )
+)
 public class MembershipTier {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,10 +32,10 @@ public class MembershipTier {
     private float price;
     private String description;
 
-    @Column(name = "is_default", nullable = false)
-    private boolean isDefault;
+    @Column(name = "is_default")
+    private boolean defaultTier;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
     private Channel channel;
 

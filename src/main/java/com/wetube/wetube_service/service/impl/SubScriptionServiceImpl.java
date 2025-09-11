@@ -6,12 +6,12 @@ import com.wetube.wetube_service.repository.SubscriptionRepository;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
 import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
-import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
+import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.channel.MembershipTier;
 import com.wetube.wetube_service.entity.channel.Subscription;
-import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.ChannelMapper;
@@ -19,11 +19,13 @@ import com.wetube.wetube_service.mapper.SubscriptionMapper;
 import com.wetube.wetube_service.service.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class SubScriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
@@ -33,7 +35,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     private final ChannelMapper channelMapper;
 
     @Override
-    public List<SubscribedChannelDto> getSubscribedChannels(UUID userId) {
+    public List<SubscribedChannelResponseDto> getSubscribedChannels(UUID userId) {
         Optional.ofNullable(userId)
                 .orElseThrow(() -> new IllegalArgumentException("UserID is empty"));
 
@@ -118,7 +120,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
                     .orElseThrow(() -> new ResourceNotFoundException("Channel", "id", channelId.toString()));
 
             tier = channel.getMembershipTiers().stream()
-                    .filter(MembershipTier::isDefault)
+                    .filter(MembershipTier::isDefaultTier)
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("MembershipTier", "channelId", channel.getId().toString()));
         } else {
