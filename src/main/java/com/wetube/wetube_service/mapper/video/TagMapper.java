@@ -1,11 +1,11 @@
-package com.wetube.wetube_service.mapper;
+package com.wetube.wetube_service.mapper.video;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-import com.wetube.wetube_service.dto.TagDto;
-import com.wetube.wetube_service.entity.Tag;
+import com.wetube.wetube_service.dto.video.TagDto;
+import com.wetube.wetube_service.entity.video.Tag;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TagMapper {

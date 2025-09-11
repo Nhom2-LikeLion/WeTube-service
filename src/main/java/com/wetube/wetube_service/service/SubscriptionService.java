@@ -2,9 +2,7 @@ package com.wetube.wetube_service.service;
 
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
 import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
-import com.wetube.wetube_service.dto.response.ChannelResponseDto;
 import com.wetube.wetube_service.dto.response.SubscribedChannelDto;
-import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 
 import java.util.List;

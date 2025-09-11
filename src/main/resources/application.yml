@@ -1,19 +1,62 @@
 spring:
-  application:
-    name: WeTube-service
-  profiles:
-    default: local
-
+  #  config:
+  #    import: optional:file:.env.prod.properties
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER}
   jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: ${DB_DIALECT}
+  elasticsearch:
+    uris: http://10.19.2.200:9200
+    connection-timeout: 5s
+    socket-timeout: 10s
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE}
+      timeout: ${REDIS_TIMEOUT}ms
+      jedis:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
 
   servlet:
     multipart:
       enabled: true
       max-file-size: 100MB
       max-request-size: 120MB
+
+
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: ${CORS_ALLOWED_ORIGINS}
+        allowed-methods: ${CORS_ALLOWED_METHODS}
+        allowed-headers: ${CORS_ALLOWED_HEADERS}
+        exposed-headers: ${CORS_EXPOSED_HEADERS}
+        allow-credentials: ${CORS_ALLOW_CREDENTIALS}
+        max-age: 3600
+
+cloudinary:
+  url: ${CLOUDINARY_URL}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+# Application specific configuration
+app:
+  data:
+    auto-import: false  # Set to true to automatically import MySQL data to Elasticsearch on startup

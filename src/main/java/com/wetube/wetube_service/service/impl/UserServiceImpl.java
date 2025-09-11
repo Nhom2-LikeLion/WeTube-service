@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.service.impl;
 
 import com.wetube.wetube_service.repository.UserRepository;
-import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;

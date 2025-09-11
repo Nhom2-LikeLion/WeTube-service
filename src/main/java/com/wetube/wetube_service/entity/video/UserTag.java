@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.entity;
+package com.wetube.wetube_service.entity.video;
 
 import jakarta.persistence.*;
 import lombok.*;

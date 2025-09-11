@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.repository.video;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.wetube.wetube_service.entity.Tag;
+import com.wetube.wetube_service.entity.video.Tag;
 
 import jakarta.transaction.Transactional;
 
