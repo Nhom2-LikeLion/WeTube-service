@@ -13,6 +13,12 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
       format_sql: true
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 120MB
+
 app:
   jwt:
     issuer: "oauth2-service-v2"
@@ -20,3 +26,6 @@ app:
     refresh-token-ttl-days: 14
     private-key-pem: "classpath:keys/private_key.pem"
     public-key-pem: "classpath:keys/public_key.pem"
+
+geoip:
+  database: classpath:GeoLite/GeoLite2-Country.mmdb

@@ -58,6 +58,7 @@ public class Comment {
 
     public enum TargetType {
         POST,
-        VIDEO
+        VIDEO,
+        COMMENT
     }
 }

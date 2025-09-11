@@ -16,5 +16,5 @@ public class UserResponseDto {
     private String name;
     private String picture;
     private LocalDateTime createdAt;
-    private ChannelResponseDto channel;
+    private UserChannelResponseDto channel;
 }

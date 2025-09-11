@@ -61,9 +61,6 @@ dependencies {
     // JWT
     implementation "com.nimbusds:nimbus-jose-jwt:${versions.nimbusJwt}"
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation "io.jsonwebtoken:jjwt-api:${versions.jjwt}"
-    runtimeOnly  "io.jsonwebtoken:jjwt-impl:${versions.jjwt}"
-    runtimeOnly  "io.jsonwebtoken:jjwt-jackson:${versions.jjwt}"
 
     // Dotenv
     implementation "me.paulschwarz:spring-dotenv:${versions.dotenv}"
@@ -81,7 +78,7 @@ dependencies {
     developmentOnly "org.springframework.boot:spring-boot-devtools"
 
     // Testing
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"   // JUnit 5, Mockito, AssertJ
     testImplementation "org.mockito:mockito-junit-jupiter:${versions.mockitoJupiter}"
     testImplementation "com.h2database:h2:${versions.h2}"
 
@@ -90,6 +87,13 @@ dependencies {
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstruct}"
     testCompileOnly 'org.projectlombok:lombok'
 
+    implementation 'com.cloudinary:cloudinary-http44:1.32.2'
+
+    // GeoLocate
+    implementation 'com.maxmind.geoip2:geoip2:4.2.0'
+
+
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
 
 test {
@@ -110,8 +114,8 @@ jacocoTestReport {
     dependsOn test
     reports {
         html.required = true
-        xml.required = true               // required for CI/Sonar
-        csv.required = false
+        xml.required  = true               // required for CI/Sonar
+        csv.required  = false
         html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
     }
 }
@@ -128,7 +132,7 @@ jacocoTestCoverageVerification {
             ]  // exclusion packages
             limit {
                 counter = 'LINE'
-                value = 'COVEREDRATIO'
+                value   = 'COVEREDRATIO'
                 minimum = 0                      // minimum coverage threshold
             }
         }
