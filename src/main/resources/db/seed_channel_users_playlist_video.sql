@@ -1,4 +1,4 @@
-INSERT INTO users (id, avatar_url, created_at, email, name, password, updated_at, channel_id) 
+INSERT INTO users (id, picture, created_at, email, name, password, updated_at, channel_id)
 VALUES (
     '123e4567-e89b-12d3-a456-426614174000','https://example.com/avatar.png',NOW(),
     'demo@example.com','Demo User','$2a$10$7Q/9bE8Z0x3.vbBkRz6xeO9ZsQZDlZ/JYpJ5UOml8ZCuzv1UOv1xO', -- password hash "123456"
@@ -6,11 +6,11 @@ VALUES (
     NULL
 );
 INSERT INTO channels (
-    id, avatar_url, background_img_url, country, created_at, description, name,
+    id, picture, background_img_url, country_code, created_at, description, name,
     revenue, status, total_subscribers, total_videos, total_views, updated_at
 ) VALUES (
-    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','https://example.com/channel-avatar.png','https://example.com/channel-bg.png',
-    'VIETNAM',NOW(),'Kênh demo tổng hợp video','Demo Channel',0.0,'ACTIVE',0,0,0,NOW()
+    '6ba7b810-9dad-11d1-80b4-00c04fd430c8','https://example.com/channel-avatar.png','https://example.com/channel-bg.png',
+    'VI',NOW(),'Kênh demo tổng hợp video','Demo Channel',0.0,'ACTIVE',0,0,0,NOW()
 );
 INSERT INTO videos (id, title, video_url, thumbnail_url, duration, created_at, updated_at)
 VALUES

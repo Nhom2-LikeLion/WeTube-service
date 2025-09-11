@@ -25,7 +25,7 @@ public class Channel {
     @JdbcTypeCode(value = SqlTypes.VARCHAR)
     private UUID id;
     private String name;
-    private String avatarUrl;
+    private String picture;
     private String backgroundImgUrl;
     private String description;
 
