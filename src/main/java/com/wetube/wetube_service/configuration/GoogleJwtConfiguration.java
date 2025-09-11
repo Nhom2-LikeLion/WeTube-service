@@ -66,7 +66,6 @@ public class GoogleJwtConfiguration {
         requiredClaims.add("sub");
         requiredClaims.add("exp");
         requiredClaims.add("iat");
-//        requiredClaims.add("email");
 
         var claimsVerifier = new DefaultJWTClaimsVerifier<>(expectedClaims, requiredClaims);
         jwtProcessor.setJWTClaimsSetVerifier(claimsVerifier);

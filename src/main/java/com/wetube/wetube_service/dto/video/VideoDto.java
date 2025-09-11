@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.dto;
+package com.wetube.wetube_service.dto.video;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import com.wetube.wetube_service.dto.UserDto;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class VideoDto {
     private UUID id;
     private String usersId;
     private String title;
+    private String description;
     private String thumbnailUrl;
     private String videoUrl;
     private String videosStatus;
@@ -25,5 +28,6 @@ public class VideoDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<TagDto> tags; 
+    private Set<TagDto> tags;
+    private UserDto user;
 }

@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.entity;
+package com.wetube.wetube_service.entity.video;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +32,7 @@ public class Video {
     private String usersId;
     @Column(nullable = false)
     private String title;
+    private String description;
     private String thumbnailUrl;
     private String videoUrl;
     private String videosStatus;

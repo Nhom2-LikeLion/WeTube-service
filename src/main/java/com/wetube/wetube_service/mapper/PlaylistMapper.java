@@ -11,18 +11,18 @@ import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 
 @Mapper(componentModel = "spring")
 public interface PlaylistMapper {
 
-    @Mapping(target = "id", ignore = true) 
-    @Mapping(target = "playlistVideos", ignore = true) 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "playlistVideos", ignore = true)
     @Mapping(source = "dto.title", target = "title")
     @Mapping(source = "dto.type", target = "playlistType")
-    @Mapping(source = "user", target = "user") 
+    @Mapping(source = "user", target = "user")
     Playlist toEntity(CreatePlaylistRequest dto, AppUser user);
 
     // ✅ Playlist -> PlaylistUserDto (response)
@@ -54,7 +54,7 @@ public interface PlaylistMapper {
     @Mapping(target = "video", source = "video")
     @Mapping(target = "historyDuration", source = "dto.historyDuration")
     PlaylistVideo toPlaylistVideo(PlaylistaddRequest dto, Playlist playlist, Video video);
-    
+
     @Mapping(target = "playlistId", source = "id")
     @Mapping(target = "playlistTitle", source = "title")
     @Mapping(target = "playlistType", source = "playlistType")
@@ -62,5 +62,5 @@ public interface PlaylistMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "videos", expression = "java(toPlaylistDtoList(playlist.getPlaylistVideos()))")
     PlaylistDetailDto toDetailDto(Playlist playlist);
-  
+
 }

@@ -16,4 +16,4 @@ public class PollSummaryDto {
     private List<PollOptionDto> options;
     private Integer totalVotes;
     private UUID userVotedOptionId;
-}
+}   

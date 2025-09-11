@@ -21,4 +21,3 @@ public class PostDto {
     private LocalDateTime updatedAt;
     private PollSummaryDto poll;
 }
-

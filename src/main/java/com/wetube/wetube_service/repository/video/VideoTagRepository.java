@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.repository;
+package com.wetube.wetube_service.repository.video;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.wetube.wetube_service.entity.VideoTag;
+import com.wetube.wetube_service.entity.video.VideoTag;
 
 public interface VideoTagRepository extends JpaRepository<VideoTag, UUID> {
     @EntityGraph(attributePaths = "tag")

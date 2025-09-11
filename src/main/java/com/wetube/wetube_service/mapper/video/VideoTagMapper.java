@@ -1,9 +1,9 @@
-package com.wetube.wetube_service.mapper;
+package com.wetube.wetube_service.mapper.video;
 
 import org.mapstruct.Mapper;
 
-import com.wetube.wetube_service.entity.VideoTag;
-import com.wetube.wetube_service.entity.Tag;
+import com.wetube.wetube_service.entity.video.VideoTag;
+import com.wetube.wetube_service.entity.video.Tag;
 
 @Mapper(componentModel = "spring", uses = TagMapper.class)
 public interface VideoTagMapper {

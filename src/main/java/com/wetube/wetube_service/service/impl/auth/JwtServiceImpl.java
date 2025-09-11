@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -31,7 +30,6 @@ public class JwtServiceImpl implements JwtService {
                           @Value("${app.jwt.issuer}") String issuer,
                           @Value("${app.jwt.access-token-ttl-hour}") long accessTtl) {
         this.privateKey = loader.loadPrivateKey();
-//        RSAPublicKey publicKey = loader.loadPublicKey();
         this.issuer = issuer;
         this.accessTtlHours = accessTtl;
     }

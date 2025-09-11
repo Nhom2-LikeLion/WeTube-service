@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.dto;
+package com.wetube.wetube_service.dto.video;
 
 import java.util.UUID;
 

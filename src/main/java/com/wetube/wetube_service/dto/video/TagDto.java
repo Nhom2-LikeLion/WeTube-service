@@ -1,9 +1,8 @@
-package com.wetube.wetube_service.dto;
+package com.wetube.wetube_service.dto.video;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TagDto {
-    @Id
     private UUID id;
     private String name;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private Integer count;
 }

@@ -1,12 +1,9 @@
 package com.wetube.wetube_service.controller;
 
-import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

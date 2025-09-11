@@ -11,7 +11,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-      format_sql: true
+
+  elasticsearch:
+    uris: http://10.19.2.200:9200
+    connection-timeout: 5s
+    socket-timeout: 10s
 
   servlet:
     multipart:
@@ -20,6 +24,8 @@ spring:
       max-request-size: 120MB
 
 app:
+  data:
+    auto-import: false
   jwt:
     issuer: "oauth2-service-v2"
     access-token-ttl-hour: 1

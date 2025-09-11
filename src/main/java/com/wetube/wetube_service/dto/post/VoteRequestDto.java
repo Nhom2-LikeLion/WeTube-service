@@ -14,4 +14,3 @@ public class VoteRequestDto {
     private UUID optionId;
     private UUID userId;
 }
-

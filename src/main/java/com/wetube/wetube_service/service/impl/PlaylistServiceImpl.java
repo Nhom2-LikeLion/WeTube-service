@@ -3,6 +3,7 @@ package com.wetube.wetube_service.service.impl;
 import java.util.List;
 import java.util.UUID;
 
+import com.wetube.wetube_service.repository.video.VideoRepository;
 import org.springframework.stereotype.Service;
 
 import com.wetube.wetube_service.dto.PlaylistDetailDto;
@@ -11,7 +12,7 @@ import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.Video;
+import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
@@ -20,7 +21,6 @@ import com.wetube.wetube_service.mapper.PlaylistMapper;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
-import com.wetube.wetube_service.repository.VideoRepository;
 import com.wetube.wetube_service.service.PlaylistService;
 
 import lombok.RequiredArgsConstructor;
