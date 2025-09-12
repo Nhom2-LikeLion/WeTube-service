@@ -1,6 +1,8 @@
 package com.wetube.wetube_service.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.protobuf.util.JsonFormat;
 import com.wetube.wetube_service.dto.request.livekit.*;
 import com.wetube.wetube_service.dto.response.livekit.*;
 import io.livekit.server.*;
@@ -189,8 +191,8 @@ public class LivekitController {
     public CreateIngressResponse createIngress(@RequestBody CreateIngressParams params) throws IOException {
         RoomMetadata metadata = params.getMetadata();
         String roomName = params.getRoomName();
-        String ingressType = params.getIngressType() != null ? params.getIngressType() : "rtmp";
 
+        // Nếu chưa có roomName thì tự generate
         if (roomName == null || roomName.isBlank()) {
             roomName = generateRoomId();
         }
@@ -198,49 +200,43 @@ public class LivekitController {
         // Tạo Room
         roomClient.createRoom(
                 roomName,
-                null,
-                null,
-                null,
+                null, null, null,
                 objectMapper.writeValueAsString(metadata),
-                null,
-                null,
-                null,
+                null, null, null, null
+        ).execute();
+
+        // Chỉ RTMP -> fix video/audio options
+        LivekitIngress.IngressVideoOptions videoOptions = LivekitIngress.IngressVideoOptions.newBuilder()
+                .setSource(LivekitModels.TrackSource.CAMERA)
+                .setPreset(LivekitIngress.IngressVideoEncodingPreset.H264_1080P_30FPS_3_LAYERS)
+                .build();
+
+        LivekitIngress.IngressAudioOptions audioOptions = LivekitIngress.IngressAudioOptions.newBuilder()
+                .setSource(LivekitModels.TrackSource.MICROPHONE)
+                .setPreset(LivekitIngress.IngressAudioEncodingPreset.OPUS_STEREO_96KBPS)
+                .build();
+
+        // Tạo ingress RTMP
+        Response<LivekitIngress.IngressInfo> resp = ingressClient.createIngress(
+                roomName,                                      // name
+                roomName,                                      // roomName
+                metadata.getCreatorIdentity(),                 // participantIdentity
+                metadata.getCreatorIdentity() + " (via OBS)",  // participantName
+                LivekitIngress.IngressInput.RTMP_INPUT,        // cố định RTMP
+                audioOptions,
+                videoOptions,
+                null,   // bypassTranscoding -> không cần cho RTMP
+                true,   // enableTranscoding
                 null
         ).execute();
 
-        // Video & Audio options
-        LivekitIngress.IngressVideoOptions videoOptions = null;
-        LivekitIngress.IngressAudioOptions audioOptions = null;
-        Boolean bypassTranscoding = null;
-
-        if ("whip".equalsIgnoreCase(ingressType)) {
-            bypassTranscoding = true;
-        } else {
-            videoOptions = LivekitIngress.IngressVideoOptions.newBuilder()
-                    .setSource(LivekitModels.TrackSource.CAMERA)
-                    .setPreset(LivekitIngress.IngressVideoEncodingPreset.H264_1080P_30FPS_3_LAYERS)
-                    .build();
-            audioOptions = LivekitIngress.IngressAudioOptions.newBuilder()
-                    .setSource(LivekitModels.TrackSource.MICROPHONE)
-                    .setPreset(LivekitIngress.IngressAudioEncodingPreset.OPUS_STEREO_96KBPS)
-                    .build();
+        if (!resp.isSuccessful() || resp.body() == null) {
+            throw new RuntimeException("Failed to create ingress: " + resp.code() + " - " + resp.errorBody().string());
         }
 
-        // Gọi IngressServiceClient
-        LivekitIngress.IngressInfo ingress = ingressClient.createIngress(
-                roomName,
-                roomName,
-                metadata.getCreatorIdentity() + " (via OBS)",
-                metadata.getCreatorIdentity() + " (via OBS)",
-                "whip".equalsIgnoreCase(ingressType) ? LivekitIngress.IngressInput.WHIP_INPUT : LivekitIngress.IngressInput.RTMP_INPUT,
-                audioOptions,
-                videoOptions,
-                bypassTranscoding,
-                null,
-                null
-        ).execute().body();
+        LivekitIngress.IngressInfo ingress = resp.body();
 
-        // Tạo LiveKit AccessToken
+        // Tạo token cho viewer
         AccessToken at = new AccessToken(livekitProperties.getApiKey(), livekitProperties.getApiSecret());
         at.setIdentity(metadata.getCreatorIdentity());
         at.addGrants(
@@ -257,14 +253,18 @@ public class LivekitController {
         conn.setWsUrl(livekitProperties.getUrl());
         conn.setToken(at.toJwt());
 
+        // Convert IngressInfo (protobuf) sang JSON thay vì trả trực tiếp
+        String ingressJson = JsonFormat.printer().print(ingress);
+
+        ObjectNode ingressNode = objectMapper.readValue(ingressJson, ObjectNode.class);
+
         CreateIngressResponse response = new CreateIngressResponse();
-        response.setIngress(ingress);
+        response.setIngress(ingressNode); // thay kiểu từ IngressInfo -> JsonNode
         response.setAuthToken(authToken);
         response.setConnectionDetails(conn);
 
         return response;
     }
-
 
 
 
