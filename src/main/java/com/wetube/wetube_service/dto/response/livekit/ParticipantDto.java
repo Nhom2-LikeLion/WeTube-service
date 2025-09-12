@@ -11,6 +11,7 @@ public class ParticipantDto {
     private String sid;
     private String identity;
     private JsonNode metadata;
+    private  String name;
     private long joinedAt;
     private long joinedAtMs;
     private String region;
