@@ -1,5 +1,9 @@
 package com.wetube.wetube_service.controller;
 
+import com.wetube.wetube_service.dto.response.MeResponseDto;
+import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.mapper.MeMapper;
+import com.wetube.wetube_service.service.UserService;
 import com.wetube.wetube_service.service.auth.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/me")
@@ -22,9 +27,12 @@ public class MeController {
     private static final String MESSAGE = "message";
 
     private final RefreshTokenService refreshTokenService;
+    private final UserService userService;
+    private final MeMapper meMapper;
+
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> me(
+    public ResponseEntity<Object> me(
             @AuthenticationPrincipal Jwt jwt,
             @CookieValue(name = "SID", required = false) String sid) {
         if (jwt == null) {
@@ -53,15 +61,25 @@ public class MeController {
                 }
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    ERROR, "Chưa đăng nhập",
+                    ERROR, "No login yet",
                     ERROR_CODE, "unauthenticated",
                     MESSAGE, "No valid JWT or session provided"
             ));
         }
-        return ResponseEntity.ok(Map.of(
-                "userId", jwt.getSubject(),
-                "email", jwt.getClaim("email"),
-                "roles", jwt.getClaim("roles")
-        ));
+
+        String userIdString = jwt.getSubject();
+        UUID userId = UUID.fromString(userIdString);
+        AppUser user = userService.getById(userId);
+
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    ERROR, "User not found",
+                    MESSAGE, "User corresponding to JWT not found in database"
+            ));
+        }
+
+        MeResponseDto response = meMapper.toDto(user);
+        return ResponseEntity.ok(response);
     }
 }

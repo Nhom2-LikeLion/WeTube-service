@@ -2,15 +2,18 @@ package com.wetube.wetube_service.service.impl.post;
 
 import com.wetube.wetube_service.dto.post.PollSummaryDto;
 import com.wetube.wetube_service.dto.post.PostDto;
+import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.Like;
 import com.wetube.wetube_service.entity.post.PollOption;
 import com.wetube.wetube_service.entity.post.Post;
 import com.wetube.wetube_service.mapper.post.PostMapper;
+import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.post.PollOptionRepository;
 import com.wetube.wetube_service.repository.post.PostRepository;
 import com.wetube.wetube_service.service.LikeService;
 import com.wetube.wetube_service.service.post.PostPollService;
 import com.wetube.wetube_service.service.post.PostService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final LikeService likeService;
@@ -68,8 +71,14 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostDto createPost(PostDto postDto) {
-        Post post = postMapper.toEntity(postDto);
+        AppUser user = userRepository.findById(postDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + postDto.getUserId()));
 
+        Post post = new Post();
+        post.setUser(user);
+
+        post.setContent(postDto.getContent());
+        post.setImageUrl(postDto.getImageUrl());
         if (post.getCommentCount() == null) {
             post.setCommentCount(0);
         }

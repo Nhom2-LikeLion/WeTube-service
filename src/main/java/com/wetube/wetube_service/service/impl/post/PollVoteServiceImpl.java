@@ -36,15 +36,12 @@ public class PollVoteServiceImpl implements PollVoteService {
             throw new RuntimeException("Option does not belong to the given post");
         }
 
-//        pollVoteRepository.deleteByPostIdAndUserId(request.getPostId(), request.getUserId());
         pollVoteRepository.deleteByUserAndPost(user, option.getPost());
 
         PollVote v = PollVote.builder()
-//                .postId(request.getPostId())
-//                .optionId(request.getOptionId())
-//                .userId(request.getUserId())
                 .user(user)
                 .pollOption(option)
+                .post(option.getPost())
                 .build();
         pollVoteRepository.save(v);
 

@@ -27,6 +27,7 @@ public class WebCsrfConfiguration {
                 new RegexRequestMatcher("^/auth(/.*)?$", null),
                 new RegexRequestMatcher("^/api/auth(/.*)?$", null),
                 new RegexRequestMatcher("^/api/playlists(/.*)?$", null),
+                new RegexRequestMatcher("^/api/posts(/.*)?$", null),
                 new RegexRequestMatcher("^/actuator(/.*)?$", null)
         );
     }
