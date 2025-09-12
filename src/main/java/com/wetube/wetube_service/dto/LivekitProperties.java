@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.controller;
+package com.wetube.wetube_service.dto;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
