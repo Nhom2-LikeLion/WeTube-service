@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetube.wetube_service.dto.LivekitProperties;
 import com.wetube.wetube_service.dto.request.livekit.*;
 import com.wetube.wetube_service.dto.response.livekit.*;
+import com.wetube.wetube_service.mapper.ParticipantMapper;
 import io.livekit.server.*;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class LivekitRoomService {
     private final RoomServiceClient roomClient;
     private final ObjectMapper objectMapper;
     private final LivekitProperties livekitProperties;
+    private final ParticipantMapper participantMapper;
+
 
     public CreateStreamResponse createStream(CreateStreamParams params) throws IOException {
         RoomMetadata metadata = params.getMetadata();
@@ -107,6 +110,16 @@ public class LivekitRoomService {
                     dto.setRoomId(r.getSid());
                     dto.setName(r.getName());
                     dto.setNumParticipants(r.getNumParticipants());
+
+                    try {
+                        if (r.getMetadata() != null && !r.getMetadata().isEmpty()) {
+                            RoomMetadata metadata = objectMapper.readValue(r.getMetadata(), RoomMetadata.class);
+                            dto.setMetadata(metadata);
+                        }
+                    } catch (Exception e) {
+                        log.warn("[LiveKit] Failed to parse metadata for room {}: {}", r.getName(), e.getMessage());
+                    }
+
                     return dto;
                 })
                 .toList();
@@ -117,23 +130,14 @@ public class LivekitRoomService {
 
     public List<ParticipantDto> listParticipants(String roomName) throws IOException {
         log.debug("[LiveKit] Fetching participants for room={}", roomName);
+
         Response<List<LivekitModels.ParticipantInfo>> resp = roomClient.listParticipants(roomName).execute();
         if (!resp.isSuccessful() || resp.body() == null) {
             log.error("[LiveKit] Failed to fetch participants for room={}", roomName);
             throw new RuntimeException("Failed to fetch participants for room: " + roomName);
         }
 
-        List<ParticipantDto> participants = resp.body().stream().map(p -> {
-            ParticipantDto dto = new ParticipantDto();
-            dto.setIdentity(p.getIdentity());
-            dto.setName(p.getName());
-            dto.setMetadata(p.getMetadata());
-            dto.setPublisher(p.getTracksList().stream()
-                    .anyMatch(t -> t.getType() == LivekitModels.TrackType.AUDIO
-                            || t.getType() == LivekitModels.TrackType.VIDEO));
-            dto.setMuted(p.getTracksList().stream().allMatch(LivekitModels.TrackInfo::getMuted));
-            return dto;
-        }).toList();
+        List<ParticipantDto> participants = participantMapper.toDtoList(resp.body());
 
         log.info("[LiveKit] Found {} participants in room={}", participants.size(), roomName);
         return participants;

@@ -7,4 +7,5 @@ public class RoomMetadata {
     private String creatorIdentity;
     private boolean enableChat;
     private boolean allowParticipation;
+
 }
