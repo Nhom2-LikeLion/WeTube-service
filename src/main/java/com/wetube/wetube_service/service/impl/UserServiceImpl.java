@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final OAuthAccountRepository oauthAccountRepository;
+    private final ChannelServiceImpl channelService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -44,25 +45,47 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-    @Override
     @Transactional
-    public AppUser upsertGoogleUser(GoogleUser googleUser, String scopes) {
+    public AppUser upsertGoogleUser(GoogleUser googleUser, String scopes, String clientIp) {
         Optional<OAuthAccount> oauthAccountOpt = oauthAccountRepository.findByProviderAndProviderUserId(PROVIDER_GOOGLE, googleUser.sub());
 
+        AppUser user;
         if (oauthAccountOpt.isPresent()) {
-            AppUser existingUser = oauthAccountOpt.get().getUser();
-            ensureHasRole(existingUser);
-            return existingUser;
+            user = oauthAccountOpt.get().getUser();
+            // Cập nhật thông tin user cũ nếu cần
+            user.setName(googleUser.name());
+            user.setPicture(googleUser.picture());
         } else {
-            AppUser user = userRepository.findByEmail(googleUser.email())
+            user = userRepository.findByEmail(googleUser.email())
                     .orElseGet(() -> createNewGoogleUser(googleUser));
-            ensureHasRole(user);
+        }
 
+        ensureHasRole(user);
+
+        if (oauthAccountOpt.isEmpty()) {
             OAuthAccount newAuthAccount = createOAuthAccount(googleUser, scopes, user);
             oauthAccountRepository.save(newAuthAccount);
-
-            return user;
+        } else {
+            OAuthAccount existingOAuthAccount = oauthAccountOpt.get();
+            existingOAuthAccount.setScopes(scopes);
+            try {
+                String rawInfoJson = objectMapper.writeValueAsString(googleUser);
+                existingOAuthAccount.setRawInfo(rawInfoJson);
+            } catch (JsonProcessingException e) {
+                log.error("Failed to serialize GoogleUser to JSON for user: {}", googleUser.email(), e);
+                existingOAuthAccount.setRawInfo("{\"error\":\"Serialization failed\"}");
+            }
+            oauthAccountRepository.save(existingOAuthAccount);
         }
+
+        if (user.getChannel() == null) {
+            channelService.initiateChannel(user.getId(), clientIp);
+            AppUser finalUser = user;
+            user = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", finalUser.getId().toString()));
+        }
+
+        return userRepository.save(user);
     }
 
     private AppUser createNewGoogleUser(GoogleUser googleUser) {

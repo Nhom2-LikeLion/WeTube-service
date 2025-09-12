@@ -8,6 +8,7 @@ import com.wetube.wetube_service.service.UserService;
 import com.wetube.wetube_service.service.auth.GoogleTokenService;
 import com.wetube.wetube_service.service.auth.JwtService;
 import com.wetube.wetube_service.service.auth.RefreshTokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,10 +60,11 @@ public class AuthController {
     }
 
     @GetMapping("/login/google/callback")
-    public ResponseEntity<Map<String, Object>> googleCallback(@RequestParam String code) {
+    public ResponseEntity<Map<String, Object>> googleCallback(@RequestParam String code, HttpServletRequest request) {
         GoogleTokenResponse gtr = googleToken.exchangeCode(code);
         GoogleUser googleUser = googleToken.parseAndVerify(gtr.idToken());
-        AppUser user = userService.upsertGoogleUser(googleUser, gtr.scope());
+        String clientIp = request.getRemoteAddr();
+        AppUser user = userService.upsertGoogleUser(googleUser, gtr.scope(), clientIp);
 
         // 1) Issue session (server-side refresh)
         var issue = refreshService.issue(user, null); // sid + rawRefresh (server only)
