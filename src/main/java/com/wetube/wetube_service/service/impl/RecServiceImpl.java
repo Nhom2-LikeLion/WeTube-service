@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wetube.wetube_service.repository.UserTagRepository;
 import com.wetube.wetube_service.repository.VideoRepository;
 import com.wetube.wetube_service.repository.VideoTagRepository;
-import com.wetube.wetube_service.dto.VideoDto;
 import com.wetube.wetube_service.entity.UserTag;
 import com.wetube.wetube_service.entity.Video;
 import com.wetube.wetube_service.entity.VideoTag;
