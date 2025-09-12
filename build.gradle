@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.4'
     id 'io.spring.dependency-management' version '1.1.7'
-     id 'jacoco'
+    id 'jacoco'
 }
 
 group = 'com.wetube'
@@ -63,6 +63,9 @@ dependencies {
     implementation "com.nimbusds:nimbus-jose-jwt:${versions.nimbusJwt}"
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    // LiveKit
+    implementation 'io.livekit:livekit-server:0.10.0'
+
     // Dotenv
     implementation "me.paulschwarz:spring-dotenv:${versions.dotenv}"
 
@@ -95,6 +98,8 @@ dependencies {
 
 
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    annotationProcessor 'org.projectlombok:lombok'
+
 }
 
 test {

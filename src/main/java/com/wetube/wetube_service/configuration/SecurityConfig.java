@@ -95,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
+                        .requestMatchers("/api/livekit/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated())
