@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class JoinStreamResponse {
-    private String auth_token;
-    private ConnectionDetails connection_details;
+    private String authToken;
+    private ConnectionDetails connectionDetails;
 }

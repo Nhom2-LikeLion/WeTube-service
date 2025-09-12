@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -85,8 +84,8 @@ public class LivekitRoomService {
         conn.setToken(at.toJwt());
 
         JoinStreamResponse res = new JoinStreamResponse();
-        res.setAuth_token(authToken);
-        res.setConnection_details(conn);
+        res.setAuthToken(authToken);
+        res.setConnectionDetails(conn);
 
         log.info("[LiveKit] {} joined stream in room={}", identity, roomName);
         return res;
