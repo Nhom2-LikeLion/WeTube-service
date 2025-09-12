@@ -14,6 +14,6 @@ import java.util.UUID;
 public class SubscribedChannelResponseDto {
     private UUID id;
     private String name;
-    private String avatarUrl;
+    private String picture;
     private UUID subscriptionId;
 }

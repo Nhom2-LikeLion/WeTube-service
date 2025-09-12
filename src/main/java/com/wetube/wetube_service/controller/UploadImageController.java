@@ -1,6 +1,5 @@
 package com.wetube.wetube_service.controller;
 
-import com.cloudinary.Cloudinary;
 import com.wetube.wetube_service.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,12 +1,12 @@
 package com.wetube.wetube_service.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.wetube.wetube_service.dto.request.SubscriptionRequest;
 import com.wetube.wetube_service.dto.request.UnsubscribeRequest;
 import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
-
-import java.util.List;
-import java.util.UUID;
 
 public interface SubscriptionService {
     List<SubscribedChannelResponseDto> getSubscribedChannels(UUID userId);

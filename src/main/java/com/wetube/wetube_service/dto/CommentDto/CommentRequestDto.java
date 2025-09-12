@@ -17,4 +17,3 @@ public class CommentRequestDto {
     private UUID parentCommentId;
     private Comment.TargetType targetType;
 }
-

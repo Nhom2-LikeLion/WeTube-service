@@ -1,9 +1,9 @@
-//package com.wetube.wetube_service.service;
-//
-//import java.time.Duration;
-//import java.util.Set;
-//
-//public interface RedisService {
+// package com.wetube.wetube_service.service;
+
+// import java.time.Duration;
+// import java.util.Set;
+
+// public interface RedisService {
 //    void save(String key, Object value, Duration expiration);
 //    void save(String key, Object value);
 //    <T> T get(String key, Class<T> type);
@@ -16,4 +16,4 @@
 //    void hashSet(String key, String hashKey, Object value);
 //    <T> T hashGet(String key, String hashKey, Class<T> type);
 //    void hashDelete(String key, String hashKey);
-//}
+// }

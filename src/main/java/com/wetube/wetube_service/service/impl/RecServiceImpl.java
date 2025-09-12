@@ -7,14 +7,14 @@ import com.wetube.wetube_service.dto.response.RecResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wetube.wetube_service.repository.UserTagRepository;
-import com.wetube.wetube_service.repository.VideoRepository;
-import com.wetube.wetube_service.repository.VideoTagRepository;
-import com.wetube.wetube_service.entity.UserTag;
-import com.wetube.wetube_service.entity.Video;
-import com.wetube.wetube_service.entity.VideoTag;
-import com.wetube.wetube_service.mapper.VideoMapper;
-import com.wetube.wetube_service.service.RecService;
+import com.wetube.wetube_service.repository.video.UserTagRepository;
+import com.wetube.wetube_service.repository.video.VideoRepository;
+import com.wetube.wetube_service.repository.video.VideoTagRepository;
+import com.wetube.wetube_service.entity.video.UserTag;
+import com.wetube.wetube_service.entity.video.Video;
+import com.wetube.wetube_service.entity.video.VideoTag;
+import com.wetube.wetube_service.mapper.video.VideoMapper;
+import com.wetube.wetube_service.service.video.RecService;
 
 import lombok.RequiredArgsConstructor;
 
