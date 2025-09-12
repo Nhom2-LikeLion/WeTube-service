@@ -9,12 +9,12 @@ import io.livekit.server.*;
 import livekit.LivekitIngress;
 import livekit.LivekitModels;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @RestController
@@ -27,7 +27,6 @@ public class LivekitController {
     private final ObjectMapper objectMapper;
 
     private final LivekitProperties livekitProperties;
-
 
     @PostMapping("/create-stream")
     public CreateStreamResponse createStream(@RequestBody CreateStreamParams params) throws IOException {
@@ -134,7 +133,7 @@ public class LivekitController {
         return res;
     }
 
-    @GetMapping("/rooms/{roomName}/participants")
+    @GetMapping("/rooms/participants/{roomName}/")
     public List<ParticipantDto> listParticipants(@PathVariable String roomName) throws IOException {
         retrofit2.Response<List<livekit.LivekitModels.ParticipantInfo>> resp =
                 roomClient.listParticipants(roomName).execute();
@@ -266,33 +265,69 @@ public class LivekitController {
         return response;
     }
 
+    @DeleteMapping("/ingress/inactive")
+    public ResponseEntity<?> deleteInactiveIngress() throws IOException {
 
+        Response<List<LivekitIngress.IngressInfo>> resp = ingressClient.listIngress().execute();
+
+        if (!resp.isSuccessful() || resp.body() == null) {
+            return ResponseEntity
+                    .status(resp.code())
+                    .body("Failed to list ingress: " +
+                            (resp.errorBody() != null ? resp.errorBody().string() : "unknown"));
+        }
+
+        List<LivekitIngress.IngressInfo> ingressList = resp.body();
+        List<String> inactiveIds = new ArrayList<>();
+        List<String> deletedIds = new ArrayList<>();
+        List<String> failedToDelete = new ArrayList<>();
+
+        System.out.println("=== [LiveKit] All Ingress Fetched ===");
+        for (LivekitIngress.IngressInfo ingress : ingressList) {
+            System.out.println("IngressId=" + ingress.getIngressId()
+                    + " | Room=" + ingress.getRoomName()
+                    + " | Status=" + (ingress.hasState() ? ingress.getState().getStatus() : "UNKNOWN"));
+        }
+
+        for (LivekitIngress.IngressInfo ingress : ingressList) {
+            if (ingress.hasState()
+                    && ingress.getState().getStatus() == LivekitIngress.IngressState.Status.forNumber(0)) {
+
+                inactiveIds.add(ingress.getIngressId());
+
+                Response<LivekitIngress.IngressInfo> delResp = ingressClient.deleteIngress(ingress.getIngressId()).execute();
+                if (delResp.isSuccessful()) {
+                    deletedIds.add(ingress.getIngressId());
+                } else {
+                    failedToDelete.add(ingress.getIngressId());
+                }
+            }
+        }
+
+        System.out.println("=== [LiveKit] Inactive Ingress === " + inactiveIds);
+
+        System.out.println("=== [LiveKit] Deleted Ingress === " + deletedIds);
+
+        if (!failedToDelete.isEmpty()) {
+            System.out.println("=== [LiveKit] Failed To Delete === " + failedToDelete);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("inactive", inactiveIds);
+        result.put("deleted", deletedIds);
+        result.put("failedToDelete", failedToDelete);
+        result.put("inactiveCount", inactiveIds.size());
+        result.put("deletedCount", deletedIds.size());
+
+        return ResponseEntity.ok(result);
+    }
 
     private String generateRoomId() {
         return "room-" + UUID.randomUUID();
     }
 
     private String createAuthToken(String roomName, String creatorIdentity) {
-        // TODO: implement JWT signing if needed
         return UUID.randomUUID().toString();
-    }
-
-    @GetMapping("/token")
-    public String getToken(
-            @RequestParam String identity,
-            @RequestParam String room) {
-
-        AccessToken token = new AccessToken(livekitProperties.getApiKey(), livekitProperties.getApiSecret());
-        token.setName(identity);      // Optional
-        token.setIdentity(identity);  // Important
-        token.setMetadata("custom-data");
-
-        token.addGrants(
-                new RoomJoin(true),
-                new RoomName(room)
-        );
-
-        return token.toJwt();
     }
 }
 
