@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class UserResponseDto {
     private String email;
     private String name;
-    private String avatarUrl;
+    private String picture;
     private LocalDateTime createdAt;
-    private ChannelResponseDto channel;
+    private UserChannelResponseDto channel;
 }

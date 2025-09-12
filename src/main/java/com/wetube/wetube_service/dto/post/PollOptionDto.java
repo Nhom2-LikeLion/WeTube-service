@@ -15,5 +15,3 @@ public class PollOptionDto {
     private Integer voteCount;
     private Double percentage;
 }
-
-

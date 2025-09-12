@@ -2,24 +2,28 @@ package com.wetube.wetube_service.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wetube.wetube_service.repository.TagRepository;
-import com.wetube.wetube_service.repository.VideoRepository;
-import com.wetube.wetube_service.repository.VideoTagRepository;
-import com.wetube.wetube_service.dto.VideoDto;
-import com.wetube.wetube_service.entity.Video;
-import com.wetube.wetube_service.entity.VideoTag;
-import com.wetube.wetube_service.mapper.VideoMapper;
-import com.wetube.wetube_service.entity.Tag;
+import com.wetube.wetube_service.repository.video.TagRepository;
+import com.wetube.wetube_service.repository.video.VideoRepository;
+import com.wetube.wetube_service.repository.video.VideoTagRepository;
+import com.wetube.wetube_service.dto.video.VideoDto;
+import com.wetube.wetube_service.entity.video.Video;
+import com.wetube.wetube_service.entity.video.VideoTag;
+import com.wetube.wetube_service.mapper.video.VideoMapper;
+import com.wetube.wetube_service.entity.video.Tag;
 import com.wetube.wetube_service.service.CloudinaryService;
-import com.wetube.wetube_service.service.VideoService;
+import com.wetube.wetube_service.service.video.VideoService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -134,5 +138,26 @@ public class VideoServiceImpl implements VideoService {
                 out.add(s);
         }
         return out;
+    }
+
+    @Override
+    public List<VideoDto> searchByTitle(String title) {
+        return videoRepository.findByTitleContainingIgnoreCase(title)
+                .stream().map(videoMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VideoDto> searchByTitlePaging(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return videoRepository.findByTitleContainingIgnoreCase(title, pageable)
+                .map(videoMapper::toDto);
+    }
+
+    @Override
+    public Page<VideoDto> getAllVideosPaging(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return videoRepository.findAll(pageable).map(videoMapper::toDto);
     }
 }

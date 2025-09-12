@@ -1,14 +1,12 @@
 package com.wetube.wetube_service.entity.channel;
 
-import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.CompositeKey.SubscriptionId;
+import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Builder
 @Data

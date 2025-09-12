@@ -16,13 +16,14 @@ java {
 
 ext {
     versions = [
-            nimbusJwt       : '9.47',
-            dotenv          : '4.0.0',
-            mapstruct       : '1.5.5.Final',
-            lombokMapstruct : '0.2.0',
-            mockitoJupiter  : '5.12.0',
-            h2              : '2.2.224',
-            jacoco          : '0.8.12'
+            nimbusJwt      : '10.0.1',
+            dotenv         : '4.0.0',
+            mapstruct      : '1.5.5.Final',
+            lombokMapstruct: '0.2.0',
+            mockitoJupiter : '5.12.0',
+            h2             : '2.2.224',
+            jjwt           : '0.12.6',
+            jacoco         : '0.8.12'
     ]
 }
 
@@ -44,10 +45,16 @@ dependencies {
     // Spring Boot starters
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //    implementation 'redis.clients:jedis'
-     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+
 
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -85,6 +92,10 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
 
     implementation 'com.cloudinary:cloudinary-http44:1.32.2'
+
+    // GeoLocate
+    implementation 'com.maxmind.geoip2:geoip2:4.2.0'
+
 
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     annotationProcessor 'org.projectlombok:lombok'

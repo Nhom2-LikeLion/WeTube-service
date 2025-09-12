@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.entity.post;
 
+import com.wetube.wetube_service.entity.AppUser;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,12 +24,31 @@ public class PollVote {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "post_id", nullable = false)
-    private UUID postId;
+//    @Column(name = "post_id", nullable = false)
+//    private UUID postId;
+//
+//    @Column(name = "poll_option_id", nullable = false)
+//    private UUID optionId;
+//
+//    @Column(name = "user_id", nullable = false)
+//    private UUID userId;
 
-    @Column(name = "poll_option_id", nullable = false)
-    private UUID optionId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
 
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "poll_option_id", nullable = false)
+    private PollOption pollOption;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, insertable = false, updatable = false)
+    private Post post;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.pollOption != null) {
+            this.post = this.pollOption.getPost();
+        }
+    }
 }
