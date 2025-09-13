@@ -46,6 +46,9 @@ public interface PlaylistMapper {
 
     List<PlaylistDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos);
 
+    // // ✅ Video -> VideoDto
+    // VideoDto toVideoDto(Video video);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "playlist", source = "playlist")
     @Mapping(target = "video", source = "video")
