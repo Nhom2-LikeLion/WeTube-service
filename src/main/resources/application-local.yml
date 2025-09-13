@@ -77,3 +77,11 @@ livekit:
   url: ${LIVEKIT_WS_URL}
   api-key: ${LIVEKIT_API_KEY}
   api-secret: ${LIVEKIT_API_SECRET}
+
+momo:
+  partnerCode: ${PARTNER_CODE}
+  accessKey: ${ACCESS_KEY}
+  secretKey: ${SECRET_KEY}
+  endpoint: ${ENDPOINT}
+  redirectUrl: ${REDIRECT_URL}
+  ipnUrl: ${IP_URL}

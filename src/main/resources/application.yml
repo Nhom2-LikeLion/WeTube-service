@@ -13,7 +13,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   elasticsearch:
-    uris: http://10.19.2.212:9200
+    uris: http://10.57.154.145:9200
     connection-timeout: 5s
     socket-timeout: 10s
 
