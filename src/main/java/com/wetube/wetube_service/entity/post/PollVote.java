@@ -24,15 +24,6 @@ public class PollVote {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-//    @Column(name = "post_id", nullable = false)
-//    private UUID postId;
-//
-//    @Column(name = "poll_option_id", nullable = false)
-//    private UUID optionId;
-//
-//    @Column(name = "user_id", nullable = false)
-//    private UUID userId;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
@@ -42,7 +33,7 @@ public class PollVote {
     private PollOption pollOption;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     @PrePersist

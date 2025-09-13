@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.configuration;
 
+import com.wetube.wetube_service.security.CookieBearerTokenResolver;
 import com.wetube.wetube_service.security.ForbiddenEntryPoint;
 import com.wetube.wetube_service.security.UnauthorizedEntryPoint;
 import com.wetube.wetube_service.utility.KeyLoader;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final KeyLoader keyLoader;
     private final WebCsrfConfiguration webCsrfConfiguration;
     private final ForbiddenEntryPoint forbiddenEntryPoint;
+    private final CookieBearerTokenResolver cookieBearerTokenResolver;
 
     @Bean
     Converter<Jwt, JwtAuthenticationToken> authenticationConverter() {
@@ -95,6 +97,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
+                        .requestMatchers("/api/posts/**").permitAll()
                         .requestMatchers("/api/livekit/**").permitAll()
                         .requestMatchers("/api/payment/**").permitAll()
                         .requestMatchers("/api/subpacks/**").permitAll()

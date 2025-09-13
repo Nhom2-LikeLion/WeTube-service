@@ -8,6 +8,7 @@ import com.wetube.wetube_service.service.UserService;
 import com.wetube.wetube_service.service.auth.GoogleTokenService;
 import com.wetube.wetube_service.service.auth.JwtService;
 import com.wetube.wetube_service.service.auth.RefreshTokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,18 +60,15 @@ public class AuthController {
     }
 
     @GetMapping("/login/google/callback")
-    public ResponseEntity<Map<String, Object>> googleCallback(@RequestParam String code) {
+    public void googleCallback(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws IOException {
         GoogleTokenResponse gtr = googleToken.exchangeCode(code);
         GoogleUser googleUser = googleToken.parseAndVerify(gtr.idToken());
-        AppUser user = userService.upsertGoogleUser(googleUser, gtr.scope());
+        String clientIp = request.getRemoteAddr();
+        AppUser user = userService.upsertGoogleUser(googleUser, gtr.scope(), clientIp);
 
-        // 1) Issue session (server-side refresh)
-        var issue = refreshService.issue(user, null); // sid + rawRefresh (server only)
-
-        // 2) Create short-lived Access Token
+        var issue = refreshService.issue(user, null);
         String access = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
 
-        // 3) Set cookies
         ResponseCookie atCookie = ResponseCookie.from(AT_COOKIE, access)
                 .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
                 .path("/").maxAge(Duration.ofHours(1)).build();
@@ -79,15 +77,11 @@ public class AuthController {
                 .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
                 .path("/").maxAge(Duration.ofDays(14)).build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, atCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, sidCookie.toString())
-                .body(Map.of(
-                        "access_token", access,
-                        "session_id", issue.sessionId(),
-                        "token_type", "Bearer",
-                        "expires_in", 86400
-                ));
+        // Thêm cookie vào response header
+        response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, sidCookie.toString());
+
+        response.sendRedirect("http://localhost:3000");
     }
 
     @PostMapping("/refresh-login")

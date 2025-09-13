@@ -20,17 +20,9 @@ public class PostController {
     private final PostService postService;
     private final PollVoteService pollVoteService;
 
-    @GetMapping("/{userId}/posts")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(postService.getPostsByUser(userId));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(
-            @PathVariable UUID id,
-            @RequestParam(required = false) UUID viewerId
-    ) {
-        return ResponseEntity.ok(postService.getPostById(id));
     }
 
     @PostMapping

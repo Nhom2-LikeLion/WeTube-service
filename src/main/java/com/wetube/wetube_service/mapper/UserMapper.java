@@ -4,12 +4,9 @@ import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     AppUser toEntity(UserDto userDto);
     UserResponseDto toDto(AppUser entity);
-
 }

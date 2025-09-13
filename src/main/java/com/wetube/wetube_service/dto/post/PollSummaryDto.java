@@ -12,7 +12,6 @@ import java.util.UUID;
 @Builder
 public class PollSummaryDto {
     private UUID  id;
-    private String title;
     private List<PollOptionDto> options;
     private Integer totalVotes;
     private UUID userVotedOptionId;
