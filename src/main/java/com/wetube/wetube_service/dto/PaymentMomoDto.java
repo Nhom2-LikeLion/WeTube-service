@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.SubPack;
+import com.wetube.wetube_service.entity.premium.SubPack;
 import com.wetube.wetube_service.enumeration.PaymentStatus;
 
 import jakarta.persistence.Id;

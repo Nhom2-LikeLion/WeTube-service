@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
-import com.wetube.wetube_service.service.SubscriptionService;
+import com.wetube.wetube_service.service.channel.SubscriptionService;
 
 import lombok.AllArgsConstructor;
 

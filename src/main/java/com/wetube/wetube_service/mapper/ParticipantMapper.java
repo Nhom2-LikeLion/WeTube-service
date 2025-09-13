@@ -1,17 +1,11 @@
 package com.wetube.wetube_service.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.protobuf.util.JsonFormat;
 import com.wetube.wetube_service.dto.response.livekit.ParticipantDto;
-import com.wetube.wetube_service.dto.response.livekit.TrackDto;
-import com.wetube.wetube_service.utils.ParticipantMapperHelper;
+import com.wetube.wetube_service.utility.ParticipantMapperHelper;
 import livekit.LivekitModels;
 import org.mapstruct.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = ParticipantMapperHelper.class)
 public interface ParticipantMapper {

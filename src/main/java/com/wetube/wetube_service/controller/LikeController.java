@@ -1,8 +1,8 @@
 package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.LikeDto;
-import com.wetube.wetube_service.entity.Like;
-import com.wetube.wetube_service.service.LikeService;
+import com.wetube.wetube_service.entity.interaction.Like;
+import com.wetube.wetube_service.service.interaction.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,8 +2,8 @@ package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.CommentDto.CommentRequestDto;
 import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
-import com.wetube.wetube_service.entity.Comment;
-import com.wetube.wetube_service.service.CommentService;
+import com.wetube.wetube_service.entity.interaction.Comment;
+import com.wetube.wetube_service.service.interaction.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

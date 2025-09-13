@@ -51,30 +51,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    BearerTokenResolver bearerTokenResolver() {
-        DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
-        delegate.setAllowFormEncodedBodyParameter(false);
-        delegate.setAllowUriQueryParameter(false);
-
-        return request -> {
-            String path = request.getRequestURI();
-            // Ignore access token for endpoint refresh
-            if (path.startsWith("/api/auth/refresh")) {
-                return null;
-            }
-            return delegate.resolve(request);
-        };
-    }
-
-//    private static RequestMatcher authApiMatcher() {
-//        return request -> {
-//            String base = request.getContextPath(); // thường là ""
-//            String uri = request.getRequestURI();
-//            return uri.startsWith(base + "/api/auth/");
-//        };
-//    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -90,7 +66,7 @@ public class SecurityConfig {
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .bearerTokenResolver(bearerTokenResolver())
+                        .bearerTokenResolver(cookieBearerTokenResolver)
                         .jwt(jwt -> jwt.decoder(NimbusJwtDecoder
                                 .withPublicKey(keyLoader.loadPublicKey()).build())))
                 .authorizeHttpRequests(auth -> auth

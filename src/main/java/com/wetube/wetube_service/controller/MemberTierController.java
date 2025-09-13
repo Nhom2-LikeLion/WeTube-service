@@ -1,8 +1,8 @@
 package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.request.MemberTierRequest;
-import com.wetube.wetube_service.mapper.MemberTierMapper;
-import com.wetube.wetube_service.service.MemberTierService;
+import com.wetube.wetube_service.mapper.channel.MemberTierMapper;
+import com.wetube.wetube_service.service.channel.MemberTierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

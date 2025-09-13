@@ -13,6 +13,7 @@ import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.UserMapper;
 import com.wetube.wetube_service.service.UserService;
+import com.wetube.wetube_service.service.channel.impl.ChannelServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

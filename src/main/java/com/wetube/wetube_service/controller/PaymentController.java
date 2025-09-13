@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wetube.wetube_service.dto.request.PaymentRequestDto;
 import com.wetube.wetube_service.dto.response.PaymentResponseDto;
-import com.wetube.wetube_service.service.PaymentService;
+import com.wetube.wetube_service.service.premium.PaymentService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.response.ChannelResponseDto;
-import com.wetube.wetube_service.service.ChannelService;
+import com.wetube.wetube_service.service.channel.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
