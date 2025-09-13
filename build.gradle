@@ -63,6 +63,9 @@ dependencies {
     implementation "com.nimbusds:nimbus-jose-jwt:${versions.nimbusJwt}"
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    // LiveKit
+    implementation 'io.livekit:livekit-server:0.10.0'
+
     // Dotenv
     implementation "me.paulschwarz:spring-dotenv:${versions.dotenv}"
 
@@ -92,6 +95,9 @@ dependencies {
 
     // GeoLocate
     implementation 'com.maxmind.geoip2:geoip2:4.2.0'
+
+
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
 
 test {

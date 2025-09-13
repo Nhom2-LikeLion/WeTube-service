@@ -19,7 +19,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.ArrayList;
@@ -47,6 +50,29 @@ public class SecurityConfig {
         };
     }
 
+    @Bean
+    BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
+        delegate.setAllowFormEncodedBodyParameter(false);
+        delegate.setAllowUriQueryParameter(false);
+
+        return request -> {
+            String path = request.getRequestURI();
+            // Ignore access token for endpoint refresh
+            if (path.startsWith("/api/auth/refresh")) {
+                return null;
+            }
+            return delegate.resolve(request);
+        };
+    }
+
+//    private static RequestMatcher authApiMatcher() {
+//        return request -> {
+//            String base = request.getContextPath(); // thường là ""
+//            String uri = request.getRequestURI();
+//            return uri.startsWith(base + "/api/auth/");
+//        };
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
@@ -64,18 +90,17 @@ public class SecurityConfig {
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
-//                        .bearerTokenResolver(bearerTokenResolver())
-                        .bearerTokenResolver(cookieBearerTokenResolver)
+                        .bearerTokenResolver(bearerTokenResolver())
                         .jwt(jwt -> jwt.decoder(NimbusJwtDecoder
-                                .withPublicKey(keyLoader.loadPublicKey()).build())
-                                .jwtAuthenticationConverter(authenticationConverter())
-                        )
-                )
+                                .withPublicKey(keyLoader.loadPublicKey()).build())))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
                         .requestMatchers("/api/posts/**").permitAll()
+                        .requestMatchers("/api/livekit/**").permitAll()
+                        .requestMatchers("/api/payment/**").permitAll()
+                        .requestMatchers("/api/subpacks/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated())

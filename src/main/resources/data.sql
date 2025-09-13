@@ -27,3 +27,10 @@ VALUES
     ('33333333-3333-3333-3333-333333333333', 'Video 3', 'https://example.com/video3.mp4', 'https://example.com/thumb3.png', 180, NOW(), NOW()),
     ('44444444-4444-4444-4444-444444444444', 'Video 4', 'https://example.com/video4.mp4', 'https://example.com/thumb4.png', 210, NOW(), NOW()),
     ('55555555-5555-5555-5555-555555555555', 'Video 5', 'https://example.com/video5.mp4', 'https://example.com/thumb5.png', 150, NOW(), NOW());
+
+INSERT INTO sub_package (id, create_at, description, duration_days, name, price, update_at)
+VALUES
+    ('550e8400-e29b-41d4-a716-446655440000', NOW(), 'Gói cơ bản cho người mới bắt đầu', 30, 'Basic Plan', 99000.00, NOW()),
+    ('550e8400-e29b-41d4-a716-446655440001', NOW(), 'Gói tiêu chuẩn, đầy đủ tính năng phổ biến', 90, 'Standard Plan', 249000.00, NOW()),
+    ('550e8400-e29b-41d4-a716-446655440002', NOW(), 'Gói cao cấp, nhiều tiện ích nâng cao', 180, 'Premium Plan', 499000.00, NOW()),
+    ('550e8400-e29b-41d4-a716-446655440003', NOW(), 'Gói VIP cho người dùng chuyên nghiệp', 365, 'VIP Plan', 899000.00, NOW());
