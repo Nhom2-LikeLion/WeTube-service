@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.controller;
 
+import com.wetube.wetube_service.dto.PremiumUserDto;
 import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.service.PremiumUserService;
@@ -27,6 +28,13 @@ public class UserController {
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
+
+    @GetMapping("/premium")
+    public ResponseEntity<List<PremiumUserDto>> getAllPremiumUsers() {
+        List<PremiumUserDto> list = premiumUserService.getAllPremiumUsers();
+        return ResponseEntity.ok(list);
+    }
+
 
 //    @GetMapping("/me")
 //    public ResponseEntity<UserResponseDto> getCurrentUser(Authentication authentication) {
