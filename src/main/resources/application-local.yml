@@ -26,17 +26,23 @@ spring:
           google:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
-            scope: openid, email, profile
-            redirect-uri: "http://localhost:8080/api/auth/login/google/callback"
-            client-authentication-method: client_secret_basic
-            authorization-grant-type: authorization_code
+            scope: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE}
+            redirect-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI}
+            client-authentication-method: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_AUTHENTICATION_METHOD}
+            authorization-grant-type: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE}
         provider:
           google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
-            user-name-attribute: sub
+            authorization-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI}
+            token-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI}
+            user-info-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI}
+            jwk-set-uri: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_JWK-SET_URI}
+            user-name-attribute: ${SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE}
+
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URL}
+    connection-timeout: 5s
+    socket-timeout: 10s
+
 #  data:
 #    redis:
 #      host: ${REDIS_HOST}
@@ -85,3 +91,6 @@ momo:
   endpoint: ${ENDPOINT}
   redirectUrl: ${REDIRECT_URL}
   ipnUrl: ${IP_URL}
+
+elasticsearch:
+  api-key: ${ELASTICSEARCH_API_KEY}
