@@ -44,6 +44,8 @@ public class AuthController {
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String redirectUri;
+    @Value("${CLIENT_URL}")
+    private String clientUrl;
 
     @GetMapping("/login/google")
     public void redirectToGoogle(HttpServletResponse response) throws IOException {
@@ -60,7 +62,23 @@ public class AuthController {
     }
 
     @GetMapping("/login/google/callback")
-    public void googleCallback(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void googleCallback(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String error,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        if (error != null && !error.isEmpty()) {
+            log.warn("OAuth2 authentication failed with error: {}", error);
+            response.sendRedirect(clientUrl);
+            return;
+        }
+
+        if (code == null || code.isBlank()) {
+            log.error("OAuth2 callback received without a code or an error.");
+            response.sendRedirect(clientUrl);
+            return;
+        }
+
         GoogleTokenResponse gtr = googleToken.exchangeCode(code);
         GoogleUser googleUser = googleToken.parseAndVerify(gtr.idToken());
         String clientIp = request.getRemoteAddr();
@@ -81,7 +99,7 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, sidCookie.toString());
 
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect(clientUrl);
     }
 
     @PostMapping("/refresh-login")
