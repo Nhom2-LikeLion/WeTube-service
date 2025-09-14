@@ -79,8 +79,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/subpacks/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/api/videos/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-                        .requestMatchers("/api/customers/**").authenticated())
+                        .requestMatchers("/api/customers/**").authenticated()
+                        .requestMatchers("/api/uploads/**").permitAll())
                         
                 .build();
     }
