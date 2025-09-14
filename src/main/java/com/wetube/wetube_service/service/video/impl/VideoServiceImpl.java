@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import com.wetube.wetube_service.enumeration.ActiveStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,13 +56,11 @@ public class VideoServiceImpl implements VideoService {
         Video entity = videoMapper.toEntity(videoDto);
         entity.setVideoUrl(videoUrl);
         entity.setThumbnailUrl(thumbnailUrl);
-
+        entity.setVideosStatus(ActiveStatus.ACTIVE);
         LocalDateTime now = LocalDateTime.now();
         if (entity.getCreatedAt() == null)
             entity.setCreatedAt(now);
-        if (entity.getVideosStatus() == null || entity.getVideosStatus().isBlank()) {
-            entity.setVideosStatus("pending");
-        }
+
         entity.setUpdatedAt(now);
 
         Video saved = videoRepository.save(entity);

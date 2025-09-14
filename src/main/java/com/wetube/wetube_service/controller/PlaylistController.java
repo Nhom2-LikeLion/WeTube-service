@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.wetube.wetube_service.dto.response.UserResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wetube.wetube_service.dto.PlaylistDetailDto;
-import com.wetube.wetube_service.dto.PlaylistDto;
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
@@ -30,6 +29,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PlaylistController {
     private final PlaylistService pls;
+
+//    @PostMapping("/init/{userId}")
+//    public ResponseEntity<Void> createPlaylist(@PathVariable UUID userId) {
+//        pls.initiatePlaylist(userId);
+//        return ResponseEntity.noContent().build();
+//    }
 
     //  Tạo playlist bằng JSON body
     @PostMapping("/create")
@@ -51,12 +56,12 @@ public class PlaylistController {
     }
 
     @GetMapping("/detail/{playlistVideoId}")
-    public ResponseEntity<PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistVideoId) {
+    public ResponseEntity<UserResponseDto.PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistVideoId) {
         return ResponseEntity.ok(pls.getPlaylistVideoById(playlistVideoId));
     }
 
     @PostMapping("/videos/add")
-     public ResponseEntity<PlaylistDto> addVideoToPlaylist(@RequestBody PlaylistaddRequest request) {
+     public ResponseEntity<UserResponseDto.PlaylistVideoDto> addVideoToPlaylist(@RequestBody PlaylistaddRequest request) {
         return ResponseEntity.ok(pls.addVideoToPlaylist(request));
     }
 

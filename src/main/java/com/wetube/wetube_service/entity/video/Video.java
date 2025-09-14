@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.entity.video;
 
+import com.wetube.wetube_service.enumeration.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -35,7 +36,9 @@ public class Video {
     private String description;
     private String thumbnailUrl;
     private String videoUrl;
-    private String videosStatus;
+    @Enumerated(EnumType.STRING)
+    private ActiveStatus videosStatus;
+    private int totalView;
     private float duration;
 
 

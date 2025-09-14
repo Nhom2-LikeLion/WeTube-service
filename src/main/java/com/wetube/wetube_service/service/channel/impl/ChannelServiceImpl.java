@@ -59,7 +59,7 @@ public class ChannelServiceImpl implements ChannelService {
                 .build();
 
         MembershipTier defaultTier = MembershipTier.builder()
-                .title("Default Tier")
+                .title(user.getName() + " Default Tier")
                 .description("Default membership tier")
                 .price(0f)
                 .defaultTier(true)
