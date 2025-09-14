@@ -1,6 +1,8 @@
 package com.wetube.wetube_service.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.wetube.wetube_service.dto.response.UserResponseDto;
@@ -52,6 +54,16 @@ public class PlaylistServiceImpl implements PlaylistService {
             throw new ResourceNotFoundException("userId exists or playlistType error", "id", userId.toString());
         }
         return playlistMapper.toDtoList(playlists);
+    }
+
+    @Override
+    public String getTopViewUserUploaded(UUID userId) {
+        List<Playlist> playlists = plr.findByUser_IdAndPlaylistType(userId, PlaylistType.USER_UPLOADED);
+        Optional<Video> mostViewedVideo = playlists.
+                getFirst().getPlaylistVideos().
+                stream() .map(PlaylistVideo::getVideo).
+                max(Comparator.comparingInt(Video::getTotalView));
+        return mostViewedVideo.get().getVideoUrl();
     }
 
     @Override

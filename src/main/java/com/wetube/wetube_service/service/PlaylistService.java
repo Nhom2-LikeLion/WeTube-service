@@ -15,7 +15,7 @@ public interface PlaylistService {
     List<PlaylistUserDto> getAllPlaylistByUserId(UUID userId);
 
     UserResponseDto.PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId);
-    
+
     PlaylistUserDto  createPlaylist(CreatePlaylistRequest dto);
 
     void initiatePlaylist(UUID userId);
@@ -28,8 +28,6 @@ public interface PlaylistService {
 
     List<PlaylistUserDto> getAllPlaylistByTagUserId(UUID userId,PlaylistType playlistType);
 
+    String getTopViewUserUploaded(UUID userId);
 
-    default String getTopViewUserUploaded(UUID userId) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
 }
