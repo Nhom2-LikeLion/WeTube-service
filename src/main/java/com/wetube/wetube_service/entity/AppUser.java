@@ -2,6 +2,7 @@ package com.wetube.wetube_service.entity;
 
 import com.wetube.wetube_service.entity.auth.Role;
 import com.wetube.wetube_service.entity.auth.UserRole;
+import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.post.PollVote;
 import com.wetube.wetube_service.entity.post.Post;
 import jakarta.persistence.*;
@@ -65,6 +66,9 @@ public class AppUser {
         this.userRoles.add(userRole);
         role.getUserRoles().add(userRole);
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Playlist> playlists = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

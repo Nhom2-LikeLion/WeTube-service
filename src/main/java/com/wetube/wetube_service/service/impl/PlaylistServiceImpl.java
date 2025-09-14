@@ -3,11 +3,12 @@ package com.wetube.wetube_service.service.impl;
 import java.util.List;
 import java.util.UUID;
 
+import com.wetube.wetube_service.dto.response.UserResponseDto;
+import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.repository.video.VideoRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.wetube.wetube_service.dto.PlaylistDetailDto;
-import com.wetube.wetube_service.dto.PlaylistDto;
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
@@ -54,11 +55,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId) {
+    public UserResponseDto.PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId) {
         PlaylistVideo pv = plvr.findById(playlistVideoId)
                 .orElseThrow(() -> new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString()));
         Playlist playlist = pv.getPlaylist();
-        return playlistMapper.toDetailDto(playlist);
+        return playlistMapper.toPlaylistDetailDto(playlist);
     }
 
     @Override
@@ -72,8 +73,20 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlistMapper.toDto(saved);
     }
 
-   @Override
-    public PlaylistDto addVideoToPlaylist(PlaylistaddRequest dto) {
+    @Override
+    public void initiatePlaylist(UUID userID) {
+        CreatePlaylistRequest history = new CreatePlaylistRequest("History",userID,PlaylistType.HISTORY);
+        CreatePlaylistRequest watchLater = new CreatePlaylistRequest("Watch Later",userID,PlaylistType.WATCH_LATER);
+        CreatePlaylistRequest liked = new CreatePlaylistRequest("Liked",userID,PlaylistType.LIKED);
+        CreatePlaylistRequest userVideos = new CreatePlaylistRequest("Uploaded",userID,PlaylistType.USER_UPLOADED);
+        createPlaylist(history);
+        createPlaylist(watchLater);
+        createPlaylist(liked);
+        createPlaylist(userVideos);
+    }
+
+    @Override
+    public UserResponseDto.PlaylistVideoDto addVideoToPlaylist(PlaylistaddRequest dto) {
         Playlist playlist = plr.findById(dto.getPlaylistId())
                 .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", dto.getPlaylistId().toString()));
         Video video = vdr.findById(dto.getVideoId())

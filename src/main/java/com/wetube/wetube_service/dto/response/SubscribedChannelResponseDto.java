@@ -12,8 +12,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class SubscribedChannelResponseDto {
-    private UUID id;
+    private UUID channelId;
     private String name;
-    private String picture;
-    private UUID subscriptionId;
+    private String avatarUrl;
+    private int subscribers;
+    private String description;
+    private String videoUrl;
 }

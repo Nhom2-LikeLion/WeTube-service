@@ -14,12 +14,7 @@ public interface ChannelMapper {
     // User's Channel
     UserChannelResponseDto toChannelDto(Channel channel);
 
-    // User's Subbed Channels
-    @Mapping(target = "id", source = "id.tier.channel.id")   // channel id
-    @Mapping(target = "name", source = "id.tier.channel.name")
-    @Mapping(target = "picture", source = "id.tier.channel.picture")
-    @Mapping(target = "subscriptionId", source = "id.tier.id") // tier.id
-    SubscribedChannelResponseDto toSubChannelDto(Subscription subscription);
+
 
     ChannelResponseDto toChannelResponseDto(Channel channel);
 }

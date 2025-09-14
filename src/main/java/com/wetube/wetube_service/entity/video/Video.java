@@ -36,6 +36,7 @@ public class Video {
     private String thumbnailUrl;
     private String videoUrl;
     private String videosStatus;
+    private int totalView;
     private float duration;
 
 
