@@ -88,16 +88,18 @@ public class AuthController {
         String access = jwtService.createAccessToken(user.getId(), user.getEmail(), user.getRoleCodes());
 
         ResponseCookie atCookie = ResponseCookie.from(AT_COOKIE, access)
-                .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
+                .httpOnly(true).secure(false).sameSite(SAME_SITE_STRICT)
                 .path("/").maxAge(Duration.ofHours(1)).build();
 
         ResponseCookie sidCookie = ResponseCookie.from(SID_COOKIE, issue.sessionId())
-                .httpOnly(true).secure(true).sameSite(SAME_SITE_STRICT)
+                .httpOnly(true).secure(false).sameSite(SAME_SITE_STRICT)
                 .path("/").maxAge(Duration.ofDays(14)).build();
 
         // Thêm cookie vào response header
         response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, sidCookie.toString());
+
+        log.info("LOGIN SUCCESS: Issued new refresh token with SID: {}", issue.sessionId());
 
         response.sendRedirect(clientUrl);
     }
@@ -132,6 +134,8 @@ public class AuthController {
                 .sameSite(SAME_SITE_LAX).path("/")
                 .maxAge(Duration.ofDays(14)).build();
 
+        log.info("REFRESH-LOGIN: Received SID from cookie: {}", sid);
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, atCookie.toString(), sidCookie.toString())
                 .body(Map.of(
@@ -145,8 +149,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(@CookieValue(value = "SID", required = false) String sid) {
         if (sid != null) {
             try {
-                RefreshToken rt = refreshService.validateBySession(sid);
-                rt.setRevoked(true);
+                refreshService.revokeSession(sid);
             } catch (Exception e) {
                 log.warn("Error while revoking session [{}]: {}", sid, e.getMessage());
             }
@@ -161,5 +164,4 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, clearSid.toString())
                 .build();
     }
-
 }
