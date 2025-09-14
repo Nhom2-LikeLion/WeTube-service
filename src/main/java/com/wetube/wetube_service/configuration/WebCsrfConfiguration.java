@@ -30,6 +30,7 @@ public class WebCsrfConfiguration {
                 new RegexRequestMatcher("^/api/posts(/.*)?$", null),
                 new RegexRequestMatcher("^/actuator(/.*)?$", null),
                 new RegexRequestMatcher("^/api/payment(/.*)?$", null),
+                new RegexRequestMatcher("^/api/subscriptions(/.*)?$", null),
                 new RegexRequestMatcher("^/api/subpacks(/.*)?$", null),
                 new RegexRequestMatcher("^/api/me(/.*)?$", null),
                 new RegexRequestMatcher("^/api/livekit(/.*)?$", null),
