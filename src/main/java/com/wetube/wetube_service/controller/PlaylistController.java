@@ -30,6 +30,12 @@ import lombok.RequiredArgsConstructor;
 public class PlaylistController {
     private final PlaylistService pls;
 
+//    @PostMapping("/init/{userId}")
+//    public ResponseEntity<Void> createPlaylist(@PathVariable UUID userId) {
+//        pls.initiatePlaylist(userId);
+//        return ResponseEntity.noContent().build();
+//    }
+
     //  Tạo playlist bằng JSON body
     @PostMapping("/create")
     public ResponseEntity<PlaylistUserDto> createPlaylist(@RequestBody CreatePlaylistRequest request) {
