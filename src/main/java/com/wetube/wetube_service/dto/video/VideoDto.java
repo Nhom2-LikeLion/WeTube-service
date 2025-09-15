@@ -28,6 +28,7 @@ public class VideoDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String tagsAsString;
     private Set<TagDto> tags;
     private UserDto user;
 }

@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,6 @@ public interface PlaylistRepository extends CrudRepository<Playlist, UUID>{
        ORDER BY v.totalView DESC
        """)
      List<String> findVideoUrlsByUserUploaded(@Param("userId") UUID userId, Pageable pageable);
+
+     Optional<Playlist> findByUserIdAndPlaylistType(UUID userId, PlaylistType playlistType);
 }
