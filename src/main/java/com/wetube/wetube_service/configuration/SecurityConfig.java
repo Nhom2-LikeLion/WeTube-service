@@ -81,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/subscriptions/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/api/videos/**").permitAll()
+                        .requestMatchers("/api/recommend/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated())
                         

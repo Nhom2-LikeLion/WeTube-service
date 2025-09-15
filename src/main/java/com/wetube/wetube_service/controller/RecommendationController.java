@@ -1,8 +1,9 @@
 package com.wetube.wetube_service.controller;
 
+import java.util.List;
 import java.util.UUID;
 
-import com.wetube.wetube_service.dto.response.RecResponse;
+import com.wetube.wetube_service.dto.video.RecommendVideoDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,7 @@ public class RecommendationController {
     private final RecService recommendationService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<RecResponse> recommendVideos(
+    public ResponseEntity<List<RecommendVideoDto>> recommendVideos(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "10") int limit) {
         return ResponseEntity.ok(recommendationService.recommendVideos(userId, limit));
