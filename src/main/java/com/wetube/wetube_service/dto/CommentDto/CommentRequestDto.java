@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.dto.CommentDto;
 
-import com.wetube.wetube_service.entity.Comment;
+import com.wetube.wetube_service.entity.interaction.Comment;
 import lombok.*;
 
 import java.util.UUID;

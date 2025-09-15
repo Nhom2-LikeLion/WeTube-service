@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import com.wetube.wetube_service.service.impl.LivekitIngressService;
+import com.wetube.wetube_service.service.livekit.LivekitIngressService;
 import java.io.IOException;
 
 @Component

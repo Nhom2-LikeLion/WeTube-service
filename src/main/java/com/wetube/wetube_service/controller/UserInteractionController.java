@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wetube.wetube_service.enumeration.InteractionType;
-import com.wetube.wetube_service.service.impl.UserInteractionServiceImpl;
+import com.wetube.wetube_service.service.interaction.impl.UserInteractionServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 

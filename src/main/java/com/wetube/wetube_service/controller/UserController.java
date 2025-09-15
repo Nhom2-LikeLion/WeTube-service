@@ -1,9 +1,8 @@
 package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.PremiumUserDto;
-import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
-import com.wetube.wetube_service.service.PremiumUserService;
+import com.wetube.wetube_service.service.premium.PremiumUserService;
 import com.wetube.wetube_service.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

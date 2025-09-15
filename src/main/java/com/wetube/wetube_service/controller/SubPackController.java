@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.wetube.wetube_service.dto.SubPacksDto;
 import com.wetube.wetube_service.dto.request.SubPackRequestDto;
-import com.wetube.wetube_service.service.SubPackService;
+import com.wetube.wetube_service.service.premium.SubPackService;
 
 import lombok.RequiredArgsConstructor;
 

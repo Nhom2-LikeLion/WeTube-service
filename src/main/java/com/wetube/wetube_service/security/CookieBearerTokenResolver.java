@@ -14,12 +14,10 @@ public class CookieBearerTokenResolver implements BearerTokenResolver {
 
     @Override
     public String resolve(HttpServletRequest request) {
-        // Kiểm tra xem request có cookie không
         if (request.getCookies() == null) {
             return null;
         }
 
-        // Tìm cookie có tên là "AT" và trả về giá trị của nó
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)

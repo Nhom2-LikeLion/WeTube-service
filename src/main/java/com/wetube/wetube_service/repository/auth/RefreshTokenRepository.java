@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findBySessionIdAndRevokedFalse(String sessionId);
+    Optional<RefreshToken> findBySessionId(String sessionId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""

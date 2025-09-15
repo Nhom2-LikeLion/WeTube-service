@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.dto;
 
-import com.wetube.wetube_service.entity.Like;
+import com.wetube.wetube_service.entity.interaction.Like;
 import lombok.*;
 
 import java.util.List;

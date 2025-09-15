@@ -49,30 +49,6 @@ public class SecurityConfig {
         };
     }
 
-    // @Bean
-    // BearerTokenResolver bearerTokenResolver() {
-    //     DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
-    //     delegate.setAllowFormEncodedBodyParameter(false);
-    //     delegate.setAllowUriQueryParameter(false);
-
-    //     return request -> {
-    //         String path = request.getRequestURI();
-    //         // Ignore access token for endpoint refresh
-    //         if (path.startsWith("/api/auth/refresh")) {
-    //             return null;
-    //         }
-    //         return delegate.resolve(request);
-    //     };
-    // }
-
-//    private static RequestMatcher authApiMatcher() {
-//        return request -> {
-//            String base = request.getContextPath(); // thường là ""
-//            String uri = request.getRequestURI();
-//            return uri.startsWith(base + "/api/auth/");
-//        };
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
@@ -100,6 +76,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/livekit/**").permitAll()
                         .requestMatchers("/api/payment/**").permitAll()
                         .requestMatchers("/api/subpacks/**").permitAll()
+                        .requestMatchers("/api/channels/**").permitAll()
+                        .requestMatchers("/api/tiers", "/api/tiers/**").permitAll()
+                        .requestMatchers("/api/subscriptions/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/api/videos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
