@@ -50,7 +50,6 @@ public class VideoServiceImpl implements VideoService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
     private final UserRepository userRepository;
-    private final VideoService self;
 
     private static final String ID_NOT_FOUND = "Video not found with id: ";
 
@@ -87,7 +86,7 @@ public class VideoServiceImpl implements VideoService {
         String tagsAsString = videoDto.getTagsAsString();
         if (tagsAsString != null && !tagsAsString.isBlank()) {
             log.info("Adding tags to new video {}: {}", savedVideo.getId(), tagsAsString);
-            return self.addTags(savedVideo.getId(), tagsAsString);
+            return this.addTags(savedVideo.getId(), tagsAsString);
         }
 
         return videoMapper.toDto(savedVideo);
@@ -95,7 +94,7 @@ public class VideoServiceImpl implements VideoService {
 
     private void addVideoToUserUploadedPlaylist(Video video) {
         try {
-            UUID userId = UUID.fromString(video.getUsersId());
+            UUID userId = video.getUser().getId();
 
             Playlist uploadedPlaylist = playlistRepository.findByUserIdAndPlaylistType(userId, PlaylistType.USER_UPLOADED)
                     .orElseGet(() -> {
@@ -121,7 +120,7 @@ public class VideoServiceImpl implements VideoService {
 
         } catch (Exception e) {
             log.error("Failed to add video {} to USER_UPLOADED playlist for user {}. Error: {}",
-                    video.getId(), video.getUsersId(), e.getMessage());
+                    video.getId(), video.getUser().getId(), e.getMessage());
         }
     }
 

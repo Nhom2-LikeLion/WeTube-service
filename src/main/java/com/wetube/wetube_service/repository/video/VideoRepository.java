@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 import com.wetube.wetube_service.entity.video.Video;
 
 public interface VideoRepository extends JpaRepository<Video, UUID> {
-    Video findByIdAndUsersId(UUID id, String usersId);
+    Video findByIdAndUser_Id(UUID videoId, UUID userId);
 
     @Query("""
         SELECT v FROM Video v

@@ -43,7 +43,7 @@ public interface VideoMapper {
     Set<TagDto> map(Set<VideoTag> videoTags);
 
     @Mapping(target = "id", expression = "java(uuidToString(entity.getId()))")
-    @Mapping(target = "userId", source = "usersId")
+    @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "tags", expression = "java(mapTagNames(entity.getVideoTags()))")
     VideoDocument mapEntityToVideoDocument(Video entity);
 

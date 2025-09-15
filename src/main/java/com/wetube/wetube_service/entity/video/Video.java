@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.entity.video;
 
+import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +31,10 @@ public class Video {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
-    private String usersId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", nullable = false)
+    private AppUser user;
+
     @Column(nullable = false)
     private String title;
     private String description;
