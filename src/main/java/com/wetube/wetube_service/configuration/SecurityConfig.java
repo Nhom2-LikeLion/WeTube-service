@@ -1,10 +1,7 @@
 package com.wetube.wetube_service.configuration;
 
-import com.wetube.wetube_service.security.CookieBearerTokenResolver;
-import com.wetube.wetube_service.security.ForbiddenEntryPoint;
-import com.wetube.wetube_service.security.UnauthorizedEntryPoint;
-import com.wetube.wetube_service.utility.KeyLoader;
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -19,13 +16,15 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.ArrayList;
+import com.wetube.wetube_service.security.CookieBearerTokenResolver;
+import com.wetube.wetube_service.security.ForbiddenEntryPoint;
+import com.wetube.wetube_service.security.UnauthorizedEntryPoint;
+import com.wetube.wetube_service.utility.KeyLoader;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
