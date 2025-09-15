@@ -11,16 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.result.view.RedirectView;
 
-import jakarta.servlet.http.HttpServletResponse;
 import com.wetube.wetube_service.dto.request.PaymentRequestDto;
 import com.wetube.wetube_service.dto.response.PaymentResponseDto;
-import com.wetube.wetube_service.entity.PaymentMomo;
-import com.wetube.wetube_service.enumeration.PaymentStatus;
-import com.wetube.wetube_service.repository.PaymentMomoRepository;
-import com.wetube.wetube_service.service.PaymentService;
+import com.wetube.wetube_service.repository.premium.PaymentMomoRepository;
+import com.wetube.wetube_service.service.premium.PaymentService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -52,7 +49,7 @@ public class PaymentController {
      @GetMapping("/redirect")
         public void handleRedirect(
                 @RequestParam Map<String, String> queryParams,
-                HttpServletResponse response) throws IOException {  // <- thêm HttpServletResponse và throws IOException
+                HttpServletResponse response) throws IOException {  
             String resultCode = queryParams.get("resultCode");
             String orderId = queryParams.get("orderId");
 
