@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.service.channel.impl;
 
+import com.wetube.wetube_service.mapper.channel.SubscriptionMapper;
 import com.wetube.wetube_service.repository.channel.ChannelRepository;
 import com.wetube.wetube_service.repository.channel.MemberTierRepository;
 import com.wetube.wetube_service.repository.channel.SubscriptionRepository;
@@ -14,8 +15,7 @@ import com.wetube.wetube_service.entity.channel.Subscription;
 import com.wetube.wetube_service.entity.compositekey.SubscriptionId;
 import com.wetube.wetube_service.enumeration.SubscriptionType;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
-import com.wetube.wetube_service.mapper.channel.ChannelMapper;
-import com.wetube.wetube_service.mapper.channel.SubscriptionMapper;
+import com.wetube.wetube_service.service.PlaylistService;
 import com.wetube.wetube_service.service.channel.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
     private final ChannelRepository channelRepository;
     private final MemberTierRepository memberTierRepository;
     private final SubscriptionMapper subscriptionMapper;
-    private final ChannelMapper channelMapper;
+    private final PlaylistService playlistService;
 
     @Override
     public List<SubscribedChannelResponseDto> getSubscribedChannels(UUID userId) {
@@ -46,16 +46,9 @@ public class SubScriptionServiceImpl implements SubscriptionService {
         List<Subscription> subscriptions = Optional.ofNullable(subscriptionRepository.findByIdSubscriberId(userId))
                 .orElseGet(Collections::emptyList);
 
-//        return subscriptions.stream()
-//                .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))
-//                .map(Subscription::getChannel)
-//                .distinct() // loại trùng channel
-//                .map(channelMapper::toSubChannelDto)
-//                .toList();
-
-                return subscriptions.stream()
+        return subscriptions.stream()
                 .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))
-                .map(channelMapper::toSubChannelDto)
+                .map(s -> subscriptionMapper.toSubChannelDto(s, playlistService))
                 .toList();
     }
 

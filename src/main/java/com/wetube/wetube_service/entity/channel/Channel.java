@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.entity.channel;
 
+import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +46,8 @@ public class Channel {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "channel")
+    private AppUser user;
 
     @OneToMany(mappedBy = "channel", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)

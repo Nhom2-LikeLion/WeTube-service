@@ -17,7 +17,7 @@ public class
 ChannelResponseDto {
     private UUID id;
     private String name;
-    private String avatarUrl;
+    private String picture;
     private String backgroundImgUrl;
     private String description;
     private String countryCode;
