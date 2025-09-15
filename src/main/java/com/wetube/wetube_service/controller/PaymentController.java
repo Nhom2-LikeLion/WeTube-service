@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.controller;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -10,9 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.result.view.RedirectView;
 
+import jakarta.servlet.http.HttpServletResponse;
 import com.wetube.wetube_service.dto.request.PaymentRequestDto;
 import com.wetube.wetube_service.dto.response.PaymentResponseDto;
+import com.wetube.wetube_service.entity.PaymentMomo;
+import com.wetube.wetube_service.enumeration.PaymentStatus;
+import com.wetube.wetube_service.repository.PaymentMomoRepository;
 import com.wetube.wetube_service.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
+    private final PaymentMomoRepository paymentRepo;
 
     @PostMapping("/create")
     public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody PaymentRequestDto dto) {
@@ -43,21 +50,41 @@ public class PaymentController {
     }
 
      @GetMapping("/redirect")
-    public ResponseEntity<String> handleRedirect(
-            @RequestParam Map<String, String> queryParams) {
-        String resultCode = queryParams.get("resultCode");
-        String orderId = queryParams.get("orderId");
+        public void handleRedirect(
+                @RequestParam Map<String, String> queryParams,
+                HttpServletResponse response) throws IOException {  // <- thêm HttpServletResponse và throws IOException
+            String resultCode = queryParams.get("resultCode");
+            String orderId = queryParams.get("orderId");
 
-        if ("0".equals(resultCode)) {
-            return ResponseEntity.ok("Thanh toán thành công cho orderId=" + orderId);
-        } else {
-            return ResponseEntity.ok("Thanh toán thất bại: " + queryParams);
+            if ("0".equals(resultCode)) {
+                paymentService.handleMoMoIpn(
+                    queryParams.entrySet().stream()
+                        .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue
+                        ))
+                );
+            }
+
+            String redirectUrl = "http://localhost:3000/?paymentStatus=" + resultCode + "&orderId=" + orderId;
+            response.sendRedirect(redirectUrl); 
         }
-    }
 
     @PostMapping("/notify")
     public ResponseEntity<String> handleNotify(@RequestBody Map<String, Object> body) {
         System.out.println("MoMo notify: " + body);
         return ResponseEntity.ok("OK");
     }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<String> confirmPayment(@RequestParam String orderId) {
+        PaymentMomo payment = paymentRepo.findByOrderId(orderId)
+            .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            return ResponseEntity.ok("Order đã được xác nhận thành công");
+        }
+        return ResponseEntity.badRequest().body("Thanh toán chưa thành công hoặc đã thất bại");
+    }
+
 }
