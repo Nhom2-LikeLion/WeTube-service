@@ -33,11 +33,15 @@ public class VideoController {
             @RequestParam("usersId") String usersId,
             @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "duration", required = false) Float duration,
             @RequestParam(value = "videoStatus", defaultValue = "pending") String videosStatus) {
         try {
             VideoDto meta = VideoDto.builder()
                     .usersId(usersId)
                     .title(title)
+                    .description(description)
+                    .duration(duration)
                     .videosStatus(videosStatus)
                     .build();
 
@@ -57,7 +61,7 @@ public class VideoController {
 //    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<VideoDto> addTagsToVideo(
             @PathVariable("id") UUID videoId,
-            @RequestParam("hashtags") String hashtags 
+            @RequestParam("hashtags") String hashtags
     ) {
         if (hashtags == null || hashtags.isBlank()) {
             return ResponseEntity.badRequest().body(null);
