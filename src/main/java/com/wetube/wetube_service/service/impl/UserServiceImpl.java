@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         AppUser user = userOptional.orElseThrow(() -> new ResourceNotFoundException("User", "Id", userId.toString()));
 
-        return userMapper.toDto(user);
+        return userMapper.toResponse(user);
     }
 
     @Transactional

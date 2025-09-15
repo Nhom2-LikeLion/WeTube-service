@@ -2,9 +2,12 @@ package com.wetube.wetube_service.service.interaction.impl;
 
 import com.wetube.wetube_service.dto.CommentDto.CommentRequestDto;
 import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
+import com.wetube.wetube_service.dto.UserDto;
 import com.wetube.wetube_service.entity.interaction.Comment;
 import com.wetube.wetube_service.entity.interaction.Like;
+import com.wetube.wetube_service.mapper.UserMapper;
 import com.wetube.wetube_service.mapper.interaction.CommentMapper;
+import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.interaction.CommentRepository;
 import com.wetube.wetube_service.repository.post.PostRepository;
 import com.wetube.wetube_service.service.interaction.CommentService;
@@ -25,6 +28,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final PostRepository postRepository;
     private final LikeService likeService;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public List<CommentResponseDto> getCommentsByTargetId(UUID targetId, Comment.TargetType type) {
@@ -118,20 +123,23 @@ public class CommentServiceImpl implements CommentService {
     private CommentResponseDto toResponseWithReplies(Comment comment) {
         CommentResponseDto dto = toResponseBasic(comment);
 
-        Integer replyCount = commentRepository.countByParentCommentId(comment.getId());
-        dto.setReplyCount(replyCount);
-
         List<Comment> replies = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
-        List<CommentResponseDto> replyDtos = replies.stream()
-                .map(this::toResponseBasic)
-                .collect(Collectors.toList());
-        dto.setReplies(replyDtos);
+        dto.setReplyCount(replies.size());
+        dto.setReplies(
+                replies.stream()
+                        .map(this::toResponseBasic) // reply cũng có userDto
+                        .collect(Collectors.toList())
+        );
 
         return dto;
     }
 
     private CommentResponseDto toResponseBasic(Comment comment) {
         CommentResponseDto dto = commentMapper.toResponseDto(comment);
+
+        userRepository.findById(comment.getUserId()).ifPresent(user -> {
+        dto.setUser(userMapper.toBasicDto(user));
+        });
 
         dto.setReplyCount(0);
         dto.setReplies(Collections.emptyList());
