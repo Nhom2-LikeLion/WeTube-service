@@ -73,15 +73,15 @@ public class PaymentController {
         return ResponseEntity.ok("OK");
     }
 
-    @PostMapping("/confirm")
-    public ResponseEntity<String> confirmPayment(@RequestParam String orderId) {
-        PaymentMomo payment = paymentRepo.findByOrderId(orderId)
-            .orElseThrow(() -> new RuntimeException("Payment not found"));
+    // @PostMapping("/confirm")
+    // public ResponseEntity<String> confirmPayment(@RequestParam String orderId) {
+    //     PaymentMomo payment = paymentRepo.findByOrderId(orderId)
+    //         .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        if (payment.getStatus() == PaymentStatus.SUCCESS) {
-            return ResponseEntity.ok("Order đã được xác nhận thành công");
-        }
-        return ResponseEntity.badRequest().body("Thanh toán chưa thành công hoặc đã thất bại");
-    }
+    //     if (payment.getStatus() == PaymentStatus.SUCCESS) {
+    //         return ResponseEntity.ok("Order đã được xác nhận thành công");
+    //     }
+    //     return ResponseEntity.badRequest().body("Thanh toán chưa thành công hoặc đã thất bại");
+    // }
 
 }
