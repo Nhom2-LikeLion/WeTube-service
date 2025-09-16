@@ -214,4 +214,12 @@ public class VideoServiceImpl implements VideoService {
         Pageable pageable = PageRequest.of(page, size);
         return videoRepository.findAll(pageable).map(videoMapper::toDto);
     }
+
+    @Override
+    public List<VideoDto> getVideosByTag(String tagName) {
+        return videoRepository.findByVideoTags_Tag_NameOrderByTotalViewDesc(tagName)
+                .stream()
+                .map(videoMapper::toDto)
+                .toList();
+    }
 }

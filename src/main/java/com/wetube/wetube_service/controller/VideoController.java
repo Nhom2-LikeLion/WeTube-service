@@ -80,6 +80,11 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getAllVideo());
     }
 
+    @GetMapping("/by-tag")
+    public ResponseEntity<List<VideoDto>> getVideosByTag(@RequestParam String tag) {
+        return ResponseEntity.ok(videoService.getVideosByTag(tag));
+    }
+
 
     @GetMapping("/search/fulltext")
 	public Page<VideoDocument> fullText(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {

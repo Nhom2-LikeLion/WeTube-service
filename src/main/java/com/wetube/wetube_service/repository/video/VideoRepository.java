@@ -17,6 +17,8 @@ import com.wetube.wetube_service.enumeration.ActiveStatus;
 public interface VideoRepository extends JpaRepository<Video, UUID> {
     Video findByIdAndUser_Id(UUID videoId, UUID userId);
 
+    List<Video> findByVideoTags_Tag_NameOrderByTotalViewDesc(String tagName);
+
     @Query("""
         SELECT v FROM Video v
         LEFT JOIN FETCH v.videoTags vt
