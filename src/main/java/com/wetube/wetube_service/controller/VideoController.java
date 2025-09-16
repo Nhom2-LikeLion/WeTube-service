@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.search.VideoDocument;
 import com.wetube.wetube_service.service.VideoSearchService;
@@ -61,6 +62,11 @@ public class VideoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Server Error", "message", e.getMessage()));
         }
+    }
+
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<VideoDetailResponseDto> getDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(videoService.getDetailWithRecommend(id));
     }
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
