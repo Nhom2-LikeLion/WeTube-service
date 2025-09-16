@@ -22,7 +22,7 @@ public interface VideoService {
     List<VideoDto> searchByTitle(String title);
     Page<VideoDto> searchByTitlePaging(String title, int page, int size);
     Page<VideoDto> getAllVideosPaging( int page, int size);
-
+    List<VideoDto> getVideoResult(String query);
     VideoDetailResponseDto getDetailWithRecommend(UUID videoId);
 
 

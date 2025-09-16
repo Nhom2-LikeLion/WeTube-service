@@ -280,4 +280,20 @@ public class VideoServiceImpl implements VideoService {
                 .map(videoMapper::toDto)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VideoDto> getVideoResult(String query) {
+        if (query == null || query.isBlank()) {
+            return java.util.Collections.emptyList();
+        }
+
+        String processedQuery = query.trim().replaceAll("\\s+", "%");
+
+        log.info("Executing search with processed query: {}", processedQuery);
+
+        List<Video> videos = videoRepository.findByQuery(processedQuery);
+
+        return videoMapper.toDtoList(videos);
+    }
 }

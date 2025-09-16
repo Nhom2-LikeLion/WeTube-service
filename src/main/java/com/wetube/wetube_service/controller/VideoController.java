@@ -149,5 +149,11 @@ public class VideoController {
 	public Page<VideoDto> searchByNamePaged(@RequestParam String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		return videoService.searchByTitlePaging(title, page, size);
 	}
+
+    @GetMapping("/db/search")
+    public ResponseEntity<List<VideoDto>> searchDatabaseByQuery(@RequestParam("q") String query) {
+        List<VideoDto> results = videoService.getVideoResult(query);
+        return ResponseEntity.ok(results);
+    }
 }
 
