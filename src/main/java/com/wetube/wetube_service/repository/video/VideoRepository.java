@@ -12,9 +12,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.wetube.wetube_service.entity.video.Video;
+import com.wetube.wetube_service.enumeration.ActiveStatus;
 
 public interface VideoRepository extends JpaRepository<Video, UUID> {
-    Video findByIdAndUsersId(UUID id, String usersId);
+    Video findByIdAndUser_Id(UUID videoId, UUID userId);
 
     @Query("""
         SELECT v FROM Video v
@@ -23,7 +24,7 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
         WHERE v.id = :id
     """)
     Optional<Video> findByIdWithTags(@Param("id") UUID id);
-    List<Video> findAllByVideosStatusOrderByCreatedAtDesc(String status);
+    List<Video> findAllByVideosStatusOrderByCreatedAtDesc(ActiveStatus status);
 
     List<Video> findByTitleContainingIgnoreCase(String title);
     Page<Video> findByTitleContainingIgnoreCase(String title, Pageable pageable);

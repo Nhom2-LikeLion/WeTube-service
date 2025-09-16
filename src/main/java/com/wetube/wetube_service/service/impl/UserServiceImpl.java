@@ -3,6 +3,7 @@ package com.wetube.wetube_service.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetube.wetube_service.dto.GoogleUser;
+import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.entity.auth.OAuthAccount;
 import com.wetube.wetube_service.entity.auth.Role;
 import com.wetube.wetube_service.repository.auth.OAuthAccountRepository;
@@ -12,6 +13,7 @@ import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.UserMapper;
+import com.wetube.wetube_service.service.PlaylistService;
 import com.wetube.wetube_service.service.UserService;
 import com.wetube.wetube_service.service.channel.impl.ChannelServiceImpl;
 import lombok.AllArgsConstructor;
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final OAuthAccountRepository oauthAccountRepository;
     private final ChannelServiceImpl channelService;
     private final ObjectMapper objectMapper;
+    private final PlaylistService playlistService;
 
     @Override
     public UserResponseDto getUserById(UUID userId) {
@@ -81,6 +84,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.getChannel() == null) {
             channelService.initiateChannel(user.getId(), clientIp);
+            playlistService.initiatePlaylist(user.getId());
             AppUser finalUser = user;
             user = userRepository.findById(user.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", "id", finalUser.getId().toString()));

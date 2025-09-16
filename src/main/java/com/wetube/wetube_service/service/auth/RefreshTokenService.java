@@ -12,4 +12,6 @@ public interface RefreshTokenService {
     RefreshToken validateBySession(String sessionId);
 
     RotateResult rotateBySession(String sessionId);
+
+    void revokeSession(String sessionId);
 }

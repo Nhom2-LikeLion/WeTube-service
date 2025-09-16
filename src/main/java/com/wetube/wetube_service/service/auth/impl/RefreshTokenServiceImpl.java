@@ -9,6 +9,7 @@ import com.wetube.wetube_service.exception.SystemConfigurationException;
 import com.wetube.wetube_service.repository.auth.RefreshTokenRepository;
 import com.wetube.wetube_service.service.auth.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -78,8 +80,25 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional(readOnly = true)
     public RefreshToken validateBySession(String sessionId) {
-        return refreshTokenRepository.findBySessionIdAndRevokedFalse(sessionId)
-                .orElseThrow(() -> new InvalidTokenException("invalid_session"));
+        log.info("Validating session ID: {}", sessionId);
+
+        var tokenOpt = refreshTokenRepository.findBySessionId(sessionId);
+
+        if (tokenOpt.isEmpty()) {
+            log.error("VALIDATION FAILED: SID [{}] does not exist in database.", sessionId);
+            throw new InvalidTokenException("invalid_session - not found");
+        }
+
+        RefreshToken token = tokenOpt.get();
+        log.info("Found token for SID [{}]. Check revoked status...", sessionId);
+
+        if (token.isRevoked()) {
+            log.error("VALIDATION FAILED: Token for SID [{}] has been revoked (revoked = true).", sessionId);
+            throw new InvalidTokenException("invalid_session - revoked");
+        }
+
+        log.info("VALIDATION SUCCESS: Token for SID [{}] valid.", sessionId);
+        return token;
     }
 
     @Override
@@ -106,5 +125,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.save(next);
 
         return new RotateResult(sessionId, raw, next.getUser());
+    }
+
+    @Override
+    @Transactional
+    public void revokeSession(String sessionId) {
+        refreshTokenRepository.findBySessionId(sessionId).ifPresent(token -> {
+            log.info("Revoking token for SID: {}", sessionId);
+            token.setRevoked(true);
+        });
     }
 }

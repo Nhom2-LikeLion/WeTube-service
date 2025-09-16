@@ -1,5 +1,7 @@
 package com.wetube.wetube_service.entity.video;
 
+import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.enumeration.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -29,13 +31,18 @@ public class Video {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
-    private String usersId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", nullable = false)
+    private AppUser user;
+
     @Column(nullable = false)
     private String title;
     private String description;
     private String thumbnailUrl;
     private String videoUrl;
-    private String videosStatus;
+    @Enumerated(EnumType.STRING)
+    private ActiveStatus videosStatus;
+    private int totalView;
     private float duration;
 
 
