@@ -56,6 +56,10 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
 
 
+    //Websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
 
