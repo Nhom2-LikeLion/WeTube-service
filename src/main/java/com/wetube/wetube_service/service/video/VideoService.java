@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.wetube.wetube_service.dto.video.RecommendResponseDto;
+import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 
 
@@ -20,7 +22,9 @@ public interface VideoService {
     List<VideoDto> searchByTitle(String title);
     Page<VideoDto> searchByTitlePaging(String title, int page, int size);
     Page<VideoDto> getAllVideosPaging( int page, int size);
-  
+
+    VideoDetailResponseDto getDetailWithRecommend(UUID videoId);
+
 
    List<VideoDto> getVideosByTag(String tagName);
 }

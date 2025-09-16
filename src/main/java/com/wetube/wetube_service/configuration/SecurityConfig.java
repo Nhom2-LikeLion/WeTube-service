@@ -82,9 +82,13 @@ public class SecurityConfig {
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/api/videos/**").permitAll()
                         .requestMatchers("/api/recommend/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-                        .requestMatchers("/api/customers/**").authenticated())
-                        
+                        .requestMatchers("/api/customers/**").authenticated()
+                        .requestMatchers("/api/uploads/**").permitAll()
+                        .requestMatchers("/api/likes/**").permitAll()
+                        .requestMatchers("/api/comments/**").permitAll())
+
                 .build();
     }
 

@@ -31,5 +31,10 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
     List<Video> findByTitleContainingIgnoreCase(String title);
     Page<Video> findByTitleContainingIgnoreCase(String title, Pageable pageable);
     Page<Video> findAll(Pageable pageable);
+    List<Video> findDistinctByVideoTags_Tag_NameInAndIdNot(List<String> tagNames, UUID excludeId);
+
+
+    
+
 
 }

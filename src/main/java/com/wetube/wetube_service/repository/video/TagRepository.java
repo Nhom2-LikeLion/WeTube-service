@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.repository.video;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,5 +20,7 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
     @Transactional
     @Query("UPDATE Tag t SET t.count = t.count + 1 WHERE t.id = :id")
     int incrementCount(@Param("id") UUID id);
+    List<Tag> findByVideoTags_Video_Id(UUID videoId);
+
     
 }

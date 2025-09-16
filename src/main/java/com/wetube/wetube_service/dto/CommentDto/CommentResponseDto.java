@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.dto.CommentDto;
 
+import com.wetube.wetube_service.dto.UserDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class CommentResponseDto {
     private UUID id;
     private String content;
-    private UUID userId;
+    private UserDto user;
     private Integer likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
