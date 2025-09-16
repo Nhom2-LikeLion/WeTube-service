@@ -8,7 +8,11 @@ VALUES
 -- 2. Tags
 INSERT INTO tags (id, name, created_at, count)
 VALUES
-(UUID(), 'Sports',  NOW(), 0);
+(UUID(), 'Sports',  NOW(), 0),
+(UUID(), 'Music',   NOW(), 0),
+(UUID(), 'Anime',   NOW(), 0),
+(UUID(), 'Action',  NOW(), 0),
+(UUID(), 'Comedy',  NOW(), 0);
 
 -- 3. Videos
 -- Giả định có enum ActiveStatus { PUBLIC, PRIVATE, DRAFT }
