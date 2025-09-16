@@ -265,4 +265,12 @@ public class VideoServiceImpl implements VideoService {
 
                 return new VideoDetailResponseDto(detail, recommend);
     }
+
+    @Override
+    public List<VideoDto> getVideosByTag(String tagName) {
+        return videoRepository.findByVideoTags_Tag_NameOrderByTotalViewDesc(tagName)
+                .stream()
+                .map(videoMapper::toDto)
+                .toList();
+    }
 }

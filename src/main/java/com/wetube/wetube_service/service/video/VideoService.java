@@ -26,4 +26,5 @@ public interface VideoService {
     VideoDetailResponseDto getDetailWithRecommend(UUID videoId);
 
 
-} 
+   List<VideoDto> getVideosByTag(String tagName);
+}
