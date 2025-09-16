@@ -9,6 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RecommendResponseDto {
-    private RecommendVideoDto video;
+    private List<RecommendVideoDto> video;
     private List<TagDto> tags;
 }
