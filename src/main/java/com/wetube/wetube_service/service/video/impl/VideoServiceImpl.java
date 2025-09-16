@@ -68,12 +68,19 @@ public class VideoServiceImpl implements VideoService {
             throw new IllegalArgumentException("Video file is required");
         }
 
+        UUID userId = UUID.fromString(videoDto.getUsersId());
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+
         String videoUrl = cloudinaryService.uploadVideo(videoFile);
         String thumbnailUrl = (thumbnailFile != null && !thumbnailFile.isEmpty())
                 ? cloudinaryService.uploadThumbnail(thumbnailFile)
                 : null;
 
         Video entity = videoMapper.toEntity(videoDto);
+
+        entity.setUser(user);
         entity.setVideoUrl(videoUrl);
         entity.setThumbnailUrl(thumbnailUrl);
         entity.setVideosStatus(ActiveStatus.ACTIVE);

@@ -8,12 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.search.VideoDocument;
@@ -31,18 +27,16 @@ public class VideoController {
     private final VideoSearchService searchService;
 
     @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> uploadFile(
             @RequestParam("videoFile") MultipartFile videoFile,
-//            @RequestParam("usersId") String usersId,
-            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam("usersId") String usersId,
             @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "duration", required = false) Float duration,
             @RequestParam(value = "tags", required = false) String tags){
         try {
-            String usersId = jwt.getSubject();
+//            String usersId = jwt.getSubject();
 
             VideoDto meta = VideoDto.builder()
                     .usersId(usersId)
