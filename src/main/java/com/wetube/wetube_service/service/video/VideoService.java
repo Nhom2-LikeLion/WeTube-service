@@ -6,14 +6,12 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wetube.wetube_service.dto.video.RecommendResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 
 
 public interface VideoService {
     VideoDto createVideo(MultipartFile videoFile, MultipartFile thumbnailFile, VideoDto videoDto) throws Exception;
-    VideoDto getById(String id);
     List<VideoDto> getAllVideo();
     VideoDto addTags(UUID videoId, String hashtagText);
     
@@ -25,6 +23,8 @@ public interface VideoService {
     List<VideoDto> getVideoResult(String query);
     VideoDetailResponseDto getDetailWithRecommend(UUID videoId);
 
-
+    Page<VideoDto> getVideosByUserId(UUID userId, int page, int size);
    List<VideoDto> getVideosByTag(String tagName);
+
+
 }

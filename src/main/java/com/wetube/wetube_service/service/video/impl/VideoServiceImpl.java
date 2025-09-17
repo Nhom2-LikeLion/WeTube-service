@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -176,11 +177,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional(readOnly = true)
-    public VideoDto getById(String id) {
-        UUID uuid = UUID.fromString(id);
-        Video video = videoRepository.findById(uuid)
-                .orElseThrow(() -> new IllegalArgumentException(ID_NOT_FOUND + id));
-        return videoMapper.toDto(video);
+    public Page<VideoDto> getVideosByUserId(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Video> videoPage = videoRepository.findByUserId(userId, pageable);
+
+        return videoPage.map(videoMapper::toDto);
     }
 
     @Override
