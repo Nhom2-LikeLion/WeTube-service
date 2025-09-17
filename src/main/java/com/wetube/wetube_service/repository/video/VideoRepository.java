@@ -42,7 +42,7 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
                          OR LOWER(COALESCE(t.name, '')) LIKE LOWER(:query)                                                      OR LOWER(COALESCE(t.name, '')) LIKE LOWER(:query) 
             """)
     List<Video> findByQuery(@Param("query") String query);
-    
 
+    Page<Video> findByUserId(UUID userId, Pageable pageable);
 
 }

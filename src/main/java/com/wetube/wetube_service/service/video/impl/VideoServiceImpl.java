@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import com.wetube.wetube_service.dto.response.CustomPageResponse;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
@@ -62,16 +63,15 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public VideoDto createVideo(MultipartFile videoFile,
-            MultipartFile thumbnailFile,
-            VideoDto videoDto) throws Exception {
+                                MultipartFile thumbnailFile,
+                                VideoDto videoDto, UUID authenticatedUserId) throws Exception {
 
         if (videoFile == null || videoFile.isEmpty()) {
             throw new IllegalArgumentException("Video file is required");
         }
 
-        UUID userId = UUID.fromString(videoDto.getUsersId());
-        AppUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        AppUser user = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + authenticatedUserId));
 
 
         String videoUrl = cloudinaryService.uploadVideo(videoFile);
@@ -177,12 +177,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VideoDto> getVideosByUserId(UUID userId, int page, int size) {
+    public CustomPageResponse<VideoDto> getVideosByUserId(UUID userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Page<Video> videoPage = videoRepository.findByUserId(userId, pageable);
-
-        return videoPage.map(videoMapper::toDto);
+        Page<VideoDto> videoDtoPage = videoPage.map(videoMapper::toDto);
+        return new CustomPageResponse<>(videoDtoPage);
     }
 
     @Override
@@ -195,17 +195,12 @@ public class VideoServiceImpl implements VideoService {
     private Set<String> parseHashtagText(String hashtagText) {
         if (hashtagText == null || hashtagText.isBlank())
             return java.util.Collections.emptySet();
-        String[] parts = hashtagText.split("\\s+");
+        String[] parts = hashtagText.split("[\\s#]+");
         Set<String> out = new LinkedHashSet<>();
-        for (String raw : parts) {
-            if (raw == null)
-                continue;
-            String s = raw.trim();
-            if (s.startsWith("#"))
-                s = s.substring(1);
-            s = s.trim().toLowerCase(Locale.ROOT);
-            if (!s.isBlank())
-                out.add(s);
+        for (String part : parts) {
+            if (part != null && !part.isBlank()) {
+                out.add(part.trim().toLowerCase(Locale.ROOT));
+            }
         }
         return out;
     }
@@ -238,16 +233,16 @@ public class VideoServiceImpl implements VideoService {
 
         List<TagDto> tags = tagRepository.findByVideoTags_Video_Id(videoId)
                 .stream().map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getCreatedAt(), 0)).toList();
-        
+
         var detail = new VideoDetailDto(
-            video.getId(),
-            video.getTitle(),
-            video.getDescription(),
-            video.getVideoUrl(),
-            video.getCreatedAt().toLocalDate(),
-            video.getTotalView(),
-            video.getUser().getName(),
-            video.getUser().getPicture()
+                video.getId(),
+                video.getTitle(),
+                video.getDescription(),
+                video.getVideoUrl(),
+                video.getCreatedAt().toLocalDate(),
+                video.getTotalView(),
+                video.getUser().getName(),
+                video.getUser().getPicture()
         );
 
         var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
@@ -264,15 +259,15 @@ public class VideoServiceImpl implements VideoService {
                         v.getUser().getName(),
                         (long) v.getDuration(),
                         v.getUser().getPicture()
-                )) 
+                ))
                 .toList();
 
-                 var recommend = RecommendResponseDto.builder()
+        var recommend = RecommendResponseDto.builder()
                 .video(relatedVideos)
                 .tags(tags)
                 .build();
 
-                return new VideoDetailResponseDto(detail, recommend);
+        return new VideoDetailResponseDto(detail, recommend);
     }
 
     @Override
