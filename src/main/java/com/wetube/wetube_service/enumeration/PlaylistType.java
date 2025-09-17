@@ -6,5 +6,8 @@ public enum  PlaylistType {
     WATCH_LATER,
     USER_PLAYLIST,
     USER_UPLOADED,
-    HISTORY
+    HISTORY,
+    MUSIC,
+    USER_SAVED,
+    SAVED,
 }

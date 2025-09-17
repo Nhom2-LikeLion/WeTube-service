@@ -3,7 +3,7 @@ package com.wetube.wetube_service.dto.response;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ public class UserResponseDto {
     private String email;
     private String name;
     private String picture;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     private UserChannelResponseDto channel;
 
     @Data
@@ -27,7 +27,7 @@ public class UserResponseDto {
         private String playlistTitle;
         private PlaylistType playlistType;
         private int totalVideos;
-        private LocalDateTime createdAt;
+        private LocalDate createdAt;
         private List<PlaylistVideoDto> videos;
     }
 

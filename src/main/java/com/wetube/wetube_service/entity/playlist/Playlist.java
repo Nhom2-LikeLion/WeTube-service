@@ -1,5 +1,5 @@
 package com.wetube.wetube_service.entity.playlist;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,19 +48,25 @@ public class Playlist {
     private String title;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlaylistType playlistType;
 
+    @Column(nullable = true)
+    private String privacy;
+
+    @Column(nullable = true)
+    private String thumbnailUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<PlaylistVideo> playlistVideos;
 }

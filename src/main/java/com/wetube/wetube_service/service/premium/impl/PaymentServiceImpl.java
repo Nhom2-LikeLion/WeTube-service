@@ -145,7 +145,7 @@ import jakarta.transaction.Transactional;
                         .orElseThrow(() -> new RuntimeException("Payment not found"));
 
                 if ("0".equals(resultCode)) {
-                    // Thanh toán thành công
+                   
                     PremiumUser premiumUser = PremiumUser.builder()
                             .user(payment.getUser())
                             .subpack(payment.getSubpack())

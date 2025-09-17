@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.wetube.wetube_service.dto.response.UserResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
+import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.service.PlaylistService;
 
@@ -55,9 +55,9 @@ public class PlaylistController {
         return ResponseEntity.ok(pls.getAllPlaylistByTagUserId(userId,playlistType));
     }
 
-    @GetMapping("/detail/{playlistVideoId}")
-    public ResponseEntity<UserResponseDto.PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistVideoId) {
-        return ResponseEntity.ok(pls.getPlaylistVideoById(playlistVideoId));
+    @GetMapping("/detail/{playlistId}")
+    public ResponseEntity<UserResponseDto.PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistId) {
+        return ResponseEntity.ok(pls.getPlaylistVideoById(playlistId));
     }
 
     @PostMapping("/videos/add")
@@ -81,5 +81,13 @@ public class PlaylistController {
     public ResponseEntity<Map<String, String>> removePlaylist(@PathVariable UUID playlistId){
         pls.removePlaylist(playlistId);
         return ResponseEntity.ok(Map.of("message","Playlist deleted successfully"));
+    }
+
+    @GetMapping("/recentlyadded/{userId}")
+    public List<PlaylistUserDto> getRecentlyAddedPlaylists(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return pls.getRecentlyAddedPlaylists(userId, limit);
     }
 }

@@ -8,13 +8,13 @@ import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
-import org.springframework.data.domain.PageRequest;
+
 
 
 public interface PlaylistService {
     List<PlaylistUserDto> getAllPlaylistByUserId(UUID userId);
 
-    UserResponseDto.PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId);
+    UserResponseDto.PlaylistDetailDto getPlaylistVideoById(UUID playlistId);
 
     PlaylistUserDto  createPlaylist(CreatePlaylistRequest dto);
 
@@ -29,5 +29,7 @@ public interface PlaylistService {
     List<PlaylistUserDto> getAllPlaylistByTagUserId(UUID userId,PlaylistType playlistType);
 
     String getTopViewUserUploaded(UUID userId);
+
+    List<PlaylistUserDto> getRecentlyAddedPlaylists(UUID userId, int limit);
 
 }
