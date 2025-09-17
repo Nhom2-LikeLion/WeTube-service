@@ -1,0 +1,17 @@
+package com.wetube.wetube_service.repository.notification;
+
+import com.wetube.wetube_service.entity.notification.Notification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface NotificationRepository extends JpaRepository<Notification, UUID> {
+
+    List<Notification> findByUserIdOrderByCreatedAtDesc(UUID userId);
+
+    Integer countByUserIdAndIsReadFalse(UUID userId);
+}
+
