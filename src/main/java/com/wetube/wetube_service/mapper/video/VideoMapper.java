@@ -5,6 +5,8 @@ import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.video.VideoTag;
 import com.wetube.wetube_service.search.VideoDocument;
+import com.wetube.wetube_service.dto.video.RecommendVideoDto;
+
 
 import org.mapstruct.*;
 
@@ -24,6 +26,22 @@ public interface VideoMapper {
         if (entities == null || entities.isEmpty()) return Collections.emptyList();
         return entities.stream().map(this::toDto).toList();
     }
+
+    @Mapping(target = "id",          source = "id")
+    @Mapping(target = "title",       source = "title")
+    @Mapping(target = "thumbnailUrl",source = "thumbnailUrl")
+    @Mapping(target = "totalView",   source = "totalView")
+    @Mapping(target = "createAt",    source = "createdAt")
+    @Mapping(target = "name",        source = "user.name")     
+    @Mapping(target = "picture",     source = "user.picture")  
+    @Mapping(target = "duration",    source = "duration")
+    RecommendVideoDto toRecommendDto(Video entity);
+
+    default List<RecommendVideoDto> toRecommendDtoList(List<Video> entities) {
+        if (entities == null || entities.isEmpty()) return Collections.emptyList();
+        return entities.stream().map(this::toRecommendDto).toList();
+    }
+
 
     @InheritInverseConfiguration(name = "toDto")
     @Mapping(target = "id", ignore = true)

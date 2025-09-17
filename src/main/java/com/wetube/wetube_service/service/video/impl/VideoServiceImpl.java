@@ -26,6 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.wetube.wetube_service.repository.video.TagRepository;
 import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.repository.video.VideoTagRepository;
+import com.wetube.wetube_service.dto.video.RecommendResponseDto;
+import com.wetube.wetube_service.dto.video.RecommendVideoDto;
+import com.wetube.wetube_service.dto.video.TagDto;
+import com.wetube.wetube_service.dto.video.VideoDetailDto;
+import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.video.VideoTag;
@@ -63,12 +68,19 @@ public class VideoServiceImpl implements VideoService {
             throw new IllegalArgumentException("Video file is required");
         }
 
+        UUID userId = UUID.fromString(videoDto.getUsersId());
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+
         String videoUrl = cloudinaryService.uploadVideo(videoFile);
         String thumbnailUrl = (thumbnailFile != null && !thumbnailFile.isEmpty())
                 ? cloudinaryService.uploadThumbnail(thumbnailFile)
                 : null;
 
         Video entity = videoMapper.toEntity(videoDto);
+
+        entity.setUser(user);
         entity.setVideoUrl(videoUrl);
         entity.setThumbnailUrl(thumbnailUrl);
         entity.setVideosStatus(ActiveStatus.ACTIVE);
@@ -96,11 +108,13 @@ public class VideoServiceImpl implements VideoService {
         try {
             UUID userId = video.getUser().getId();
 
-            Playlist uploadedPlaylist = playlistRepository.findByUserIdAndPlaylistType(userId, PlaylistType.USER_UPLOADED)
+            Playlist uploadedPlaylist = playlistRepository
+                    .findByUserIdAndPlaylistType(userId, PlaylistType.USER_UPLOADED)
                     .orElseGet(() -> {
                         log.info("USER_UPLOADED playlist not found for user {}. Creating new one.", userId);
                         AppUser user = userRepository.findById(userId)
-                                .orElseThrow(() -> new IllegalArgumentException("User not found for creating playlist"));
+                                .orElseThrow(
+                                        () -> new IllegalArgumentException("User not found for creating playlist"));
 
                         Playlist newPlaylist = Playlist.builder()
                                 .title("Uploaded videos")
@@ -213,5 +227,57 @@ public class VideoServiceImpl implements VideoService {
     public Page<VideoDto> getAllVideosPaging(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return videoRepository.findAll(pageable).map(videoMapper::toDto);
+    }
+
+    @Override
+    public VideoDetailResponseDto getDetailWithRecommend(UUID videoId) {
+        var video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new RuntimeException(ID_NOT_FOUND + videoId));
+
+        List<TagDto> tags = tagRepository.findByVideoTags_Video_Id(videoId)
+                .stream().map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getCreatedAt(), 0)).toList();
+        
+        var detail = new VideoDetailDto(
+            video.getId(),
+            video.getTitle(),
+            video.getDescription(),
+            video.getVideoUrl(),
+            video.getCreatedAt().toLocalDate(),
+            video.getTotalView(),
+            video.getUser().getName(),
+            video.getUser().getPicture()
+        );
+
+        var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
+                        tags.stream().map(TagDto::getName).toList(),
+                        videoId
+                )
+                .stream()
+                .map(v -> new RecommendVideoDto(
+                        v.getId(),
+                        v.getTitle(),
+                        v.getThumbnailUrl(),
+                        Integer.valueOf(v.getTotalView()),
+                        v.getCreatedAt().toLocalDate(),
+                        v.getUser().getName(),
+                        (long) v.getDuration(),
+                        v.getUser().getPicture()
+                )) 
+                .toList();
+
+                 var recommend = RecommendResponseDto.builder()
+                .video(relatedVideos)
+                .tags(tags)
+                .build();
+
+                return new VideoDetailResponseDto(detail, recommend);
+    }
+
+    @Override
+    public List<VideoDto> getVideosByTag(String tagName) {
+        return videoRepository.findByVideoTags_Tag_NameOrderByTotalViewDesc(tagName)
+                .stream()
+                .map(videoMapper::toDto)
+                .toList();
     }
 }

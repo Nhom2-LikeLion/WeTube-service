@@ -4,6 +4,16 @@ spring:
   profiles:
     default: local
 
+  main:
+    allow-bean-definition-overriding: true
+
+  web:
+    cors:
+      allowed-origins: "http://localhost:3000"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -35,3 +45,11 @@ app:
 
 geoip:
   database: classpath:GeoLite/GeoLite2-Country.mmdb
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

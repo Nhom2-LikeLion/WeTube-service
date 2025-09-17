@@ -4,5 +4,6 @@ public enum ActiveStatus {
     NONE,
     INACTIVE,
     PENDING,
-    ACTIVE
+    ACTIVE,
+    PUBLIC
 }

@@ -464,7 +464,7 @@ CREATE TABLE `videos` (
   `updated_at` datetime(6) DEFAULT NULL,
   `users_id` varchar(255) DEFAULT NULL,
   `video_url` varchar(255) DEFAULT NULL,
-  `videos_status` enum('ACTIVE','INACTIVE','NONE','PENDING') DEFAULT NULL,
+  `videos_status` enum('ACTIVE','INACTIVE','NONE','PENDING','PUBLIC') DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
