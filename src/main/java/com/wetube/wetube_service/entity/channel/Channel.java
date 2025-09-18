@@ -58,7 +58,7 @@ public class Channel {
         return user.getId();
     }
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("orderPosition ASC")
     private List<ChannelCategory> categories = new ArrayList<>();
 }

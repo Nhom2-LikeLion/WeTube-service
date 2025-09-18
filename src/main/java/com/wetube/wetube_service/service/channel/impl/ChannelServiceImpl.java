@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +63,20 @@ public class ChannelServiceImpl implements ChannelService {
                 .totalVideos(0)
                 .totalViews(0)
                 .revenue(0f)
+                .user(user)
                 .build();
+
+        List<ChannelCategory> defaultCategories = new ArrayList<>();
+        CategoryType[] categoryTypes = CategoryType.values();
+        for (int i = 0; i < categoryTypes.length; i++) {
+            ChannelCategory category = ChannelCategory.builder()
+                    .categoryType(categoryTypes[i])
+                    .orderPosition(i + 1)
+                    .isVisible(true)
+                    .channel(channel)
+                    .build();
+            defaultCategories.add(category);
+        }
 
         MembershipTier defaultTier = MembershipTier.builder()
                 .title(user.getName() + " Default Tier")
@@ -72,29 +86,10 @@ public class ChannelServiceImpl implements ChannelService {
                 .channel(channel)
                 .build();
 
+        channel.setCategories(defaultCategories);
         channel.setMembershipTiers(List.of(defaultTier));
         user.setChannel(channel);
 
-        Channel savedChannel = userRepository.save(user).getChannel();
-
-        initiateCategories(savedChannel);
-    }
-
-    @Override
-    public void initiateCategories(Channel channel) {
-        CategoryType[] defaultCategories = CategoryType.values();
-
-        for (int i = 0; i < defaultCategories.length; i++) {
-            ChannelCategory category = ChannelCategory.builder()
-                    .categoryType(defaultCategories[i])
-                    .orderPosition(i + 1)
-                    .isVisible(true)
-                    .channel(channel)
-                    .build();
-
-            categoryRepository.save(category);
-        }
-        log.info("Created {} default categories for channel: {}",
-                defaultCategories.length, channel.getId());
+        userRepository.save(user);
     }
 }

@@ -11,5 +11,4 @@ public interface ChannelService {
 //    List<UserDto> getSubscribers(UUID channelId);
 //    List<UserDto> getPremiumSubscribers(UUID channelId);
     void initiateChannel(UUID userID, String ip);
-    void initiateCategories(Channel savedChannel);
 }
