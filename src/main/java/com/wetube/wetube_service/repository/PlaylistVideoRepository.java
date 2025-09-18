@@ -11,6 +11,6 @@ import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 @Repository
 public interface PlaylistVideoRepository extends JpaRepository<PlaylistVideo, UUID>{
     List<PlaylistVideo> findByPlaylistId(UUID playlistId);
-
+    List<PlaylistVideo> findByPlaylist_Id(UUID playlistId);
     void deleteByPlaylistId(UUID playlistId);
 }

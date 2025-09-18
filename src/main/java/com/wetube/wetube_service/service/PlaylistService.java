@@ -5,28 +5,35 @@ import java.util.UUID;
 
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
-import com.wetube.wetube_service.dto.response.PlaylistUserDto;
-import com.wetube.wetube_service.dto.response.UserResponseDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
-import org.springframework.data.domain.PageRequest;
+import com.wetube.wetube_service.exception.DuplicatePlaylistTitleException;
 
 
 public interface PlaylistService {
-    List<PlaylistUserDto> getAllPlaylistByUserId(UUID userId);
+    UserPlaylistDto createPlaylist(CreatePlaylistRequest dto);
 
-    UserResponseDto.PlaylistDetailDto getPlaylistVideoById(UUID playlistVideoId);
+    List<UserPlaylistDto> getAllPlaylistByUserId(UUID userId);
 
-    PlaylistUserDto  createPlaylist(CreatePlaylistRequest dto);
+    List<UserPlaylistDto> getUserPlaylistById(UUID userId);
+
+    List<UserPlaylistDto> getUserCreatedPlaylistById(UUID userId);
+
+    PlaylistDetailDto getPlaylistDetailedById(UUID playlistVideoId);
+    PlaylistDetailDto getPlaylistDetailedById(UUID channelId, String playlistName);
+
+    List<UserPlaylistDto> getAllPlaylistByTagUserId(UUID userId, PlaylistType playlistType);
 
     void initiatePlaylist(UUID userId);
 
-    UserResponseDto.PlaylistVideoDto addVideoToPlaylist(PlaylistaddRequest dto);
+    PlaylistVideoDto addVideoToPlaylist(PlaylistaddRequest dto);
 
     void removeVideoFromPlaylist(UUID videoId, UUID playlistVideoId);
 
     void removePlaylist(UUID playlistId);
 
-    List<PlaylistUserDto> getAllPlaylistByTagUserId(UUID userId,PlaylistType playlistType);
 
     String getTopViewUserUploaded(UUID userId);
 

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.wetube.wetube_service.dto.response.UserResponseDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
+import com.wetube.wetube_service.exception.DuplicatePlaylistTitleException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
-import com.wetube.wetube_service.dto.response.PlaylistUserDto;
+import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.service.PlaylistService;
 
@@ -28,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/playlists")
 @RequiredArgsConstructor
 public class PlaylistController {
-    private final PlaylistService pls;
+    private final PlaylistService playlistService;
 
 //    @PostMapping("/init/{userId}")
 //    public ResponseEntity<Void> createPlaylist(@PathVariable UUID userId) {
@@ -36,33 +38,52 @@ public class PlaylistController {
 //        return ResponseEntity.noContent().build();
 //    }
 
-    //  Tạo playlist bằng JSON body
-    @PostMapping("/create")
-    public ResponseEntity<PlaylistUserDto> createPlaylist(@RequestBody CreatePlaylistRequest request) {
-        return ResponseEntity.ok(pls.createPlaylist(request));
+    @Deprecated
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<List<UserPlaylistDto>> getAllPlaylistsByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(playlistService.getAllPlaylistByUserId(userId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PlaylistUserDto>> getAllPlaylistsByUser(@PathVariable UUID userId) {
-        return ResponseEntity.ok(pls.getAllPlaylistByUserId(userId));
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<UserPlaylistDto>> getUserPlaylistsById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(playlistService.getUserPlaylistById(userId));
     }
-    
+
+    @GetMapping("/created/{userId}")
+    public ResponseEntity<List<UserPlaylistDto>> getUserCreatedPlaylistsById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(playlistService.getUserCreatedPlaylistById(userId));
+    }
+
+    @GetMapping("/detail/{playlistId}")
+    public ResponseEntity<PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistId) {
+        return ResponseEntity.ok(playlistService.getPlaylistDetailedById(playlistId));
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<PlaylistDetailDto> getPlaylistDetail(
+            @RequestParam UUID channelId,
+            @RequestParam String playlistName) {
+
+        PlaylistDetailDto result = playlistService.getPlaylistDetailedById(channelId, playlistName);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<UserPlaylistDto> createPlaylist(@RequestBody CreatePlaylistRequest request) {
+        return ResponseEntity.ok(playlistService.createPlaylist(request));
+    }
+
     @GetMapping("/{userId}/playlistType")
-    public ResponseEntity<List<PlaylistUserDto>> getAllPlaylistsByTagUser(
-        @PathVariable UUID userId,
+    public ResponseEntity<List<UserPlaylistDto>> getAllPlaylistsByTagUser(
+        @PathVariable UUID userId,  
         @RequestParam PlaylistType playlistType) {
 
-        return ResponseEntity.ok(pls.getAllPlaylistByTagUserId(userId,playlistType));
-    }
-
-    @GetMapping("/detail/{playlistVideoId}")
-    public ResponseEntity<UserResponseDto.PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistVideoId) {
-        return ResponseEntity.ok(pls.getPlaylistVideoById(playlistVideoId));
+        return ResponseEntity.ok(playlistService.getAllPlaylistByTagUserId(userId,playlistType));
     }
 
     @PostMapping("/videos/add")
-     public ResponseEntity<UserResponseDto.PlaylistVideoDto> addVideoToPlaylist(@RequestBody PlaylistaddRequest request) {
-        return ResponseEntity.ok(pls.addVideoToPlaylist(request));
+     public ResponseEntity<PlaylistVideoDto> addVideoToPlaylist(@RequestBody PlaylistaddRequest request) {
+        return ResponseEntity.ok(playlistService.addVideoToPlaylist(request));
     }
 
     @DeleteMapping("/{videoId}/{playlistVideoId}")
@@ -70,7 +91,7 @@ public class PlaylistController {
             @PathVariable UUID videoId,
             @PathVariable UUID playlistVideoId) {
 
-        pls.removeVideoFromPlaylist(videoId, playlistVideoId);
+        playlistService.removeVideoFromPlaylist(videoId, playlistVideoId);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Video removed from playlist successfully");
@@ -79,7 +100,7 @@ public class PlaylistController {
 
     @DeleteMapping("/{playlistId}")
     public ResponseEntity<Map<String, String>> removePlaylist(@PathVariable UUID playlistId){
-        pls.removePlaylist(playlistId);
+        playlistService.removePlaylist(playlistId);
         return ResponseEntity.ok(Map.of("message","Playlist deleted successfully"));
     }
 }
