@@ -17,30 +17,4 @@ public class UserResponseDto {
     private String picture;
     private LocalDateTime createdAt;
     private UserChannelResponseDto channel;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class PlaylistDetailDto {
-        private UUID playlistId;
-        private String playlistTitle;
-        private PlaylistType playlistType;
-        private int totalVideos;
-        private LocalDateTime createdAt;
-        private List<PlaylistVideoDto> videos;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class PlaylistVideoDto {
-        private UUID videoId;
-        private String videoTitle;
-        private String videoUrl;
-        private String thumbnailUrl;
-        private float historyDuration;
-    }
 }

@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.dto.response;
+package com.wetube.wetube_service.dto.response.playlist;
 
 import java.util.UUID;
 

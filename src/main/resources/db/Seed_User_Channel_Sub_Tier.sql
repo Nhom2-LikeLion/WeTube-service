@@ -18,8 +18,8 @@ For release under our Record Label, please send your demo (Unreleased) ',
      'CA', 'ACTIVE', 350.75, 5400, 120, 245000, NOW(), NOW()),
 
     ('11111111-1111-1111-1111-111111111113', 'MrBeast', 
-     'https://yt3.googleusercontent.com/ytc/AIdro_lzXs22krjqYJ2Kuh8cYbYHD_qpdo01j1RjSX5G2PrJ1w=s160-c-k-c0x00ffffff-no-rj',
      'https://yt3.googleusercontent.com/nxYrc_1_2f77DoBadyxMTmv7ZpRZapHR5jbuYe7PlPd5cIRJxtNNEYyOC0ZsxaDyJJzXrnJiuDE=s160-c-k-c0x00ffffff-no-rj',
+     'https://yt3.googleusercontent.com/5KWiriZZ_KEoEdSMFTJKj2M6vR_XSiRZeQ-ix0cvG3TGZuGoi8sfAjrSiZAP0GzXBkmF8ZGytw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
      'ĐĂNG KÝ LIỀN TAY, BIẾT ĐÂU GẶP MAY!',
      'VN', 'ACTIVE', 220.3, 3200, 88, 156000, NOW(), NOW());
   
