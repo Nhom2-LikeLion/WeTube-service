@@ -73,25 +73,17 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.createPlaylist(request));
     }
 
-    @GetMapping("/{userId}/playlistType")
-    public ResponseEntity<List<UserPlaylistDto>> getAllPlaylistsByTagUser(
-        @PathVariable UUID userId,  
-        @RequestParam PlaylistType playlistType) {
-
-        return ResponseEntity.ok(playlistService.getAllPlaylistByTagUserId(userId,playlistType));
-    }
-
-    @PostMapping("/videos/add")
+    @PostMapping("/add")
      public ResponseEntity<PlaylistVideoDto> addVideoToPlaylist(@RequestBody PlaylistaddRequest request) {
         return ResponseEntity.ok(playlistService.addVideoToPlaylist(request));
     }
 
-    @DeleteMapping("/{videoId}/{playlistVideoId}")
+    @DeleteMapping("/{playlistId}/{videoId}")
     public ResponseEntity<Map<String, String>> removeVideoFromPlaylist(
-            @PathVariable UUID videoId,
-            @PathVariable UUID playlistVideoId) {
+            @PathVariable UUID playlistId,
+            @PathVariable UUID videoId) {
 
-        playlistService.removeVideoFromPlaylist(videoId, playlistVideoId);
+        playlistService.removeVideoFromPlaylist(playlistId, videoId);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Video removed from playlist successfully");

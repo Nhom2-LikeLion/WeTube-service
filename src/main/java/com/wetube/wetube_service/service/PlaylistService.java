@@ -24,8 +24,6 @@ public interface PlaylistService {
     PlaylistDetailDto getPlaylistDetailedById(UUID playlistVideoId);
     PlaylistDetailDto getPlaylistDetailedById(UUID channelId, String playlistName);
 
-    List<UserPlaylistDto> getAllPlaylistByTagUserId(UUID userId, PlaylistType playlistType);
-
     void initiatePlaylist(UUID userId);
 
     PlaylistVideoDto addVideoToPlaylist(PlaylistaddRequest dto);

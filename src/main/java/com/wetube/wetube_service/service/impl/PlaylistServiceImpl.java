@@ -107,14 +107,6 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlistMapper.toPlaylistDetailDto(playlist);
     }
 
-    @Override
-    public List<UserPlaylistDto> getAllPlaylistByTagUserId(UUID userId, PlaylistType playlistType) {
-        List<Playlist> playlists = playlistRepo.findByUser_IdAndPlaylistType(userId, playlistType);
-        if (playlists.isEmpty()) {
-            throw new ResourceNotFoundException("userId exists or playlistType error", "id", userId.toString());
-        }
-        return playlistMapper.toDtoList(playlists);
-    }
 
     @Override
     public String getTopViewUserUploaded(UUID userId) {
@@ -153,16 +145,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public void removeVideoFromPlaylist(UUID videoId, UUID playlistVideoId) {
-        var playlistVideo = playlistVideoRepo.findById(playlistVideoId)
-                .orElseThrow(() -> new ResourceNotFoundException("PlaylistVideo", "id", playlistVideoId.toString()));
+    public void removeVideoFromPlaylist(UUID playlistId, UUID videoId) {
+        PlaylistVideo playlistVideo = playlistVideoRepo.findByPlaylist_IdAndVideo_Id(playlistId, videoId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "PlaylistVideo",
+                        "playlistId/videoId",
+                        playlistId + " / " + videoId));
 
-        if (!playlistVideo.getVideo().getId().equals(videoId)) {
-            throw new ResourceNotFoundException("Video", "id", videoId.toString());
-        }
+        playlistVideoRepo.delete(playlistVideo);
+    }
 
-    playlistVideoRepo.deleteById(playlistVideoId);
-}
 
     @Override
     public void removePlaylist(UUID playlistId) {
