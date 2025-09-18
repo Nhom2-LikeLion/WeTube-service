@@ -61,7 +61,7 @@ public class VideoController {
     @GetMapping("/{id}/detail")
     public ResponseEntity<VideoDetailResponseDto> getDetail(
             @PathVariable UUID id,
-            @RequestParam UUID userId) {
+            @RequestParam(required = false) UUID userId) {
         return ResponseEntity.ok(videoService.getDetailWithRecommend(id, userId));
     }
 

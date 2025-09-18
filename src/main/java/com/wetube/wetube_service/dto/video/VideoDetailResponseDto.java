@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 public class VideoDetailResponseDto {
     private VideoDetailDto detail;
     private RecommendResponseDto recommend;
+ 
 
-    private int totalSubscribers;
-    private boolean isSubscribed; 
 }
 

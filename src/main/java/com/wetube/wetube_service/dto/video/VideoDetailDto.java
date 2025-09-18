@@ -24,5 +24,7 @@ public class VideoDetailDto {
     private String name;
     private String picture;
     private LikeDto like;
+    private int totalSubscribers;
+    private boolean subscribed; 
     private List<CommentResponseDto> comments;
 }

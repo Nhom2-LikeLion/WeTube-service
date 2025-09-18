@@ -19,6 +19,7 @@ import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.channel.SubscriptionRepository;
 import com.wetube.wetube_service.repository.interaction.CommentRepository;
+import com.wetube.wetube_service.repository.interaction.LikeRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -59,17 +60,17 @@ public class VideoServiceImpl implements VideoService {
     private final TagRepository tagRepository;
     private final VideoTagRepository videoTagRepository;
     private final VideoMapper videoMapper;
+    private final CommentMapper commentMapper;
     private final CloudinaryService cloudinaryService;
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
     private final UserRepository userRepository;
+
+    private final CommentRepository commentRepository;
     private final LikeService likeService;
 
     private final SubscriptionRepository subscriptionRepository;
-
-    private final CommentMapper commentMapper;
-    private final CommentRepository commentRepository;
 
     private static final String ID_NOT_FOUND = "Video not found with id: ";
 
@@ -251,14 +252,23 @@ public class VideoServiceImpl implements VideoService {
         List<TagDto> tags = tagRepository.findByVideoTags_Video_Id(videoId)
                 .stream().map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getCreatedAt(), 0)).toList();
 
+        LikeDto likeInfo = null;
+        if (userId != null) {
+            likeInfo = likeService.getLikeInfo(videoId, Like.TargetType.VIDEO, userId);
+        }
         List<CommentResponseDto> comments = commentRepository
                 .findByTargetTypeAndTargetId(Comment.TargetType.VIDEO, videoId)
                 .stream()
                 .map(commentMapper::toResponseDto)
                 .toList();
+        UUID channelId = video.getUser().getChannel().getId();
 
-        LikeDto likeInfo = likeService.getLikeInfo(videoId, Like.TargetType.VIDEO, userId);
+        Integer totalSubscribers = subscriptionRepository.countById_Tier_Channel_Id(channelId);
 
+        boolean subscribed = false;
+        if (userId != null) {
+            subscribed = subscriptionRepository.existsById_Subscriber_IdAndId_Tier_Channel_Id(userId, channelId);
+        }
         var detail = new VideoDetailDto(
                 video.getId(),
                 video.getTitle(),
@@ -269,6 +279,8 @@ public class VideoServiceImpl implements VideoService {
                 video.getUser().getName(),
                 video.getUser().getPicture(),
                 likeInfo,
+                totalSubscribers,
+                subscribed,
                 comments);
 
         var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
@@ -291,13 +303,7 @@ public class VideoServiceImpl implements VideoService {
                 .tags(tags)
                 .build();
 
-        UUID channelId = video.getUser().getChannel().getId();
-
-        Integer totalSubscribers = subscriptionRepository.countById_Tier_Channel_Id(channelId);
-
-        boolean subscribed = subscriptionRepository.existsById_Subscriber_IdAndId_Tier_Channel_Id(userId, channelId);
-
-        return new VideoDetailResponseDto(detail, recommend, totalSubscribers, subscribed);
+        return new VideoDetailResponseDto(detail, recommend);
     }
 
     @Override

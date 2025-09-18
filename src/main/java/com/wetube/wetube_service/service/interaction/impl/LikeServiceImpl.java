@@ -2,6 +2,7 @@ package com.wetube.wetube_service.service.interaction.impl;
 
 import com.wetube.wetube_service.dto.LikeDto;
 import com.wetube.wetube_service.entity.interaction.Like;
+import com.wetube.wetube_service.entity.interaction.Like.TargetType;
 import com.wetube.wetube_service.repository.interaction.LikeRepository;
 import com.wetube.wetube_service.service.interaction.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,28 +20,27 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
 
-@Override
-public LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId) {
-    int likeCount = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
+    @Override
+    public LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId) {
+        int likeCount = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
+        List<UUID> likedUserIds = likeRepository.findByTargetTypeAndTargetId(targetType, targetId)
+                .stream()
+                .map(Like::getUserId)
+                .collect(Collectors.toList());
 
-    List<UUID> likedUserIds = likeRepository.findByTargetTypeAndTargetId(targetType, targetId)
-            .stream()
-            .map(Like::getUserId)
-            .toList();
+        Boolean liked = null;
+        if (userId != null) {
+            liked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
+        }
 
-    Boolean liked = null;
-    if (userId != null) {
-        liked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
+        return LikeDto.builder()
+                .targetId(targetId)
+                .targetType(targetType)
+                .likeCount(likeCount)
+                .likedUserIds(likedUserIds)
+                .liked(liked)
+                .build();
     }
-
-    return LikeDto.builder()
-            .targetId(targetId)
-            .targetType(targetType)
-            .likeCount(likeCount)
-            .likedUserIds(likedUserIds)
-            .liked(liked)
-            .build();
-}
 
     @Override
     public void toggleLike(UUID targetId, Like.TargetType targetType, UUID userId) {
@@ -60,10 +61,5 @@ public LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userI
                     .build();
             likeRepository.save(like);
         }
-    }
-
-        @Override
-    public Integer getLikeCount(UUID targetId, Like.TargetType targetType) {
-        return likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
     }
 }
