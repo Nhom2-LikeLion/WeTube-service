@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,27 +18,28 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
 
-    @Override
-    public LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId) {
-        int likeCount = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
-        List<UUID> likedUserIds = likeRepository.findByTargetTypeAndTargetId(targetType, targetId)
-                .stream()
-                .map(Like::getUserId)
-                .collect(Collectors.toList());
+@Override
+public LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId) {
+    int likeCount = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
 
-        Boolean liked = null;
-        if (userId != null) {
-            liked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
-        }
+    List<UUID> likedUserIds = likeRepository.findByTargetTypeAndTargetId(targetType, targetId)
+            .stream()
+            .map(Like::getUserId)
+            .toList();
 
-        return LikeDto.builder()
-                .targetId(targetId)
-                .targetType(targetType)
-                .likeCount(likeCount)
-                .likedUserIds(likedUserIds)
-                .liked(liked)
-                .build();
+    Boolean liked = null;
+    if (userId != null) {
+        liked = likeRepository.existsByTargetTypeAndTargetIdAndUserId(targetType, targetId, userId);
     }
+
+    return LikeDto.builder()
+            .targetId(targetId)
+            .targetType(targetType)
+            .likeCount(likeCount)
+            .likedUserIds(likedUserIds)
+            .liked(liked)
+            .build();
+}
 
     @Override
     public void toggleLike(UUID targetId, Like.TargetType targetType, UUID userId) {
@@ -60,5 +60,10 @@ public class LikeServiceImpl implements LikeService {
                     .build();
             likeRepository.save(like);
         }
+    }
+
+        @Override
+    public Integer getLikeCount(UUID targetId, Like.TargetType targetType) {
+        return likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
     }
 }

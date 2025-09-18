@@ -16,6 +16,9 @@ public interface CommentMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Comment toEntity(CommentRequestDto dto);
 
+    CommentResponseDto toEntity(Comment comment);
+
+
     CommentResponseDto toResponseDto(Comment comment);
 }
 

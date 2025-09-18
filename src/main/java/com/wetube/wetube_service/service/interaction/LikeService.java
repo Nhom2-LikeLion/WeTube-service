@@ -6,8 +6,8 @@ import com.wetube.wetube_service.entity.interaction.Like;
 import java.util.UUID;
 
 public interface LikeService {
-
     LikeDto getLikeInfo(UUID targetId, Like.TargetType targetType, UUID userId);
-
     void toggleLike(UUID targetId, Like.TargetType targetType, UUID userId);
+    Integer getLikeCount(UUID targetId, Like.TargetType targetType);
 }
+
