@@ -53,12 +53,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
-                        .ignoringRequestMatchers(
-                                webCsrfConfiguration.csrfIgnoringRequestMatcher()
-//                                authApiMatcher() // ignore CSRF for /api/auth/**
-                        ))
+                .csrf(csrf -> csrf.disable()
+                        // .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
+//                         .ignoringRequestMatchers(
+//                                 webCsrfConfiguration.csrfIgnoringRequestMatcher()
+// //                                authApiMatcher() // ignore CSRF for /api/auth/**
+                        // )
+                        )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint) // 401
                         .accessDeniedHandler(forbiddenEntryPoint) // 403
@@ -83,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/videos/**").permitAll()
                         .requestMatchers("/api/channel/**").permitAll()
                         .requestMatchers("/api/recommend/**").permitAll()
+                        .requestMatchers("/api/transactions/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated()

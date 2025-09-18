@@ -1,16 +1,12 @@
 package com.wetube.wetube_service.mapper.channel;
-import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.dto.response.SubscribedChannelResponseDto;
-import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.channel.Subscription;
-import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.service.PlaylistService;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import java.util.List;
 import java.util.UUID;
 
 

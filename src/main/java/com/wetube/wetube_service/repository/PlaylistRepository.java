@@ -17,6 +17,8 @@ import com.wetube.wetube_service.enumeration.PlaylistType;
 public interface PlaylistRepository extends CrudRepository<Playlist, UUID>{
      List<Playlist> findByUser_Id(UUID userId);
      List<Playlist> findByUser_IdAndPlaylistType(UUID userId, PlaylistType playlistType);
+     Optional<Playlist> findByUser_IdAndTitle(UUID userId, String title);
+
      @Query("""
        SELECT v.videoUrl
        FROM Playlist p

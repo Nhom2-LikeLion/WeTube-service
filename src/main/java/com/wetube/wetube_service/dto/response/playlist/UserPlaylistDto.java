@@ -1,8 +1,10 @@
-package com.wetube.wetube_service.dto.response;
+package com.wetube.wetube_service.dto.response.playlist;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlaylistUserDto {
+public class UserPlaylistDto {
     private UUID playlistId;
     private String playlistTitle;
     private PlaylistType playlistType;

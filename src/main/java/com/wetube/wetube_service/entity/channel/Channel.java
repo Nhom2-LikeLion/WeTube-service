@@ -54,6 +54,10 @@ public class Channel {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembershipTier> membershipTiers;
 
+    public UUID getUserId(){
+        return user.getId();
+    }
+
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderPosition ASC")
     private List<ChannelCategory> categories = new ArrayList<>();
