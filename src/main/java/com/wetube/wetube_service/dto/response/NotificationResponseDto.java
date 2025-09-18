@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.dto.response;
 
 import com.wetube.wetube_service.entity.notification.Notification;
-
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +18,5 @@ public class NotificationResponseDto {
     private boolean isRead;
     private LocalDateTime createdAt;
     private UUID videoId;
-    private UUID channelId;
+    private ChannelResponseDto channel;
 }
-

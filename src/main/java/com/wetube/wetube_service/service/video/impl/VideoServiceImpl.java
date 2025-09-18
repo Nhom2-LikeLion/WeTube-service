@@ -15,6 +15,7 @@ import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
+import com.wetube.wetube_service.service.notification.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ public class VideoServiceImpl implements VideoService {
     private final VideoTagRepository videoTagRepository;
     private final VideoMapper videoMapper;
     private final CloudinaryService cloudinaryService;
+    private final NotificationService notificationService;
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
@@ -92,6 +94,8 @@ public class VideoServiceImpl implements VideoService {
 
         Video savedVideo = videoRepository.save(entity);
         videoRepository.flush();
+
+        notificationService.createNewVideoNotification(savedVideo.getUser().getChannel().getId(), savedVideo.getId());
 
         addVideoToUserUploadedPlaylist(savedVideo);
 

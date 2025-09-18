@@ -14,6 +14,6 @@ public interface NotificationService {
 
     void deleteNotification(UUID notificationId);
 
-    void createNewVideoNotification(UUID videoId);
+    void createNewVideoNotification(UUID videoId, UUID channelId);
 }
 

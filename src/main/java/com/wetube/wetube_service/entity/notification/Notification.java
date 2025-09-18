@@ -1,5 +1,7 @@
 package com.wetube.wetube_service.entity.notification;
 
+import com.wetube.wetube_service.entity.channel.Channel;
+import com.wetube.wetube_service.entity.video.Video;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,12 +18,18 @@ import java.util.UUID;
 public class Notification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private UUID userId;
-    private UUID channelId;
-    private UUID videoId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    private Video video;
 
     @Enumerated(EnumType.STRING)
     private NotificationType type;
@@ -33,10 +41,9 @@ public class Notification {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum NotificationType {
-            NEW_VIDEO,
-            COMMENT,
-            REPLY,
-            SYSTEM
+        NEW_VIDEO,
+        COMMENT,
+        REPLY,
+        SYSTEM
     }
 }
-

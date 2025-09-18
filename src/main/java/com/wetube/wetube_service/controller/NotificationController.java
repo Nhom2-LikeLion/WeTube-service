@@ -48,5 +48,14 @@ public class NotificationController {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/video")
+    public ResponseEntity<Void> createNewVideoNotification(
+            @RequestParam UUID channelId,
+            @RequestParam UUID videoId
+    ) {
+        notificationService.createNewVideoNotification(channelId, videoId);
+        return ResponseEntity.ok().build();
+    }
 }
 
