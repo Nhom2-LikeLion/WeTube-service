@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.service.membership.impl;
+package com.wetube.wetube_service.service.membership;
 
 import com.wetube.wetube_service.dto.MembershipPurchaseResponse;
 import com.wetube.wetube_service.entity.AppUser;
@@ -10,7 +10,6 @@ import com.wetube.wetube_service.repository.MembershipTierRepository;
 import com.wetube.wetube_service.repository.TransactionRepository;
 import com.wetube.wetube_service.repository.UserRepository;
 import com.wetube.wetube_service.repository.channel.ChannelRepository;
-import com.wetube.wetube_service.service.membership.TransactionService;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;

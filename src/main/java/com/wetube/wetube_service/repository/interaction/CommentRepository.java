@@ -16,6 +16,8 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     Integer countByParentCommentId(UUID parentCommentId);
 
+    List<Comment> findByTargetTypeAndTargetId(Comment.TargetType targetType, UUID targetId);
+
 }
 
 

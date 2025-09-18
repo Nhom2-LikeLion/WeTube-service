@@ -1,7 +1,6 @@
 package com.wetube.wetube_service.dto.video;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;

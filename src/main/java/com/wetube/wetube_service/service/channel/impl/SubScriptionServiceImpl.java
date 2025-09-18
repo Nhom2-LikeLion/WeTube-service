@@ -43,7 +43,7 @@ public class SubScriptionServiceImpl implements SubscriptionService {
             throw new ResourceNotFoundException("User","Id", userId.toString());
         }
 
-        List<Subscription> subscriptions = Optional.ofNullable(subscriptionRepository.findByIdSubscriberId(userId))
+        List<Subscription> subscriptions = Optional.ofNullable(subscriptionRepository.findById_Subscriber_Id(userId))
                 .orElseGet(Collections::emptyList);
 
         return subscriptions.stream()
