@@ -85,9 +85,9 @@ public class UserServiceImpl implements UserService {
         if (user.getChannel() == null) {
             channelService.initiateChannel(user.getId(), clientIp);
             playlistService.initiatePlaylist(user.getId());
-            AppUser finalUser = user;
-            user = userRepository.findById(user.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", finalUser.getId().toString()));
+//            AppUser finalUser = user;
+//            user = userRepository.findById(user.getId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", finalUser.getId().toString()));
         }
 
         return userRepository.save(user);

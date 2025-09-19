@@ -17,7 +17,7 @@ import com.wetube.wetube_service.dto.UserDto;
 @Builder
 public class VideoDto {
     private UUID id;
-    private String usersId;
+//    private String usersId;
     private String title;
     private String description;
     private String thumbnailUrl;

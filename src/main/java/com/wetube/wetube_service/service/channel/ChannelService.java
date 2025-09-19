@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.service.channel;
 
 import com.wetube.wetube_service.dto.response.ChannelResponseDto;
+import com.wetube.wetube_service.entity.channel.Channel;
 
 import java.util.UUID;
 

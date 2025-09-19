@@ -8,12 +8,14 @@ import com.wetube.wetube_service.dto.LikeDto;
 import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class VideoDetailDto {
     private UUID id;
     private String title;
