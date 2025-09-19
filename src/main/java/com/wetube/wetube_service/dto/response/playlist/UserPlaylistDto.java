@@ -24,4 +24,7 @@ public class UserPlaylistDto {
     private PlaylistType playlistType;
     private int totalVideos;
     private LocalDateTime createdAt;
+    private String privacy;   
+    private String lastUpdatedLabel;
+    private String thumbnailUrl; 
 }

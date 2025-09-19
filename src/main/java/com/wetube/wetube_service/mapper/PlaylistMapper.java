@@ -30,7 +30,14 @@ public interface PlaylistMapper {
     @Mapping(target = "playlistType", source = "playlistType")
     @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
     @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "privacy", source = "privacy")
+    @Mapping(
+    target = "thumbnailUrl",
+    expression = "java(playlist.getPlaylistVideos() != null && !playlist.getPlaylistVideos().isEmpty() ? playlist.getPlaylistVideos().get(playlist.getPlaylistVideos().size() - 1).getVideo().getThumbnailUrl() : null)"
+)
+    @Mapping(target = "lastUpdatedLabel", expression = "java(\"Cập nhật \" + playlist.getCreatedAt())")
     UserPlaylistDto toDto(Playlist playlist);
+
 
     List<UserPlaylistDto> toDtoList(List<Playlist> playlists);
 
