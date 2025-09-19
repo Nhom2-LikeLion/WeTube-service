@@ -28,7 +28,7 @@ public interface VideoService {
 
     List<VideoDto> getVideoResult(String query);
 
-    VideoDetailResponseDto getDetailWithRecommend(UUID videoId);
+    VideoDetailResponseDto getDetailWithRecommend(UUID videoId, UUID userId);
 
     CustomPageResponse<VideoDto> getVideosByUserId(UUID userId, int page, int size);
 

@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
 import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.entity.interaction.Comment;
+import com.wetube.wetube_service.entity.interaction.Like;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
@@ -16,6 +18,10 @@ import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
+import com.wetube.wetube_service.repository.channel.SubscriptionRepository;
+import com.wetube.wetube_service.repository.interaction.CommentRepository;
+import com.wetube.wetube_service.repository.interaction.LikeRepository;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.wetube.wetube_service.repository.video.TagRepository;
 import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.repository.video.VideoTagRepository;
+import com.wetube.wetube_service.dto.LikeDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
 import com.wetube.wetube_service.dto.video.RecommendResponseDto;
 import com.wetube.wetube_service.dto.video.RecommendVideoDto;
 import com.wetube.wetube_service.dto.video.TagDto;
@@ -36,9 +44,11 @@ import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.video.VideoTag;
+import com.wetube.wetube_service.mapper.interaction.CommentMapper;
 import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.entity.video.Tag;
 import com.wetube.wetube_service.service.CloudinaryService;
+import com.wetube.wetube_service.service.interaction.LikeService;
 import com.wetube.wetube_service.service.video.VideoService;
 
 import lombok.RequiredArgsConstructor;
@@ -52,11 +62,17 @@ public class VideoServiceImpl implements VideoService {
     private final TagRepository tagRepository;
     private final VideoTagRepository videoTagRepository;
     private final VideoMapper videoMapper;
+    private final CommentMapper commentMapper;
     private final CloudinaryService cloudinaryService;
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
     private final UserRepository userRepository;
+
+    private final CommentRepository commentRepository;
+    private final LikeService likeService;
+
+    private final SubscriptionRepository subscriptionRepository;
 
     private static final String ID_NOT_FOUND = "Video not found with id: ";
 
@@ -227,28 +243,48 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public VideoDetailResponseDto getDetailWithRecommend(UUID videoId) {
+    public VideoDetailResponseDto getDetailWithRecommend(UUID videoId, UUID userId) {
         var video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException(ID_NOT_FOUND + videoId));
 
         List<TagDto> tags = tagRepository.findByVideoTags_Video_Id(videoId)
                 .stream().map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getCreatedAt(), 0)).toList();
 
-        var detail = new VideoDetailDto(
-                video.getId(),
-                video.getTitle(),
-                video.getDescription(),
-                video.getVideoUrl(),
-                video.getCreatedAt().toLocalDate(),
-                video.getTotalView(),
-                video.getUser().getName(),
-                video.getUser().getPicture()
-        );
+        LikeDto likeInfo = null;
+        if (userId != null) {
+            likeInfo = likeService.getLikeInfo(videoId, Like.TargetType.VIDEO, userId);
+        }
+        List<CommentResponseDto> comments = commentRepository
+                .findByTargetTypeAndTargetId(Comment.TargetType.VIDEO, videoId)
+                .stream()
+                .map(commentMapper::toResponseDto)
+                .toList();
+        UUID channelId = video.getUser().getChannel().getId();
+
+        Integer totalSubscribers = subscriptionRepository.countById_Tier_Channel_Id(channelId);
+
+        boolean subscribed = false;
+        if (userId != null) {
+            subscribed = subscriptionRepository.existsById_Subscriber_IdAndId_Tier_Channel_Id(userId, channelId);
+        }
+        var detail = VideoDetailDto.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .description(video.getDescription())
+                .videoUrl(video.getVideoUrl())
+                .createAt(video.getCreatedAt().toLocalDate())
+                .totalView(video.getTotalView())
+                .name(video.getUser().getName())
+                .picture(video.getUser().getPicture())
+                .like(likeInfo)
+                .totalSubscribers(totalSubscribers)
+                .subscribed(subscribed)
+                .comments(comments)
+                .build();
 
         var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
                         tags.stream().map(TagDto::getName).toList(),
-                        videoId
-                )
+                        videoId)
                 .stream()
                 .map(v -> new RecommendVideoDto(
                         v.getId(),

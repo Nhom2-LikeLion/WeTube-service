@@ -72,16 +72,17 @@ public class VideoController {
     }
 
     @GetMapping("/{id}/detail")
-    public ResponseEntity<VideoDetailResponseDto> getDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(videoService.getDetailWithRecommend(id));
+    public ResponseEntity<VideoDetailResponseDto> getDetail(
+            @PathVariable UUID id,
+            @RequestParam(required = false) UUID userId) {
+        return ResponseEntity.ok(videoService.getDetailWithRecommend(id, userId));
     }
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<VideoDto> addTagsToVideo(
             @PathVariable("id") UUID videoId,
-            @RequestParam("hashtags") String hashtags
-    ) {
+            @RequestParam("hashtags") String hashtags) {
         if (hashtags == null || hashtags.isBlank()) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -142,23 +143,23 @@ public class VideoController {
     // Tag/category specific search endpoints
     @GetMapping("/search/by-tag")
     public Page<VideoDocument> byTag(@RequestParam String tag,
-                                     @RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byTag(tag, page, size);
     }
 
     @GetMapping("/search/by-category")
     public Page<VideoDocument> byCategory(@RequestParam String category,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byCategory(category, page, size);
     }
 
     @GetMapping("/search/by-tag-category")
     public Page<VideoDocument> byTagAndCategory(@RequestParam String tag,
-                                                @RequestParam String category,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+            @RequestParam String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byTagAndCategory(tag, category, page, size);
     }
 
