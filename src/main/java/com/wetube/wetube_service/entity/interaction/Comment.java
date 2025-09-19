@@ -1,69 +1,91 @@
-    package com.wetube.wetube_service.entity.interaction;
+package com.wetube.wetube_service.entity.interaction;
 
-    import jakarta.persistence.*;
-    import lombok.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-    import java.time.LocalDateTime;
-    import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-    import com.wetube.wetube_service.entity.AppUser;
+import com.wetube.wetube_service.entity.AppUser;
 
-    @Entity
-    @Table(name = "comments")
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public class Comment {
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.UUID)
-        private UUID id;
+@Entity
+@Table(name = "comments")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Comment {
 
-        @Column(name = "target_id", nullable = false)
-        private UUID targetId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    private UUID id;
 
-        @Column(name = "parent_comment_id")
-        private UUID parentCommentId;
+    @Column(name = "target_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    private UUID targetId;
 
-        @Column(columnDefinition = "TEXT")
-        private String content;
+    @Column(name = "parent_comment_id")
+    private UUID parentCommentId;
 
-        @Column(name = "like_count")
-        private Integer likeCount;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-        @Column(name = "created_at")
-        private LocalDateTime createdAt;
+    @Column(name = "like_count")
+    private Integer likeCount;
 
-        @Column(name = "updated_at")
-        private LocalDateTime updatedAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-        @Enumerated(EnumType.STRING)
-        @Column(name = "target_type", nullable = false)
-        private TargetType targetType;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
-        private AppUser user;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_type", nullable = false)
+    private TargetType targetType;
 
-        @PrePersist
-        public void prePersist() {
-            if (createdAt == null)
-                createdAt = LocalDateTime.now();
-            updatedAt = createdAt;
-            if (likeCount == null)
-                likeCount = 0;
-        }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private AppUser user;
 
-        @PreUpdate
-        public void preUpdate() {
-            updatedAt = LocalDateTime.now();
-        }
-
-        public enum TargetType {
-            POST,
-            VIDEO,
-            COMMENT
-        }
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null)
+            createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+        if (likeCount == null)
+            likeCount = 0;
     }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public enum TargetType {
+        POST,
+        VIDEO,
+        COMMENT
+    }
+}
