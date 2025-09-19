@@ -4,7 +4,6 @@
 -- ------------------------------------------------------
 -- Server version	8.0.43
 use wetube_local_db;
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -15,6 +14,48 @@ use wetube_local_db;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `category_videos`
+--
+
+DROP TABLE IF EXISTS `category_videos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `category_videos` (
+  `id` varchar(36) NOT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `order_position` int NOT NULL,
+  `category_id` varchar(36) NOT NULL,
+  `video_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKpylkmxixjle2vn15d33buhetr` (`category_id`),
+  KEY `FKyud2ls22qj1fv0h1miao9rlo` (`video_id`),
+  CONSTRAINT `FKpylkmxixjle2vn15d33buhetr` FOREIGN KEY (`category_id`) REFERENCES `channel_categories` (`id`),
+  CONSTRAINT `FKyud2ls22qj1fv0h1miao9rlo` FOREIGN KEY (`video_id`) REFERENCES `videos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `channel_categories`
+--
+
+DROP TABLE IF EXISTS `channel_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `channel_categories` (
+  `id` varchar(36) NOT NULL,
+  `category_type` enum('FEATURED','FOR_YOU','LIVE','MEMBERSHIP','MEMBERSHIP_VIDEO','POPULAR','SHORT','VIDEO') NOT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `is_visible` bit(1) NOT NULL,
+  `order_position` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `channel_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKfl6as5ees3lf46b2wj4q4tsei` (`channel_id`),
+  CONSTRAINT `FKfl6as5ees3lf46b2wj4q4tsei` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `channels`
@@ -32,7 +73,7 @@ CREATE TABLE `channels` (
   `name` varchar(255) DEFAULT NULL,
   `picture` varchar(255) DEFAULT NULL,
   `revenue` float NOT NULL,
-  `status` enum('ACTIVE','INACTIVE','NONE','PENDING') DEFAULT NULL,
+  `status` enum('ACTIVE','INACTIVE','NONE','PENDING','PUBLIC') DEFAULT NULL,
   `total_subscribers` int NOT NULL,
   `total_videos` int NOT NULL,
   `total_views` int NOT NULL,
@@ -49,16 +90,18 @@ DROP TABLE IF EXISTS `comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comments` (
-  `id` binary(16) NOT NULL,
+  `id` varchar(36) NOT NULL,
   `content` text,
   `created_at` datetime(6) DEFAULT NULL,
   `like_count` int DEFAULT NULL,
   `parent_comment_id` binary(16) DEFAULT NULL,
-  `target_id` binary(16) NOT NULL,
+  `target_id` varchar(36) NOT NULL,
   `target_type` enum('COMMENT','POST','VIDEO') NOT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
-  `user_id` binary(16) NOT NULL,
-  PRIMARY KEY (`id`)
+  `user_id` varchar(36) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK8omq0tc18jd43bu5tjh6jvraq` (`user_id`),
+  CONSTRAINT `FK8omq0tc18jd43bu5tjh6jvraq` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -70,11 +113,11 @@ DROP TABLE IF EXISTS `likes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `likes` (
-  `id` binary(16) NOT NULL,
+  `id` varchar(36) NOT NULL,
   `status` bit(1) DEFAULT NULL,
-  `target_id` binary(16) DEFAULT NULL,
+  `target_id` varchar(36) NOT NULL,
   `target_type` enum('COMMENT','POST','VIDEO') NOT NULL,
-  `user_id` binary(16) DEFAULT NULL,
+  `user_id` varchar(36) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -166,12 +209,12 @@ DROP TABLE IF EXISTS `playlists`;
 CREATE TABLE `playlists` (
   `id` varchar(36) NOT NULL,
   `created_at` datetime(6) DEFAULT NULL,
-  `playlist_type` enum('HISTORY','LIKED','NONE','USER_PLAYLIST','USER_UPLOADED','WATCH_LATER') NOT NULL,
+  `playlist_type` enum('FOR_YOU','HISTORY','LIKED','MEMBERSHIP','NONE','POPULAR','SHORT','USER_PLAYLIST','USER_UPLOADED','WATCH_LATER') NOT NULL,
   `title` varchar(255) NOT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
   `user_id` varchar(36) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKtgjwvfg23v990xk7k0idmqbrj` (`user_id`),
+  UNIQUE KEY `UKb12gqrjwapun82tja4djyyo8d` (`user_id`,`title`),
   CONSTRAINT `FKtgjwvfg23v990xk7k0idmqbrj` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -227,7 +270,7 @@ CREATE TABLE `premium_user` (
   `create_at` datetime(6) DEFAULT NULL,
   `end_date` date NOT NULL,
   `start_date` date NOT NULL,
-  `status` enum('ACTIVE','INACTIVE','NONE','PENDING') DEFAULT NULL,
+  `status` enum('ACTIVE','INACTIVE','NONE','PENDING','PUBLIC') DEFAULT NULL,
   `update_at` datetime(6) DEFAULT NULL,
   `sub_package_id` varchar(36) NOT NULL,
   `user_id` varchar(36) NOT NULL,
@@ -372,6 +415,32 @@ CREATE TABLE `tiers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `transactions`
+--
+
+DROP TABLE IF EXISTS `transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `transactions` (
+  `id` varchar(36) NOT NULL,
+  `amount` decimal(38,2) NOT NULL,
+  `channel_revenue` decimal(38,2) NOT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `wetube_fee` decimal(38,2) NOT NULL,
+  `channel_id` varchar(36) NOT NULL,
+  `membership_id` varchar(36) NOT NULL,
+  `user_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK3npytqlngupfe3e1sgxpmymx8` (`channel_id`),
+  KEY `FKq43s8gyapcrdhmo6rnor11haw` (`membership_id`),
+  KEY `FKqwv7rmvc8va8rep7piikrojds` (`user_id`),
+  CONSTRAINT `FK3npytqlngupfe3e1sgxpmymx8` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
+  CONSTRAINT `FKq43s8gyapcrdhmo6rnor11haw` FOREIGN KEY (`membership_id`) REFERENCES `tiers` (`id`),
+  CONSTRAINT `FKqwv7rmvc8va8rep7piikrojds` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `user_tag`
 --
 
@@ -462,10 +531,12 @@ CREATE TABLE `videos` (
   `title` varchar(255) NOT NULL,
   `total_view` int NOT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
-  `users_id` varchar(255) DEFAULT NULL,
   `video_url` varchar(255) DEFAULT NULL,
   `videos_status` enum('ACTIVE','INACTIVE','NONE','PENDING','PUBLIC') DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `users_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKonafuk8aki7wdhw3pr2fhfwk8` (`users_id`),
+  CONSTRAINT `FKonafuk8aki7wdhw3pr2fhfwk8` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -502,4 +573,4 @@ CREATE TABLE `votes` (
 
 INSERT IGNORE INTO roles (id, code) VALUES (1, 'ROLE_USER');
 INSERT IGNORE INTO roles (id, code) VALUES (2, 'ROLE_ADMIN');
--- Dump completed on 2025-09-15  2:40:40
+-- Dump completed on 2025-09-19 15:54:00

@@ -32,6 +32,20 @@ VALUES
     ('ecfb788e-2c97-4f06-ae32-471f199e66c3', 'Workout Motivation', 'USER_PLAYLIST', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaac', NOW(), NOW()),
     ('12f498e9-3b66-4e5f-9453-c56362b9c19a', 'Uploaded Videos', 'USER_UPLOADED', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaac', NOW(), NOW());
 
+-- =========================
+-- PLAYLISTS FOR USER Alice
+-- =========================
+INSERT INTO playlists (id, title, playlist_type, user_id, created_at, updated_at)
+VALUES
+    ('6f5a5h3d-3dca-4d3e-9f06-6b2f8bc09d4e', 'Liked Videos', 'LIKED', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW()),
+    ('e9b7d5a7-042f-4b57-bd71-9f20de8eeed3', 'Watch Later', 'WATCH_LATER', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW()),
+    ('4a5be1h6-64d9-4c98-8de6-9cc0eb732097', 'History', 'HISTORY', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW()),
+    ('0e51h6f8-59a0-4ed9-9dcf-f28808a9428d', 'Alice Wonder', 'USER_PLAYLIST', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW()),
+    ('0e5151c5-59a0-4ed9-9dcf-f28808a9428d', 'Bob Monster', 'USER_PLAYLIST', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW()),
+    ('f7125b5c-8d4e-4c92-a223-f9202d598a0a', 'Uploaded Videos', 'USER_UPLOADED', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', NOW(), NOW());
+
+
+
 -- =========================================
 -- VIDEOS FOR USER 1
 -- =========================================
@@ -96,7 +110,19 @@ VALUES
      'https://i.ytimg.com/an_webp/Pv0iVoSZzN8/mqdefault_6s.webp?du=3000&sqp=COS0nMYG&rs=AOn4CLB7rJccbobhaMUUpwDHwBgqdtIP0Q',
      'https://res.cloudinary.com/dx3cioett/video/upload/v1757880390/In_10_Minutes_This_Room_Will_Explode_d5crn8.mp4',
      'ACTIVE', 980, 599, NOW(), NOW());
-
+     
+-- =========================================
+-- VIDEOS FOR USER ALICE
+-- =========================================
+INSERT INTO videos (id, users_id, title, description, thumbnail_url, video_url, videos_status, total_view, duration, created_at, updated_at)
+VALUES
+    ('66666666-6666-6666-6666-666666666660', 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', 'Alice AMV 2!',
+     'Another epic Naruto AMV By Alice',
+     'https://i.ytimg.com/an_webp/Z4hVGCWH1Kc/mqdefault_6s.webp?du=3000&sqp=CMKfnMYG&rs=AOn4CLC20X71udkHVHlcmCYLybOhzKLGVw',
+     'https://res.cloudinary.com/dx3cioett/video/upload/v1757880390/In_10_Minutes_This_Room_Will_Explode_d5crn8.mp4',
+     'ACTIVE', 1200, 599, NOW(), NOW());
+     
+     
 -- =========================================
 -- PLAYLIST_VIDEOS FOR USER 1 (USER_UPLOADED) - 3 videos
 -- =========================================
@@ -124,8 +150,13 @@ VALUES
     (UUID(), '12f498e9-3b66-4e5f-9453-c56362b9c19a', 'a6de7a3c-c20a-4e15-9c36-b75c94c07388', 0),
     (UUID(), '12f498e9-3b66-4e5f-9453-c56362b9c19a', '0b5c8c6a-1a68-4f2a-93c4-48f67cb8f6d7', 0);
 
-
-
+-- =========================================
+-- PLAYLIST_VIDEOS FOR USER ALICE (USER_UPLOADED) - 1 videos
+-- =========================================
+INSERT INTO playlist_videos (id, playlist_id, video_id, history_duration)
+VALUES
+    (UUID(), '0e51h6f8-59a0-4ed9-9dcf-f28808a9428d', '66666666-6666-6666-6666-666666666660', 	0);
+    
 
 
 -- =========================================

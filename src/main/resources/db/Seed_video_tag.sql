@@ -1,7 +1,7 @@
 -- 1. Users
 INSERT INTO users (id, email, name, picture, created_at, updated_at, password)
 VALUES
-(UUID(), 'alice@example.com', 'Alice', 'https://picsum.photos/200?1', NOW(), NOW(), 'pass'),
+-- (UUID(), 'alice@example.com', 'Alice', 'https://picsum.photos/200?1', NOW(), NOW(), 'pass'),
 (UUID(), 'bob@example.com',   'Bob',   'https://picsum.photos/200?2', NOW(), NOW(), 'pass'),
 (UUID(), 'carol@example.com', 'Carol', 'https://picsum.photos/200?3', NOW(), NOW(), 'pass');
 
@@ -142,7 +142,10 @@ VALUES
 (UUID(), (SELECT id FROM videos WHERE title='Olympics Highlights'), (SELECT id FROM tags WHERE name='Action')),
 
 -- Roast Comedy Show: Comedy
-(UUID(), (SELECT id FROM videos WHERE title='Roast Comedy Show'), (SELECT id FROM tags WHERE name='Comedy'));
+(UUID(), (SELECT id FROM videos WHERE title='Roast Comedy Show'), (SELECT id FROM tags WHERE name='Comedy')),
+
+(UUID(), (SELECT id FROM videos WHERE title = 'Alice AMV 2!'), (SELECT id FROM tags WHERE name = 'Anime')),
+(UUID(), (SELECT id FROM videos WHERE title = 'Alice AMV 2!'), (SELECT id FROM tags WHERE name = 'Music'));
 
 SELECT * FROM wetube_local_db.user_tag;
 -- 5. User_Tag (user quan tâm tag nào, điểm bao nhiêu)
@@ -152,4 +155,5 @@ VALUES
 ((SELECT id FROM users WHERE email='alice@example.com'), (SELECT id FROM tags WHERE name='Music'), 0.7, NOW()),
 ((SELECT id FROM users WHERE email='bob@example.com'),   (SELECT id FROM tags WHERE name='Sports'), 0.8, NOW()),
 ((SELECT id FROM users WHERE email='carol@example.com'), (SELECT id FROM tags WHERE name='Comedy'), 0.95, NOW());
+   
 

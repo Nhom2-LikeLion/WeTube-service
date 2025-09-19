@@ -21,7 +21,13 @@ For release under our Record Label, please send your demo (Unreleased) ',
      'https://yt3.googleusercontent.com/nxYrc_1_2f77DoBadyxMTmv7ZpRZapHR5jbuYe7PlPd5cIRJxtNNEYyOC0ZsxaDyJJzXrnJiuDE=s160-c-k-c0x00ffffff-no-rj',
      'https://yt3.googleusercontent.com/5KWiriZZ_KEoEdSMFTJKj2M6vR_XSiRZeQ-ix0cvG3TGZuGoi8sfAjrSiZAP0GzXBkmF8ZGytw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
      'ĐĂNG KÝ LIỀN TAY, BIẾT ĐÂU GẶP MAY!',
-     'VN', 'ACTIVE', 220.3, 3200, 88, 156000, NOW(), NOW());
+     'VN', 'ACTIVE', 220.3, 3200, 88, 156000, NOW(), NOW()),
+     
+	('11111111-1111-1111-1111-111111111114', 'Alice Channel', 
+     'https://yt3.googleusercontent.com/nxYrc_1_2f77DoBadyxMTmv7ZpRZapHR5jbuYe7PlPd5cIRJxtNNEYyOC0ZsxaDyJJzXrnJiuDE=s160-c-k-c0x00ffffff-no-rj',
+     'https://yt3.googleusercontent.com/5KWiriZZ_KEoEdSMFTJKj2M6vR_XSiRZeQ-ix0cvG3TGZuGoi8sfAjrSiZAP0GzXBkmF8ZGytw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
+     'Alice official channel',
+     'US', 'ACTIVE', 220.3, 3200, 88, 156000, NOW(), NOW());
   
   -- Select * from channels;
   
@@ -38,8 +44,11 @@ VALUES
 
     ('aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaac', 'MrBeast@wetube.com', 'Mr Beast',
      'https://yt3.googleusercontent.com/nxYrc_1_2f77DoBadyxMTmv7ZpRZapHR5jbuYe7PlPd5cIRJxtNNEYyOC0ZsxaDyJJzXrnJiuDE=s160-c-k-c0x00ffffff-no-rj',
-     NOW(), NOW(), 'hashed_password_789', '11111111-1111-1111-1111-111111111113');
-  
+     NOW(), NOW(), 'hashed_password_789', '11111111-1111-1111-1111-111111111113'),
+     
+	('aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaad', 'alice@example.com','Alice', 
+    'https://picsum.photos/200',
+    NOW(), NOW(), 'hashed_password_789', '11111111-1111-1111-1111-111111111114');
   -- Select * from users;
   
 -- ========================================
