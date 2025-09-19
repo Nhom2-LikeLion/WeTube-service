@@ -33,8 +33,16 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
     Page<Video> findAll(Pageable pageable);
     List<Video> findDistinctByVideoTags_Tag_NameInAndIdNot(List<String> tagNames, UUID excludeId);
 
+    @Query("""
+                SELECT DISTINCT v FROM Video v
+                         LEFT JOIN v.videoTags vt
+                         LEFT JOIN vt.tag t
+                         WHERE LOWER(v.title) LIKE LOWER(:query)
+                         OR LOWER(v.description) LIKE LOWER(:query)
+                         OR LOWER(COALESCE(t.name, '')) LIKE LOWER(:query)                                                      OR LOWER(COALESCE(t.name, '')) LIKE LOWER(:query) 
+            """)
+    List<Video> findByQuery(@Param("query") String query);
 
-    
-
+    Page<Video> findByUserId(UUID userId, Pageable pageable);
 
 }
