@@ -52,4 +52,8 @@ public class Channel {
     @OneToMany(mappedBy = "channel", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MembershipTier> membershipTiers;
+
+    public UUID getUserId(){
+        return user.getId();
+    }
 }

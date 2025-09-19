@@ -2,6 +2,7 @@ package com.wetube.wetube_service.service.interaction.impl;
 
 import com.wetube.wetube_service.dto.LikeDto;
 import com.wetube.wetube_service.entity.interaction.Like;
+import com.wetube.wetube_service.entity.interaction.Like.TargetType;
 import com.wetube.wetube_service.repository.interaction.LikeRepository;
 import com.wetube.wetube_service.service.interaction.LikeService;
 import lombok.RequiredArgsConstructor;

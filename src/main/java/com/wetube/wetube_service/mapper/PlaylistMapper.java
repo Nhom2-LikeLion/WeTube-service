@@ -2,13 +2,14 @@ package com.wetube.wetube_service.mapper;
 
 import java.util.List;
 
-import com.wetube.wetube_service.dto.response.UserResponseDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
-import com.wetube.wetube_service.dto.response.PlaylistUserDto;
+import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.playlist.Playlist;
@@ -24,26 +25,23 @@ public interface PlaylistMapper {
     @Mapping(source = "user", target = "user")
     Playlist toEntity(CreatePlaylistRequest dto, AppUser user);
 
-    // ✅ Playlist -> PlaylistUserDto (response)
     @Mapping(target = "playlistId", source = "id")
     @Mapping(target = "playlistTitle", source = "title")
     @Mapping(target = "playlistType", source = "playlistType")
     @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
     @Mapping(target = "createdAt", source = "createdAt")
-    PlaylistUserDto toDto(Playlist playlist);
+    UserPlaylistDto toDto(Playlist playlist);
 
-    // ✅ List<Playlist> -> List<PlaylistUserDto>
-    List<PlaylistUserDto> toDtoList(List<Playlist> playlists);
+    List<UserPlaylistDto> toDtoList(List<Playlist> playlists);
 
-    // ✅ PlaylistVideo -> PlaylistDto (video trong playlist)
     @Mapping(target = "videoId", source = "video.id")
     @Mapping(target = "videoTitle", source = "video.title")
     @Mapping(target = "videoUrl", source = "video.videoUrl")
     @Mapping(target = "thumbnailUrl", source = "video.thumbnailUrl")
     @Mapping(target = "historyDuration", source = "historyDuration")
-    UserResponseDto.PlaylistVideoDto toPlaylistDto(PlaylistVideo pv);
+    PlaylistVideoDto toPlaylistDto(PlaylistVideo pv);
 
-    List<UserResponseDto.PlaylistVideoDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos);
+    List<PlaylistVideoDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "playlist", source = "playlist")
@@ -57,6 +55,6 @@ public interface PlaylistMapper {
     @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "videos", expression = "java(toPlaylistDtoList(playlist.getPlaylistVideos()))")
-    UserResponseDto.PlaylistDetailDto toPlaylistDetailDto(Playlist playlist);
+    PlaylistDetailDto toPlaylistDetailDto(Playlist playlist);
 
 }

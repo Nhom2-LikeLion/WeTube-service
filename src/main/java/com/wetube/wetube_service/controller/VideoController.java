@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
@@ -59,8 +61,9 @@ public class VideoController {
     }
 
     @GetMapping("/{id}/detail")
-    public ResponseEntity<VideoDetailResponseDto> getDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(videoService.getDetailWithRecommend(id));
+    public ResponseEntity<VideoDetailResponseDto> getDetail(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        UUID userId = (jwt != null) ? UUID.fromString(jwt.getSubject()) : null;
+        return ResponseEntity.ok(videoService.getDetailWithRecommend(id, userId));
     }
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -85,65 +88,71 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getVideosByTag(tag));
     }
 
-
     @GetMapping("/search/fulltext")
-	public Page<VideoDocument> fullText(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		return searchService.fullText(q, page, size);
-	}
+    public Page<VideoDocument> fullText(@RequestParam String q, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return searchService.fullText(q, page, size);
+    }
 
-	@GetMapping("/search/fuzzy")
-	public Page<VideoDocument> fuzzy(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		return searchService.fuzzy(q, page, size);
-	}
+    @GetMapping("/search/fuzzy")
+    public Page<VideoDocument> fuzzy(@RequestParam String q, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return searchService.fuzzy(q, page, size);
+    }
 
-	@GetMapping("/search/suggest")
-	public List<String> suggest(@RequestParam String prefix, @RequestParam(defaultValue = "10") int size) {
-		return searchService.suggestNames(prefix, size);
-	}
+    @GetMapping("/search/suggest")
+    public List<String> suggest(@RequestParam String prefix, @RequestParam(defaultValue = "10") int size) {
+        return searchService.suggestNames(prefix, size);
+    }
 
-	@GetMapping("/search/sort")
-	public Page<VideoDocument> sort(@RequestParam String q, @RequestParam String sortField, @RequestParam(defaultValue = "true") boolean asc, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		return searchService.sortAndPaginate(q, sortField, asc, page, size);
-	}
+    @GetMapping("/search/sort")
+    public Page<VideoDocument> sort(@RequestParam String q, @RequestParam String sortField,
+            @RequestParam(defaultValue = "true") boolean asc, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return searchService.sortAndPaginate(q, sortField, asc, page, size);
+    }
 
-	@GetMapping("/search/aggregate")
-	public Object aggregate(@RequestParam String q) {
-		return searchService.aggregateByCategory(q);
-	}
+    @GetMapping("/search/aggregate")
+    public Object aggregate(@RequestParam String q) {
+        return searchService.aggregateByCategory(q);
+    }
 
-	@GetMapping("/search/multi")
-	public Page<VideoDocument> multi(@RequestParam(required = false) String tag,@RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		return searchService.multiFieldSearch( tag,  title,  description,  category, page,size);
-	}
+    @GetMapping("/search/multi")
+    public Page<VideoDocument> multi(@RequestParam(required = false) String tag,
+            @RequestParam(required = false) String title, @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return searchService.multiFieldSearch(tag, title, description, category, page, size);
+    }
 
     // Tag/category specific search endpoints
     @GetMapping("/search/by-tag")
     public Page<VideoDocument> byTag(@RequestParam String tag,
-                                     @RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byTag(tag, page, size);
     }
 
     @GetMapping("/search/by-category")
     public Page<VideoDocument> byCategory(@RequestParam String category,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byCategory(category, page, size);
     }
 
     @GetMapping("/search/by-tag-category")
     public Page<VideoDocument> byTagAndCategory(@RequestParam String tag,
-                                                @RequestParam String category,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+            @RequestParam String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return searchService.byTagAndCategory(tag, category, page, size);
     }
 
-	// Database search endpoints
-	@GetMapping("/db/search/name")
-	public List<VideoDto> searchByTitle(@RequestParam String title) {
-		return videoService.searchByTitle(title);
-	}
+    // Database search endpoints
+    @GetMapping("/db/search/name")
+    public List<VideoDto> searchByTitle(@RequestParam String title) {
+        return videoService.searchByTitle(title);
+    }
 
 	@GetMapping("/db/search/name-paged")
 	public Page<VideoDto> searchByNamePaged(@RequestParam String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -156,4 +165,3 @@ public class VideoController {
         return ResponseEntity.ok(results);
     }
 }
-

@@ -1,7 +1,11 @@
 package com.wetube.wetube_service.dto.video;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
+
+import com.wetube.wetube_service.dto.LikeDto;
+import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,4 +23,8 @@ public class VideoDetailDto {
     private Integer totalView;
     private String name;
     private String picture;
+    private LikeDto like;
+    private int totalSubscribers;
+    private boolean subscribed; 
+    private List<CommentResponseDto> comments;
 }
