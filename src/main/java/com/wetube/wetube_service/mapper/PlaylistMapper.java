@@ -2,13 +2,14 @@ package com.wetube.wetube_service.mapper;
 
 import java.util.List;
 
+import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.dto.response.UserResponseDto;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
-import com.wetube.wetube_service.dto.response.PlaylistUserDto;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.playlist.Playlist;

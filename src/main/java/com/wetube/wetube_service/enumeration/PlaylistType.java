@@ -7,7 +7,4 @@ public enum  PlaylistType {
     USER_PLAYLIST,
     USER_UPLOADED,
     HISTORY,
-    MUSIC,
-    USER_SAVED,
-    SAVED,
 }
