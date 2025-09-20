@@ -1,6 +1,5 @@
 package com.wetube.wetube_service.dto.response.playlist;
 
-import com.wetube.wetube_service.dto.response.UserResponseDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

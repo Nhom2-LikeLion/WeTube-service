@@ -1,10 +1,8 @@
 package com.wetube.wetube_service.dto.response.playlist;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
-import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 
 import lombok.AllArgsConstructor;

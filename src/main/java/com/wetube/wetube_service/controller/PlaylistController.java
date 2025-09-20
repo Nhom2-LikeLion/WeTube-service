@@ -20,7 +20,8 @@
     import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
     import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
     import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
-    import com.wetube.wetube_service.service.PlaylistService;
+import com.wetube.wetube_service.enumeration.PlaylistType;
+import com.wetube.wetube_service.service.PlaylistService;
 
     import lombok.RequiredArgsConstructor;
 
@@ -55,6 +56,14 @@
         @GetMapping("/detail/{playlistId}")
         public ResponseEntity<PlaylistDetailDto> getPlaylistVideoById(@PathVariable UUID playlistId) {
             return ResponseEntity.ok(playlistService.getPlaylistDetailedById(playlistId));
+        }
+
+        @GetMapping("/{userId}/playlistType")
+        public ResponseEntity<List<UserPlaylistDto>> getAllPlaylistsByTagUser(
+            @PathVariable UUID userId,
+            @RequestParam PlaylistType playlistType) {
+
+            return ResponseEntity.ok(playlistService.getAllPlaylistByTypeUserId(userId,playlistType));
         }
 
         @GetMapping("/detail")
