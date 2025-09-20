@@ -54,7 +54,6 @@ public interface PlaylistMapper {
     @Mapping(target = "playlist", source = "playlist")
     @Mapping(target = "video", source = "video")
     @Mapping(target = "historyDuration", source = "dto.historyDuration")
-    @Mapping(target = "createdAt", ignore = true)
     PlaylistVideo toPlaylistVideo(PlaylistaddRequest dto, Playlist playlist, Video video);
 
     @Mapping(target = "playlistId", source = "id")
