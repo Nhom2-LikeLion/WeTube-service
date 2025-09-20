@@ -66,7 +66,7 @@ public class Playlist {
     private PlaylistType playlistType;
     
     @Column(nullable = false)
-    private Boolean privacy;
+    private String privacy;
 
     @Column(nullable = true)
     private String thumbnailUrl;
