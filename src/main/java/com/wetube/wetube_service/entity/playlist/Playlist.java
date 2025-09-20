@@ -1,7 +1,7 @@
 package com.wetube.wetube_service.entity.playlist;
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,17 +56,17 @@ public class Playlist {
     private String title;
 
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlaylistType playlistType;
     
     @Column(nullable = false)
-    private String privacy;
+    private Boolean privacy;
 
     @Column(nullable = true)
     private String thumbnailUrl;
