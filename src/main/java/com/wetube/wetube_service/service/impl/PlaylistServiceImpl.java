@@ -75,6 +75,14 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         return playlistMapper.toDtoList(filtered);
     }
+     @Override
+    public List<UserPlaylistDto> getAllPlaylistByTypeUserId(UUID userId, PlaylistType playlistType) {
+        List<Playlist> playlists = playlistRepo.findByUser_IdAndPlaylistType(userId, playlistType);
+        if (playlists.isEmpty()) {
+            throw new ResourceNotFoundException("userId exists or playlistType error", "id", userId.toString());
+        }
+        return playlistMapper.toDtoList(playlists);
+    }
 
     @Override
     public List<UserPlaylistDto> getUserCreatedPlaylistById(UUID userId) {
@@ -121,10 +129,10 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public void initiatePlaylist(UUID userID) {
-        CreatePlaylistRequest history = new CreatePlaylistRequest("History",userID,PlaylistType.HISTORY);
-        CreatePlaylistRequest watchLater = new CreatePlaylistRequest("Watch Later",userID,PlaylistType.WATCH_LATER);
-        CreatePlaylistRequest liked = new CreatePlaylistRequest("Liked",userID,PlaylistType.LIKED);
-        CreatePlaylistRequest userVideos = new CreatePlaylistRequest("Uploaded",userID,PlaylistType.USER_UPLOADED);
+        CreatePlaylistRequest history = new CreatePlaylistRequest("History",userID,PlaylistType.HISTORY,"public");
+        CreatePlaylistRequest watchLater = new CreatePlaylistRequest("Watch Later",userID,PlaylistType.WATCH_LATER,"public");
+        CreatePlaylistRequest liked = new CreatePlaylistRequest("Liked",userID,PlaylistType.LIKED,"private");
+        CreatePlaylistRequest userVideos = new CreatePlaylistRequest("Uploaded",userID,PlaylistType.USER_UPLOADED,"public");
         createPlaylist(history);
         createPlaylist(watchLater);
         createPlaylist(liked);

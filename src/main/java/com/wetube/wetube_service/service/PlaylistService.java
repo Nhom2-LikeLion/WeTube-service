@@ -7,9 +7,9 @@ import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
 import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
-import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
-import com.wetube.wetube_service.exception.DuplicatePlaylistTitleException;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
+
 
 
 public interface PlaylistService {
@@ -20,6 +20,8 @@ public interface PlaylistService {
     List<UserPlaylistDto> getUserPlaylistById(UUID userId);
 
     List<UserPlaylistDto> getUserCreatedPlaylistById(UUID userId);
+
+    List<UserPlaylistDto> getAllPlaylistByTypeUserId(UUID userId,PlaylistType playlistType);
 
     PlaylistDetailDto getPlaylistDetailedById(UUID playlistVideoId);
     PlaylistDetailDto getPlaylistDetailedById(UUID channelId, String playlistName);

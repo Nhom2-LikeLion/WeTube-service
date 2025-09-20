@@ -1,9 +1,10 @@
 package com.wetube.wetube_service.entity.playlist;
+
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +13,20 @@ import org.hibernate.type.SqlTypes;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,6 +64,12 @@ public class Playlist {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlaylistType playlistType;
+    
+    @Column(nullable = false)
+    private Boolean privacy;
+
+    @Column(nullable = true)
+    private String thumbnailUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -57,3 +78,4 @@ public class Playlist {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistVideo> playlistVideos;
 }
+

@@ -16,4 +16,5 @@ public class CreatePlaylistRequest {
     private String title;
     private UUID userId;
     private PlaylistType type;
+    private String privacy;
 }

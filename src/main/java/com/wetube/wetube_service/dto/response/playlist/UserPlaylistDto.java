@@ -1,10 +1,8 @@
 package com.wetube.wetube_service.dto.response.playlist;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
-import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 
 import lombok.AllArgsConstructor;
@@ -24,4 +22,7 @@ public class UserPlaylistDto {
     private PlaylistType playlistType;
     private int totalVideos;
     private LocalDateTime createdAt;
+    private String privacy;   
+    private String lastUpdatedLabel;
+    private String thumbnailUrl; 
 }
