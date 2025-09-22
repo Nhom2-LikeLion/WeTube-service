@@ -66,7 +66,8 @@ public class Playlist {
     private PlaylistType playlistType;
     
     @Column(nullable = false)
-    private String privacy;
+    @Builder.Default
+    private String privacy = "PUBLIC";
 
     @Column(nullable = true)
     private String thumbnailUrl;

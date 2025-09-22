@@ -61,7 +61,7 @@ import jakarta.transaction.Transactional;
                     String extraDataJson = "{\"skus\":\"\"}";
                     String extraDataEncoded = Base64.getEncoder().encodeToString(extraDataJson.getBytes());
                     String orderInfo = "Thank you for your purchase at MoMo_test";
-                    // Tạo signature MoMo
+                   
                     String rawData = "accessKey=" + momoConfiguration.getAccessKey() +
                         "&amount=" + amountStr +
                         "&extraData=" + extraDataEncoded +
@@ -145,7 +145,7 @@ import jakarta.transaction.Transactional;
                         .orElseThrow(() -> new RuntimeException("Payment not found"));
 
                 if ("0".equals(resultCode)) {
-                    // Thanh toán thành công
+                
                     PremiumUser premiumUser = PremiumUser.builder()
                             .user(payment.getUser())
                             .subpack(payment.getSubpack())
