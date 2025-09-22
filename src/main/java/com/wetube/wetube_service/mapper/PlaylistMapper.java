@@ -3,6 +3,7 @@ package com.wetube.wetube_service.mapper;
 import java.util.List;
 
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -61,7 +62,22 @@ public interface PlaylistMapper {
     @Mapping(target = "playlistType", source = "playlistType")
     @Mapping(target = "totalVideos", expression = "java(playlist.getPlaylistVideos() != null ? playlist.getPlaylistVideos().size() : 0)")
     @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "videos", expression = "java(toPlaylistDtoList(playlist.getPlaylistVideos()))")
+//    @Mapping(target = "videos", expression = "java(toPlaylistDtoList(playlist.getPlaylistVideos()))")
+    @Mapping(target = "videos", expression = "java(toPlaylistVideoDetailDtoList(playlist.getPlaylistVideos()))")
     PlaylistDetailDto toPlaylistDetailDto(Playlist playlist);
+
+    @Mapping(target = "videoId", source = "video.id")
+    @Mapping(target = "videoTitle", source = "video.title")
+    @Mapping(target = "videoUrl", source = "video.videoUrl")
+    @Mapping(target = "thumbnailUrl", source = "video.thumbnailUrl")
+    @Mapping(target = "description", source = "video.description")
+    @Mapping(target = "duration", source = "video.duration")
+    @Mapping(target = "totalView", source = "video.totalView")
+    @Mapping(target = "createdAt", source = "video.createdAt")
+    @Mapping(target = "updatedAt", source = "video.updatedAt")
+    PlaylistVideoDetailDto toPlaylistVideoDetailDto(PlaylistVideo playlistVideo);
+
+    List<PlaylistVideoDetailDto> toPlaylistVideoDetailDtoList(List<PlaylistVideo> playlistVideos);
+
 
 }

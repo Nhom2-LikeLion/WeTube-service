@@ -20,5 +20,5 @@ public class PlaylistDetailDto {
     private PlaylistType playlistType;
     private int totalVideos;
     private LocalDateTime createdAt;
-    private List<PlaylistVideoDto> videos;
+    private List<PlaylistVideoDetailDto> videos;
 }
