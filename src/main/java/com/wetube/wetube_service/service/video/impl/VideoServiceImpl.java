@@ -1,13 +1,10 @@
 package com.wetube.wetube_service.service.video.impl;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
+import com.wetube.wetube_service.dto.video.*;
 import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.interaction.Comment;
 import com.wetube.wetube_service.entity.interaction.Like;
@@ -15,6 +12,7 @@ import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
 import com.wetube.wetube_service.enumeration.PlaylistType;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
@@ -27,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +35,6 @@ import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.repository.video.VideoTagRepository;
 import com.wetube.wetube_service.dto.LikeDto;
 import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
-import com.wetube.wetube_service.dto.video.RecommendResponseDto;
-import com.wetube.wetube_service.dto.video.RecommendVideoDto;
-import com.wetube.wetube_service.dto.video.TagDto;
-import com.wetube.wetube_service.dto.video.VideoDetailDto;
-import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
-import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.video.VideoTag;
 import com.wetube.wetube_service.mapper.interaction.CommentMapper;
@@ -75,6 +68,7 @@ public class VideoServiceImpl implements VideoService {
     private final SubscriptionRepository subscriptionRepository;
 
     private static final String ID_NOT_FOUND = "Video not found with id: ";
+    private static final String VIDEO = "video";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -328,5 +322,85 @@ public class VideoServiceImpl implements VideoService {
         List<Video> videos = videoRepository.findByQuery(processedQuery);
 
         return videoMapper.toDtoList(videos);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public VideoFormDetailDto getVideoDetail(UUID videoId) {
+        Video video = videoRepository.findByIdWithTags(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
+
+//        video.setTotalView((video.getTotalView()));
+//        videoRepository.save(video);
+
+        Set<TagDto> tags = video.getVideoTags().stream()
+                .map(videoTag -> {
+                    Tag tag = videoTag.getTag();
+                    return new TagDto(
+                            tag.getId(),
+                            tag.getName(),
+                            tag.getCreatedAt(),
+                            tag.getCount()
+                    );
+                })
+                .collect(java.util.stream.Collectors.toSet());
+
+        return VideoFormDetailDto.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .description(video.getDescription())
+                .videoUrl(video.getVideoUrl())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .status(video.getVideosStatus() != null ? video.getVideosStatus().toString() : null)
+                .duration(video.getDuration())
+                .createdAt(video.getCreatedAt() != null ? video.getCreatedAt().toLocalDate() : null)
+                .updatedAt(video.getUpdatedAt() != null ? video.getUpdatedAt().toLocalDate() : null)
+                .tags(tags)
+                .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public VideoDto updateVideo(UUID videoId, VideoUpdateDto updateDto, MultipartFile thumbnailFile, UUID authenticatedUserId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
+
+        if (!video.getUser().getId().equals(authenticatedUserId)) {
+            throw new AccessDeniedException("User does not have permission to update this video");
+        }
+
+        video.setTitle(updateDto.getTitle());
+        video.setDescription(updateDto.getDescription());
+        video.setVideosStatus(ActiveStatus.valueOf(updateDto.getStatus().toUpperCase())); // Chuyển String thành Enum
+
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            try {
+                String newThumbnailUrl = cloudinaryService.uploadThumbnail(thumbnailFile);
+                video.setThumbnailUrl(newThumbnailUrl);
+            } catch (Exception e) {
+                log.error("Failed to upload new thumbnail for video {}", videoId, e);
+            }
+        }
+
+        for (VideoTag oldVideoTag : new HashSet<>(video.getVideoTags())) {
+            Tag tag = oldVideoTag.getTag();
+            tag.setCount(Math.max(0, tag.getCount() - 1));
+            tagRepository.save(tag);
+        }
+
+        videoTagRepository.deleteAll(video.getVideoTags());
+        video.getVideoTags().clear();
+        videoRepository.flush();
+
+        if (updateDto.getTags() != null && !updateDto.getTags().isBlank()) {
+            addTags(videoId, updateDto.getTags());
+        }
+
+        Video updatedVideo = videoRepository.save(video);
+
+        Video dtoSource = videoRepository.findByIdWithTags(updatedVideo.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
+
+        return videoMapper.toDto(dtoSource);
     }
 }
