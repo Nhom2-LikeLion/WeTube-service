@@ -4,8 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.exception.DuplicatePlaylistTitleException;
@@ -100,7 +102,35 @@ public class PlaylistServiceImpl implements PlaylistService {
         Playlist playlist = playlistRepo.findById(playlistId)
                 .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", playlistId.toString()));
 
-        return playlistMapper.toPlaylistDetailDto(playlist);
+//        return playlistMapper.toPlaylistDetailDto(playlist);
+        List<PlaylistVideoDetailDto> videoDetails = playlist.getPlaylistVideos().stream()
+                .map(playlistVideo -> {
+                    Video video = playlistVideo.getVideo();
+                    AppUser user = video.getUser();
+
+                    // 3. Build DTO mới với đầy đủ thông tin
+                    return PlaylistVideoDetailDto.builder()
+                            .videoId(video.getId())
+                            .videoTitle(video.getTitle())
+                            .videoUrl(video.getVideoUrl())
+                            .thumbnailUrl(video.getThumbnailUrl())
+                            .duration(video.getDuration())
+                            .totalView(video.getTotalView())
+                            .description(video.getDescription())
+                            .createdAt(video.getCreatedAt() != null ? video.getCreatedAt().toLocalDate() : null)
+                            .updatedAt(video.getUpdatedAt() != null ? video.getUpdatedAt().toLocalDate() : null)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return PlaylistDetailDto.builder()
+                .playlistId(playlist.getId())
+                .playlistTitle(playlist.getTitle())
+                .playlistType(playlist.getPlaylistType())
+                .totalVideos(videoDetails.size())
+                .createdAt(playlist.getCreatedAt() != null ? playlist.getCreatedAt().toLocalDate().atStartOfDay() : null)
+                .videos(videoDetails)
+                .build();
     }
 
     @Override
