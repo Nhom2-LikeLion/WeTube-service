@@ -4,23 +4,23 @@
 //import com.wetube.wetube_service.dto.room.room.Room;
 //import com.wetube.wetube_service.dto.room.playlist.VideoStateChangeRequest;
 //import com.wetube.wetube_service.dto.room.room.WatchMember;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+// import lombok.Getter;
+// import lombok.Setter;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+// import java.security.SecureRandom;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.Random;
+// import java.util.UUID;
+// import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-@Getter
-@Setter
-@Slf4j
-public class RoomService {
+// @Service
+// @Getter
+// @Setter
+// @Slf4j
+// public class RoomService {
 //    private final Map<String, Room> rooms = new ConcurrentHashMap<>();
 //
 //    public Room createRoom(WatchMember host) {
@@ -56,9 +56,9 @@ public class RoomService {
 //    }
 
 
-    private String generateFriendlyRoomId() {
-        return generateRoomId(3) + "-" + generateRoomId(4) + "-" + generateRoomId(3);
-    }
+    // private String generateFriendlyRoomId() {
+    //     return generateRoomId(3) + "-" + generateRoomId(4) + "-" + generateRoomId(3);
+    // }
 
 //     private String generateRoomId(int length) {
 //         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
