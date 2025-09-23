@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.search.VideoDocument;
@@ -80,11 +81,9 @@ public class VideoController {
     }
 
     @PostMapping(value = "/{id}/tags", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<VideoDto> addTagsToVideo(
             @PathVariable("id") UUID videoId,
-            @RequestParam("hashtags") String hashtags
-    ) {
+            @RequestParam("hashtags") String hashtags) {
         if (hashtags == null || hashtags.isBlank()) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -111,76 +110,38 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getVideosByTag(tag));
     }
 
+    // ===================== Elasticsearch Search =====================
 
-    @GetMapping("/search/fulltext")
-    public Page<VideoDocument> fullText(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return searchService.fullText(q, page, size);
-    }
-
-    @GetMapping("/search/fuzzy")
-    public Page<VideoDocument> fuzzy(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return searchService.fuzzy(q, page, size);
-    }
-
-    @GetMapping("/search/suggest")
-    public List<String> suggest(@RequestParam String prefix, @RequestParam(defaultValue = "10") int size) {
-        return searchService.suggestNames(prefix, size);
-    }
-
-    @GetMapping("/search/sort")
-    public Page<VideoDocument> sort(@RequestParam String q, @RequestParam String sortField, @RequestParam(defaultValue = "true") boolean asc, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return searchService.sortAndPaginate(q, sortField, asc, page, size);
-    }
-
-    @GetMapping("/search/aggregate")
-    public Object aggregate(@RequestParam String q) {
-        return searchService.aggregateByCategory(q);
-    }
-
-    @GetMapping("/search/multi")
-    public Page<VideoDocument> multi(@RequestParam(required = false) String tag, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return searchService.multiFieldSearch(tag, title, description, category, page, size);
-    }
-
-    // Tag/category specific search endpoints
-    @GetMapping("/search/by-tag")
-    public Page<VideoDocument> byTag(@RequestParam String tag,
+    // Search gần đúng theo title → chỉ trả về VideoDocument
+    @GetMapping("/search/videos")
+    public Page<VideoDocument> searchByTitle(@RequestParam String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return searchService.byTag(tag, page, size);
+        return searchService.searchByTitle(title, page, size);
     }
 
-    @GetMapping("/search/by-category")
-    public Page<VideoDocument> byCategory(@RequestParam String category,
+    // Search chính xác title
+    @GetMapping("/search/videos/exact")
+    public VideoDocument searchExact(@RequestParam String title) {
+        return searchService.searchExactTitle(title);
+    }
+
+    // Search đầy đủ (ES + load lại từ MySQL) → trả về VideoDto đầy đủ
+    @GetMapping("/search/full")
+    public Page<VideoDto> searchByTitleFull(@RequestParam String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return searchService.byCategory(category, page, size);
+        return searchService.searchByTitleFull(title, page, size);
     }
 
-    @GetMapping("/search/by-tag-category")
-    public Page<VideoDocument> byTagAndCategory(@RequestParam String tag,
-            @RequestParam String category,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return searchService.byTagAndCategory(tag, category, page, size);
+    // Suggest autocomplete
+    @GetMapping("/search/videos/suggest")
+    public List<String> suggest(@RequestParam String prefix,
+            @RequestParam(defaultValue = "5") int size) {
+        return searchService.suggestTitles(prefix, size);
     }
 
-    // Database search endpoints
-    @GetMapping("/db/search/name")
-    public List<VideoDto> searchByTitle(@RequestParam String title) {
-        return videoService.searchByTitle(title);
-    }
-
-    @GetMapping("/db/search/name-paged")
-    public Page<VideoDto> searchByNamePaged(@RequestParam String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return videoService.searchByTitlePaging(title, page, size);
-    }
-
-    @GetMapping("/db/search")
-    public ResponseEntity<List<VideoDto>> searchDatabaseByQuery(@RequestParam("q") String query) {
-        List<VideoDto> results = videoService.getVideoResult(query);
-        return ResponseEntity.ok(results);
-    }
+    // ===================== Detail + Update =====================
 
     @GetMapping("/{id}/form-details")
     @PreAuthorize("isAuthenticated()")
@@ -192,13 +153,11 @@ public class VideoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<VideoDto> updateVideoDetails(
             @PathVariable UUID id,
-
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("status") String status,
             @RequestParam(value = "tags", required = false) String tags,
             @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-
             @AuthenticationPrincipal Jwt jwt) {
 
         UUID authenticatedUserId = UUID.fromString(jwt.getSubject());
@@ -214,4 +173,3 @@ public class VideoController {
         return ResponseEntity.ok(updatedVideo);
     }
 }
-

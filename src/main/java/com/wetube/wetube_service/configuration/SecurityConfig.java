@@ -86,7 +86,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/recommend/**").permitAll()
                         .requestMatchers("/api/transactions/**").permitAll()
                         .requestMatchers("/api/interactions/**").permitAll()
-
+                        .requestMatchers("/es/health/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated()
