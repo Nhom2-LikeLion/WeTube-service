@@ -1,61 +1,79 @@
-//package com.wetube.wetube_service.controller;
-//
-//import com.wetube.wetube_service.dto.room.RoomMember;
-//import com.wetube.wetube_service.dto.room.UpcommingListUpdate;
-//import org.springframework.messaging.handler.annotation.DestinationVariable;
-//import org.springframework.messaging.handler.annotation.MessageMapping;
-//import org.springframework.messaging.handler.annotation.SendTo;
-//import org.springframework.stereotype.Controller;
-//
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Set;
-//import java.util.concurrent.ConcurrentHashMap;
-//import java.util.stream.Collectors;
-//
-//@Controller
-//public class RoomController {
-//
-//    private final Map<String, Set<String>> roomMembers = new ConcurrentHashMap<>();
-//
-//    @MessageMapping("/rooms.members.{roomId}")
-//    @SendTo("/topic/rooms.{roomId}.members")
-//    public RoomMember updateMembers(@DestinationVariable String roomId, RoomMember member) {
-//        roomMembers.computeIfAbsent(roomId, k -> ConcurrentHashMap.newKeySet()).add(member.getUsername());
-//
-//        List<RoomMember> membersList = roomMembers.get(roomId).stream()
-//                .map(username -> {
-//                    RoomMember m = new RoomMember();
-//                    m.setUsername(username);
-//                    return m;
-//                })
-//                .collect(Collectors.toList());
-//
-//        return new RoomMember(membersList.size(), membersList);
-//    }
-//
-//    @MessageMapping("/rooms.members.leave.{roomId}")
-//    @SendTo("/topic/rooms.{roomId}.members")
-//    public RoomMember leaveRoom(@DestinationVariable String roomId, RoomMember member) {
-//        Set<String> members = roomMembers.getOrDefault(roomId, Collections.emptySet());
-//        members.remove(member.getUsername());
-//
-//        List<RoomMember> membersList = members.stream()
-//                .map(username -> {
-//                    RoomMember m = new RoomMember();
-//                    m.setUsername(username);
-//                    return m;
-//                })
-//                .collect(Collectors.toList());
-//
-//        return new RoomMember(membersList.size(), membersList);
-//    }
-//
-//    @MessageMapping("/rooms.playlist.{roomId}")
-//    @SendTo("/topic/rooms.{roomId}.playlist")
-//    public UpcommingListUpdate updatePlaylist(@DestinationVariable String roomId, UpcommingListUpdate update) {
-//        return update;
-//    }
-//}
-//
+package com.wetube.wetube_service.controller;
+
+import com.wetube.wetube_service.dto.room.playlist.VideoStateChangeRequest;
+import com.wetube.wetube_service.dto.room.room.JoinRoomRequest;
+import com.wetube.wetube_service.dto.room.room.Room;
+import com.wetube.wetube_service.dto.room.room.WatchMember;
+import com.wetube.wetube_service.service.impl.RoomService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@Controller
+@AllArgsConstructor
+@RequestMapping("/api/rooms")
+public class RoomController {
+
+    private final RoomService roomService;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @GetMapping
+    public ResponseEntity<Map<String, Room>> getAllRooms(){
+        return ResponseEntity.ok(roomService.getRooms());
+    }
+
+    @MessageMapping("/room/create")
+    public void handleCreateRoom(@Payload String username,
+                                 SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("Received username: " + username);
+
+        WatchMember host = new WatchMember();
+        host.setUsername(username);
+        host.setHost(true);
+
+        Room room = roomService.createRoom(host);
+
+        String sessionId = headerAccessor.getSessionId();
+
+        // Gửi trực tiếp cho người tạo phòng
+        messagingTemplate.convertAndSendToUser(
+                sessionId,
+                "/queue/room/created",
+                room,
+                createHeaders(sessionId)
+        );
+    }
+
+
+    @MessageMapping("/room/join")
+    @SendTo("/topic/room.{roomId}.members")
+    public void handleJoinRoom(@Payload JoinRoomRequest request,
+                               SimpMessageHeaderAccessor headerAccessor) {
+        Room updatedRoom = roomService.addMember(request.getRoomId(), request.getUsername());
+
+        // Gửi thông tin room cập nhật cho tất cả client trong topic
+        messagingTemplate.convertAndSend("/topic/room/" + request.getRoomId() + "/members", updatedRoom);
+    }
+
+    private MessageHeaders createHeaders(String sessionId) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId(sessionId);
+        headerAccessor.setLeaveMutable(true);
+        return headerAccessor.getMessageHeaders();
+    }
+
+}
+
