@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.service.impl;
+// package com.wetube.wetube_service.service.impl;
 
 //import com.wetube.wetube_service.dto.room.room.JoinRoomRequest;
 //import com.wetube.wetube_service.dto.room.room.Room;
@@ -60,13 +60,13 @@ public class RoomService {
         return generateRoomId(3) + "-" + generateRoomId(4) + "-" + generateRoomId(3);
     }
 
-    private String generateRoomId(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-}
+//     private String generateRoomId(int length) {
+//         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//         Random random = new SecureRandom();
+//         StringBuilder sb = new StringBuilder(length);
+//         for (int i = 0; i < length; i++) {
+//             sb.append(chars.charAt(random.nextInt(chars.length())));
+//         }
+//         return sb.toString();
+//     }
+// }

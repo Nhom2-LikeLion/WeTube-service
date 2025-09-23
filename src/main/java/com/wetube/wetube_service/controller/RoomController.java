@@ -1,4 +1,4 @@
-package com.wetube.wetube_service.controller;
+// package com.wetube.wetube_service.controller;
 
 import com.wetube.wetube_service.dto.room.RoomMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;

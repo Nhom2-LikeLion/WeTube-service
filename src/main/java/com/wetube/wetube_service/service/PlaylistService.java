@@ -7,10 +7,9 @@ import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
 import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
+import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
-
-
 
 public interface PlaylistService {
     UserPlaylistDto createPlaylist(CreatePlaylistRequest dto);
@@ -21,9 +20,10 @@ public interface PlaylistService {
 
     List<UserPlaylistDto> getUserCreatedPlaylistById(UUID userId);
 
-    List<UserPlaylistDto> getAllPlaylistByTypeUserId(UUID userId,PlaylistType playlistType);
+    List<UserPlaylistDto> getAllPlaylistByTypeUserId(UUID userId, PlaylistType playlistType);
 
     PlaylistDetailDto getPlaylistDetailedById(UUID playlistVideoId);
+
     PlaylistDetailDto getPlaylistDetailedById(UUID channelId, String playlistName);
 
     void initiatePlaylist(UUID userId);
@@ -34,7 +34,10 @@ public interface PlaylistService {
 
     void removePlaylist(UUID playlistId);
 
-
     String getTopViewUserUploaded(UUID userId);
+
+    List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId);
+
+    List<PlaylistVideoDto> getHistoryByUser(UUID userId);
 
 }
