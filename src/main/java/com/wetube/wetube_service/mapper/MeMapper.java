@@ -5,7 +5,7 @@ import com.wetube.wetube_service.entity.AppUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = { PlaylistMapper.class })
+@Mapper(componentModel = "spring")
 public interface MeMapper {
     @Mapping(target = "sub", expression = "java(user.getId() != null ? user.getId().toString() : null)")
     @Mapping(target = "email", source = "email")

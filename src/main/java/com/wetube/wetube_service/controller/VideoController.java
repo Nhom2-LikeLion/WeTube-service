@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
+import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
+import com.wetube.wetube_service.dto.video.VideoUpdateDto;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.data.domain.Page;
@@ -178,6 +180,38 @@ public class VideoController {
     public ResponseEntity<List<VideoDto>> searchDatabaseByQuery(@RequestParam("q") String query) {
         List<VideoDto> results = videoService.getVideoResult(query);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/{id}/form-details")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<VideoFormDetailDto> getVideoDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(videoService.getVideoDetail(id));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<VideoDto> updateVideoDetails(
+            @PathVariable UUID id,
+
+            @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("status") String status,
+            @RequestParam(value = "tags", required = false) String tags,
+            @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+
+            @AuthenticationPrincipal Jwt jwt) {
+
+        UUID authenticatedUserId = UUID.fromString(jwt.getSubject());
+
+        VideoUpdateDto updateDto = new VideoUpdateDto();
+        updateDto.setTitle(title);
+        updateDto.setDescription(description);
+        updateDto.setStatus(status);
+        updateDto.setTags(tags);
+
+        VideoDto updatedVideo = videoService.updateVideo(id, updateDto, thumbnailFile, authenticatedUserId);
+
+        return ResponseEntity.ok(updatedVideo);
     }
 }
 

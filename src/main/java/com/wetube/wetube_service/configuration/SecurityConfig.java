@@ -81,7 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tiers", "/api/tiers/**").permitAll()
                         .requestMatchers("/api/subscriptions/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
-                        .requestMatchers("/api/videos/**").permitAll()
+                        .requestMatchers("/api/videos","/api/videos/**").permitAll()
                         .requestMatchers("/api/channel/**").permitAll()
                         .requestMatchers("/api/recommend/**").permitAll()
                         .requestMatchers("/api/transactions/**").permitAll()
