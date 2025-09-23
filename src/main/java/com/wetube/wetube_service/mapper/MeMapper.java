@@ -11,6 +11,7 @@ public interface MeMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "picture", source = "picture")
     @Mapping(target = "name", source = "name")
+    @Mapping(target = "channelId", expression = "java(user.getChannel() != null && user.getChannel().getId() != null ? user.getChannel().getId().toString() : null)")
     @Mapping(target = "roles", expression = "java(new java.util.ArrayList<>(user.getRoleCodes()))")
     MeResponseDto toDto(AppUser user);
 }
