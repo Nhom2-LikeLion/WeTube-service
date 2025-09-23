@@ -1,9 +1,13 @@
 package com.wetube.wetube_service.entity.playlist;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.wetube.wetube_service.entity.video.Video;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 
@@ -48,4 +52,11 @@ public class PlaylistVideo {
     private Video video;
 
     private float historyDuration;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

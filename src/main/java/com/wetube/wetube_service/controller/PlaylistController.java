@@ -103,5 +103,8 @@ public class PlaylistController {
         return ResponseEntity.ok(Map.of("message", "Playlist deleted successfully"));
     }
 
-
+    @GetMapping("/{userId}/history")
+    public ResponseEntity<List<PlaylistVideoDto>> getUserHistory(@PathVariable UUID userId) {
+        return ResponseEntity.ok(playlistService.getHistoryByUser(userId));
+    }
 }
