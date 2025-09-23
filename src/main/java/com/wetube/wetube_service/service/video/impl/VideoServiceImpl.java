@@ -2,6 +2,7 @@ package com.wetube.wetube_service.service.video.impl;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
 import com.wetube.wetube_service.dto.video.*;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wetube.wetube_service.repository.video.TagRepository;
 import com.wetube.wetube_service.repository.video.VideoRepository;
+import com.wetube.wetube_service.repository.video.VideoSearchRepository;
 import com.wetube.wetube_service.repository.video.VideoTagRepository;
 import com.wetube.wetube_service.dto.LikeDto;
 import com.wetube.wetube_service.dto.CommentDto.CommentResponseDto;
@@ -40,6 +42,7 @@ import com.wetube.wetube_service.entity.video.VideoTag;
 import com.wetube.wetube_service.mapper.interaction.CommentMapper;
 import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.entity.video.Tag;
+import com.wetube.wetube_service.search.VideoDocument;
 import com.wetube.wetube_service.service.CloudinaryService;
 import com.wetube.wetube_service.service.interaction.LikeService;
 import com.wetube.wetube_service.service.video.VideoService;
@@ -57,6 +60,7 @@ public class VideoServiceImpl implements VideoService {
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
     private final CloudinaryService cloudinaryService;
+    private final VideoSearchRepository videoSearchRepository;
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
@@ -83,7 +87,6 @@ public class VideoServiceImpl implements VideoService {
         AppUser user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + authenticatedUserId));
 
-
         String videoUrl = cloudinaryService.uploadVideo(videoFile);
         String thumbnailUrl = (thumbnailFile != null && !thumbnailFile.isEmpty())
                 ? cloudinaryService.uploadThumbnail(thumbnailFile)
@@ -98,7 +101,6 @@ public class VideoServiceImpl implements VideoService {
         LocalDateTime now = LocalDateTime.now();
         if (entity.getCreatedAt() == null)
             entity.setCreatedAt(now);
-
         entity.setUpdatedAt(now);
 
         Video savedVideo = videoRepository.save(entity);
@@ -107,12 +109,38 @@ public class VideoServiceImpl implements VideoService {
         addVideoToUserUploadedPlaylist(savedVideo);
 
         String tagsAsString = videoDto.getTagsAsString();
+        VideoDto resultDto;
         if (tagsAsString != null && !tagsAsString.isBlank()) {
             log.info("Adding tags to new video {}: {}", savedVideo.getId(), tagsAsString);
-            return this.addTags(savedVideo.getId(), tagsAsString);
+            resultDto = this.addTags(savedVideo.getId(), tagsAsString);
+        } else {
+            resultDto = videoMapper.toDto(savedVideo);
         }
 
-        return videoMapper.toDto(savedVideo);
+        // đồng bộ sang Elasticsearch
+        indexToElasticsearch(savedVideo);
+
+        return resultDto;
+    }
+
+    private void indexToElasticsearch(Video video) {
+        try {
+            VideoDocument doc = new VideoDocument(
+                    video.getId().toString(),
+                    video.getTitle(),
+                    video.getDescription(),
+                    video.getUser().getId().toString(),
+                    video.getVideoTags().stream()
+                            .map(vt -> vt.getTag().getName())
+                            .toList(),
+                    List.of(), // TODO: map categories nếu có
+                    video.getCreatedAt().toLocalDate()
+            );
+            videoSearchRepository.save(doc);
+            log.info("Indexed video {} to Elasticsearch", video.getId());
+        } catch (Exception e) {
+            log.error("Failed to index video {} to Elasticsearch: {}", video.getId(), e.getMessage());
+        }
     }
 
     private void addVideoToUserUploadedPlaylist(Video video) {
@@ -182,6 +210,10 @@ public class VideoServiceImpl implements VideoService {
 
         Video dtoSource = videoRepository.findByIdWithTags(videoId)
                 .orElseThrow(() -> new IllegalArgumentException(ID_NOT_FOUND + videoId));
+
+        // update index sau khi add tag
+        indexToElasticsearch(dtoSource);
+
         return videoMapper.toDto(dtoSource);
     }
 
@@ -197,14 +229,14 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional(readOnly = true)
-    public java.util.List<VideoDto> getAllVideo() {
-        java.util.List<Video> videos = videoRepository.findAll();
+    public List<VideoDto> getAllVideo() {
+        List<Video> videos = videoRepository.findAll();
         return videoMapper.toDtoList(videos);
     }
 
     private Set<String> parseHashtagText(String hashtagText) {
         if (hashtagText == null || hashtagText.isBlank())
-            return java.util.Collections.emptySet();
+            return Collections.emptySet();
         String[] parts = hashtagText.split("[\\s#]+");
         Set<String> out = new LinkedHashSet<>();
         for (String part : parts) {
@@ -313,7 +345,7 @@ public class VideoServiceImpl implements VideoService {
     @Transactional(readOnly = true)
     public List<VideoDto> getVideoResult(String query) {
         if (query == null || query.isBlank()) {
-            return java.util.Collections.emptyList();
+            return Collections.emptyList();
         }
 
         String processedQuery = query.trim().replaceAll("\\s+", "%");
@@ -331,9 +363,6 @@ public class VideoServiceImpl implements VideoService {
         Video video = videoRepository.findByIdWithTags(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
 
-//        video.setTotalView((video.getTotalView()));
-//        videoRepository.save(video);
-
         Set<TagDto> tags = video.getVideoTags().stream()
                 .map(videoTag -> {
                     Tag tag = videoTag.getTag();
@@ -344,7 +373,7 @@ public class VideoServiceImpl implements VideoService {
                             tag.getCount()
                     );
                 })
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
         return VideoFormDetailDto.builder()
                 .id(video.getId())
@@ -372,7 +401,7 @@ public class VideoServiceImpl implements VideoService {
 
         video.setTitle(updateDto.getTitle());
         video.setDescription(updateDto.getDescription());
-        video.setVideosStatus(ActiveStatus.valueOf(updateDto.getStatus().toUpperCase())); // Chuyển String thành Enum
+        video.setVideosStatus(ActiveStatus.valueOf(updateDto.getStatus().toUpperCase()));
 
         if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
             try {
@@ -388,7 +417,6 @@ public class VideoServiceImpl implements VideoService {
             tag.setCount(Math.max(0, tag.getCount() - 1));
             tagRepository.save(tag);
         }
-
         videoTagRepository.deleteAll(video.getVideoTags());
         video.getVideoTags().clear();
         videoRepository.flush();
@@ -401,6 +429,9 @@ public class VideoServiceImpl implements VideoService {
 
         Video dtoSource = videoRepository.findByIdWithTags(updatedVideo.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
+
+        // update index
+        indexToElasticsearch(dtoSource);
 
         return videoMapper.toDto(dtoSource);
     }
