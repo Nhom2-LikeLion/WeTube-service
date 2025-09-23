@@ -10,6 +10,7 @@ public record MeResponseDto(
         String picture,
         String name,
         List<String> roles,
+        String channelId,
         UserChannelResponseDto channel,
         List<UserPlaylistDto> playlists
 ) { }

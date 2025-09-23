@@ -12,7 +12,6 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 @Builder
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "video_tags", uniqueConstraints = @UniqueConstraint(name = "uk_video_tag", columnNames = { "video_id",
     "tag_id" }))
 public class VideoTag {
@@ -30,4 +29,17 @@ public class VideoTag {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "tag_id", nullable = false, columnDefinition = "VARCHAR(36)")
   private Tag tag;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VideoTag videoTag = (VideoTag) o;
+        return id != null && id.equals(videoTag.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
