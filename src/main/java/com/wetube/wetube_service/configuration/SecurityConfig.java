@@ -85,6 +85,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/channel/**").permitAll()
                         .requestMatchers("/api/recommend/**").permitAll()
                         .requestMatchers("/api/transactions/**").permitAll()
+                        .requestMatchers("/api/interactions/**").permitAll()
+
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/customers/**").authenticated()
