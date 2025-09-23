@@ -20,17 +20,21 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
     List<Video> findByVideoTags_Tag_NameOrderByTotalViewDesc(String tagName);
 
     @Query("""
-        SELECT v FROM Video v
-        LEFT JOIN FETCH v.videoTags vt
-        LEFT JOIN FETCH vt.tag t
-        WHERE v.id = :id
-    """)
+                SELECT v FROM Video v
+                LEFT JOIN FETCH v.videoTags vt
+                LEFT JOIN FETCH vt.tag t
+                WHERE v.id = :id
+            """)
     Optional<Video> findByIdWithTags(@Param("id") UUID id);
+
     List<Video> findAllByVideosStatusOrderByCreatedAtDesc(ActiveStatus status);
 
     List<Video> findByTitleContainingIgnoreCase(String title);
+
     Page<Video> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
     Page<Video> findAll(Pageable pageable);
+
     List<Video> findDistinctByVideoTags_Tag_NameInAndIdNot(List<String> tagNames, UUID excludeId);
 
     @Query("""

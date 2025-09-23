@@ -19,4 +19,5 @@ public class RecommendVideoDto {
     private String name;
     private Long duration;
     private String picture;
+    private String videoUrl;
 }

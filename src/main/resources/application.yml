@@ -2,7 +2,7 @@ spring:
   application:
     name: WeTube-service
   profiles:
-    default: local
+    default: prod
 
   main:
     allow-bean-definition-overriding: true

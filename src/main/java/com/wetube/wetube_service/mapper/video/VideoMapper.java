@@ -2,6 +2,7 @@ package com.wetube.wetube_service.mapper.video;
 
 import com.wetube.wetube_service.dto.video.TagDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
+import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
 import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.entity.video.VideoTag;
 import com.wetube.wetube_service.search.VideoDocument;
@@ -69,6 +70,8 @@ public interface VideoMapper {
     default String uuidToString(UUID id) {
         return id != null ? id.toString() : null;
     }
+
+    VideoFormDetailDto toFormDetailDto(Video video);
 
     // Helper to map Set<VideoTag> -> List<String> tag names (lowercase)
     default java.util.List<String> mapTagNames(Set<VideoTag> videoTags) {
