@@ -201,4 +201,28 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
         playlistRepo.deleteById(playlistId);
     }
+
+@Override
+public List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId) {
+    return playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(playlistId);
+}
+
+@Override
+public List<PlaylistVideoDto> getHistoryByUser(UUID userId) {
+    List<Playlist> histories = playlistRepo.findByUser_IdAndPlaylistType(userId, PlaylistType.HISTORY);
+
+    if (histories.isEmpty()) {
+        throw new ResourceNotFoundException("Playlist", "type", "HISTORY");
+    }
+    Playlist history = histories.get(0);
+
+    return playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId())
+            .stream()
+            .map(playlistMapper::toPlaylistDto)
+            .toList();
+}
+
+
+
+
 }

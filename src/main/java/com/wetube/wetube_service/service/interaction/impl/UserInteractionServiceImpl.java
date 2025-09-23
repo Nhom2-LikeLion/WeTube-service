@@ -31,7 +31,7 @@ public class UserInteractionServiceImpl {
         }
 
         double delta = switch (type) {
-            case VIEW -> 1.0;
+            case VIEW -> 9.0;
             case LIKE -> 5.0;
             case COMMENT -> 8.0;
             case SHARE -> 12.0;

@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.dto.response.playlist;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -19,4 +20,5 @@ public class PlaylistVideoResponseDto {
     private UUID id;
     private VideoDto video;
     private float historyDuration;
+    private LocalDateTime updatedAt;
 }
