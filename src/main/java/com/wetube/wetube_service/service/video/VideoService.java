@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
+import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
+import com.wetube.wetube_service.dto.video.VideoUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,5 +36,7 @@ public interface VideoService {
 
     List<VideoDto> getVideosByTag(String tagName);
 
+    VideoFormDetailDto getVideoDetail(UUID videoId);
 
+    VideoDto updateVideo(UUID videoId, VideoUpdateDto updateDto, MultipartFile thumbnailFile, UUID authenticatedUserId);
 }
