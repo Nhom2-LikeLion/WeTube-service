@@ -294,7 +294,8 @@ public class VideoServiceImpl implements VideoService {
                         v.getCreatedAt().toLocalDate(),
                         v.getUser().getName(),
                         (long) v.getDuration(),
-                        v.getUser().getPicture()
+                        v.getUser().getPicture(),
+                        v.getVideoUrl()
                 ))
                 .toList();
 
