@@ -46,6 +46,7 @@ public class LivekitController {
 
     @PostMapping("/create-ingress")
     public CreateIngressResponse createIngress(@RequestBody CreateIngressParams params) throws IOException {
+        livekitIngressService.deleteInactiveIngress();
         return livekitIngressService.createIngress(params);
     }
 
