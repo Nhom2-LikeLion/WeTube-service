@@ -4,10 +4,17 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ClientChatMessage {
     private String type;
     private String sender;
     private String content;
+
+    @Override
+    public String toString() {
+        return "ClientChatMessage{" +
+                "type='" + type + '\'' +
+                ", sender='" + sender + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

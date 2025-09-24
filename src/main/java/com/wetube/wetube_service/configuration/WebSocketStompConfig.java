@@ -20,11 +20,11 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
     }
 
-    @Override
-    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-        messageConverters.add(new ProtobufMessageConverter());
-        return false;
-    }
+//    @Override
+//    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+//        messageConverters.add(new ProtobufMessageConverter());
+//        return false;
+//    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
