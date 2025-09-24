@@ -24,7 +24,7 @@ public class RecommendationController {
     @GetMapping("/{userId}")
     public ResponseEntity<List<RecommendVideoDto>> recommendVideos(
             @PathVariable UUID userId,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = "30") int limit) {
         return ResponseEntity.ok(recommendationService.recommendVideos(userId, limit));
     }
 }

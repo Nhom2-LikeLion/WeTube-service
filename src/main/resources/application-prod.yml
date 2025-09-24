@@ -3,6 +3,7 @@ spring:
     import: optional:file:.env.prod.properties
     activate:
       on-profile: prod
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -13,19 +14,6 @@ spring:
       ddl-auto: update
     show-sql: false
 
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
-      database: ${REDIS_DATABASE}
-      timeout: ${REDIS_TIMEOUT}ms
-      jedis:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: -1ms
 
   security:
     oauth2:
@@ -52,11 +40,21 @@ spring:
     connection-timeout: 5s
     socket-timeout: 10s
 
-cloudinary:
-  url: ${CLOUDINARY_URL}
-  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET}
+
+#    data:
+#      redis:
+#        host: ${REDIS_HOST}
+#        port: ${REDIS_PORT}
+#        password: ${REDIS_PASSWORD}
+#        database: ${REDIS_DATABASE}
+#        timeout: ${REDIS_TIMEOUT}ms
+#        jedis:
+#          pool:
+#            max-active: 8
+#            max-idle: 8
+#            min-idle: 0
+#            max-wait: -1ms
+
 
 management:
   endpoints:
@@ -68,6 +66,12 @@ management:
         exposed-headers: ${CORS_EXPOSED_HEADERS}
         allow-credentials: ${CORS_ALLOW_CREDENTIALS}
         max-age: 3600
+
+cloudinary:
+  url: ${CLOUDINARY_URL}
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 livekit:
   url: ${LIVEKIT_WS_URL}
