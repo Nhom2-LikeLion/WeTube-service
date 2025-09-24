@@ -37,7 +37,7 @@ public class RecServiceImpl implements RecService {
         // lấy toàn bộ affinity (userTag)
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
         if (affinities.isEmpty()) {
-            log.info("❌ User {} chưa có tag nào → không recommend được", userId);
+            log.info(" User {} chưa có tag nào → không recommend được", userId);
             return List.of();
         }
 
@@ -46,12 +46,12 @@ public class RecServiceImpl implements RecService {
         for (UserTag ut : affinities) {
             tag2point.put(ut.getTagId(), ut.getPoint());
         }
-        log.debug("🎯 User {} có tag affinities: {}", userId, tag2point);
+        log.debug(" User {} có tag affinities: {}", userId, tag2point);
 
         // lấy toàn bộ video ACTIVE (chỉnh lại enum cho khớp DB)
         List<Video> candidates = videoRepo.findAllByVideosStatusOrderByCreatedAtDesc(ActiveStatus.ACTIVE);
         if (candidates.isEmpty()) {
-            log.info("❌ Không tìm thấy video ACTIVE nào để recommend");
+            log.info(" Không tìm thấy video ACTIVE nào để recommend");
             return List.of();
         }
 
@@ -83,7 +83,7 @@ public class RecServiceImpl implements RecService {
             double score = 0.70 * tagAffinity + 0.30 * freshness;
             scored.add(new Scored(v, score));
 
-            log.debug("➡️ Video {}: tagAffinity={}, freshness={}, score={}",
+            log.debug(" Video {}: tagAffinity={}, freshness={}, score={}",
                     v.getId(), tagAffinity, freshness, score);
         }
 
@@ -93,7 +93,7 @@ public class RecServiceImpl implements RecService {
         // lấy top limit
         List<Video> top = scored.stream().limit(limit).map(Scored::v).toList();
 
-        log.info("✅ Recommend cho user {}: {} video(s)", userId, top.size());
+        log.info(" Recommend cho user {}: {} video(s)", userId, top.size());
         return videoMapper.toRecommendDtoList(top);
     }
 }
