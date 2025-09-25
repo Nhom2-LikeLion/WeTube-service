@@ -2,7 +2,7 @@ name: CI/CD pipeline for WeTube Backend Service
 
 on:
   push:
-    branches: [ feature/Deploy-to-aws ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -137,25 +137,75 @@ jobs:
 
             # Create .env file from GitHub secrets
             echo "Creating production environment file..."
-            cat > .env.prod << EOF
+            cat > .env.prod.properties << EOF
             SPRING_PROFILES_ACTIVE=prod
+            
+            # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_DIALECT=${{ secrets.DB_DIALECT }}
             DB_DRIVER=${{secrets.DB_DRIVER}}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            
+            # --- REDIS ---
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             REDIS_DATABASE=${{ secrets.REDIS_DATABASE }}
             REDIS_TIMEOUT=${{ secrets.REDIS_TIMEOUT }}
+            
+            # --- CORS ---
             CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
             CORS_ALLOWED_METHODS=${{ secrets.CORS_ALLOWED_METHODS }}
             CORS_ALLOWED_HEADERS=${{ secrets.CORS_ALLOWED_HEADERS }}
             CORS_EXPOSED_HEADERS=${{ secrets.CORS_EXPOSED_HEADERS }}
             CORS_ALLOW_CREDENTIALS=${{ secrets.CORS_ALLOW_CREDENTIALS }}
-            JWKS_URL=${{ secrets.JWKS_URL }}
+            
+            # --- Cloudinary ---
+            CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}
+            CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+            CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+            CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+            
+            # --- LiveKit ---
+            LIVEKIT_WS_URL=${{ secrets.LIVEKIT_WS_URL }}
+            LIVEKIT_API_URL=${{ secrets.LIVEKIT_API_URL }}
+            LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}
+            LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}
+            
+            # --- Google OAuth ---
+            CLIENT_ID=${{ secrets.CLIENT_ID }}
+            CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
+            
+            # --- Momo ---
+            PARTNER_CODE=${{ secrets.PARTNER_CODE }}
+            ACCESS_KEY=${{ secrets.ACCESS_KEY }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            ENDPOINT=${{ secrets.ENDPOINT }}
+            REDIRECT_URL=${{ secrets.REDIRECT_URL }}
+            IP_URL=${{ secrets.IP_URL }}
+            
+            # --- Elasticsearch ---
+            ELASTICSEARCH_URL=${{ secrets.ELASTICSEARCH_URL }}
+            ELASTICSEARCH_API_KEY=${{ secrets.ELASTICSEARCH_API_KEY }}
+            ELASTIC_USERNAME=${{ secrets.ELASTIC_USERNAME }}
+            ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD }}
+            
+            # --- Spring Security OAuth Details ---
+            SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE }}
+            SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_REDIRECT_URI }}
+            SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_AUTHENTICATION_METHOD=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_AUTHENTICATION_METHOD }}
+            SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_AUTHORIZATION_GRANT_TYPE }}
+            
+            SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_AUTHORIZATION_URI }}
+            SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_TOKEN_URI }}
+            SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}
+            SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_JWK_SET_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_JWK_SET_URI }}
+            SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}
+  
+            # --- Frontend URL ---
+            CLIENT_URL=${{ secrets.CLIENT_URL }}
+            
             IMAGE_NAME=${IMAGE_NAME}
             IMAGE_TAG=${IMAGE_TAG}
             EOF

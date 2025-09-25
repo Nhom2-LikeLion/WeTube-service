@@ -53,12 +53,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(csrf -> csrf.disable()
+//                .csrf(csrf -> csrf.disable()
                         // .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
 //                         .ignoringRequestMatchers(
 //                                 webCsrfConfiguration.csrfIgnoringRequestMatcher()
 // //                                authApiMatcher() // ignore CSRF for /api/auth/**
                         // )
+                .csrf(csrf -> csrf
+                                .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
+                                .ignoringRequestMatchers(webCsrfConfiguration.csrfIgnoringRequestMatcher())
                         )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint) // 401
