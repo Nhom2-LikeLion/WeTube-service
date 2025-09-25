@@ -79,8 +79,13 @@ jobs:
           script: |
             cd ~/full-stack-app
 
-            cat > .env.backend << EOF
+            cat > .env << EOF
             
+            IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
+            IMAGE_TAG_BACKEND=${{ github.sha }}
+            IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
+            IMAGE_TAG_FRONTEND=latest
+          
             # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
             DB_USERNAME=${{ secrets.DB_USERNAME }}
@@ -149,9 +154,7 @@ jobs:
             
             IMAGE_NAME=${IMAGE_NAME}
             IMAGE_TAG=${IMAGE_TAG}
-            EOF
             
-            cat > .env.frontend << EOF
             NEXT_PUBLIC_LIVEKIT_URL=${{ secrets.NEXT_PUBLIC_LIVEKIT_URL }}
             LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}
             LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}
@@ -159,11 +162,6 @@ jobs:
             NEXT_PUBLIC_API_BASE=${{ secrets.NEXT_PUBLIC_API_BASE }}
             NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
             EOF
-
-            export IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
-            export IMAGE_TAG_BACKEND=${{ needs.build.outputs.image_tag }}
-            export IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
-            export IMAGE_TAG_FRONTEND=latest
             
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
