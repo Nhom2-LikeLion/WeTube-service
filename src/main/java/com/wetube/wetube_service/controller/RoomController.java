@@ -35,38 +35,56 @@ public class RoomController {
         return ResponseEntity.ok(roomService.getRooms());
     }
 
-    @MessageMapping("/room/create")
-    public void handleCreateRoom(@Payload String username,
-                                 SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("Received username: " + username);
-
-        WatchMember host = new WatchMember();
+//    @MessageMapping("/room/create")
+//    @SendTo("/room/create")
+//    public void handleCreateRoom(@Payload String username,
+//                                 SimpMessageHeaderAccessor headerAccessor) {
+//        System.out.println("Received username: " + username);
+//
+//        WatchMember host = new WatchMember();
+//        host.setUsername(username);
+//        host.setHost(true);
+//
+//        Room room = roomService.createRoom(host);
+//
+//        String sessionId = headerAccessor.getSessionId();
+//        messagingTemplate.convertAndSendToUser(sessionId, "/queue/room/created", room);
+//
+////        // Gửi trực tiếp cho người tạo phòng
+////        messagingTemplate.convertAndSend(
+////                sessionId,
+////                "/queue/room/created",
+////                room,
+////                createHeaders(sessionId)
+////        );
+//    }
+@MessageMapping("/room/create")
+@SendTo("/topic/room/create")
+public Room handleCreateRoom(@Payload String username) {
+    System.out.println("Received username: " + username);
+    WatchMember host = new WatchMember();
         host.setUsername(username);
         host.setHost(true);
 
         Room room = roomService.createRoom(host);
+    return room;
+}
 
-        String sessionId = headerAccessor.getSessionId();
-
-        // Gửi trực tiếp cho người tạo phòng
-        messagingTemplate.convertAndSendToUser(
-                sessionId,
-                "/queue/room/created",
-                room,
-                createHeaders(sessionId)
-        );
+    @MessageMapping("/hello") // client gửi lên /app/hello
+    @SendTo("/topic/greetings") // broadcast tới /topic/greetings
+    public String greeting(String message) throws Exception {
+        System.out.println("Received message: " + message);
+        return "Server received: " + message;
     }
-
-
-    @MessageMapping("/room/join")
-    @SendTo("/topic/room.{roomId}.members")
-    public void handleJoinRoom(@Payload JoinRoomRequest request,
-                               SimpMessageHeaderAccessor headerAccessor) {
-        Room updatedRoom = roomService.addMember(request.getRoomId(), request.getUsername());
-
-        // Gửi thông tin room cập nhật cho tất cả client trong topic
-        messagingTemplate.convertAndSend("/topic/room/" + request.getRoomId() + "/members", updatedRoom);
-    }
+//    @MessageMapping("/room/join")
+//    @SendTo("/topic/room.{roomId}.members")
+//    public void handleJoinRoom(@Payload JoinRoomRequest request,
+//                               SimpMessageHeaderAccessor headerAccessor) {
+//        Room updatedRoom = roomService.addMember(request.getRoomId(), request.getUsername());
+//
+//        // Gửi thông tin room cập nhật cho tất cả client trong topic
+//        messagingTemplate.convertAndSend("/topic/room/" + request.getRoomId() + "/members", updatedRoom);
+//    }
 
     private MessageHeaders createHeaders(String sessionId) {
         SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);

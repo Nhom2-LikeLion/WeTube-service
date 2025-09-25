@@ -13,5 +13,5 @@ public class Room {
     private String roomId;
     private List<WatchMember> members = new ArrayList<>();
     private List<VideoRoom> playlist = new ArrayList<>();
-    private MediaPlayerState playerState;
+    private MediaPlayerState playerState = new MediaPlayerState();
 }
