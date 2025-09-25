@@ -152,9 +152,6 @@ jobs:
             # --- Frontend URL ---
             CLIENT_URL=${{ secrets.CLIENT_URL }}
             
-            IMAGE_NAME=${IMAGE_NAME}
-            IMAGE_TAG=${IMAGE_TAG}
-            
             NEXT_PUBLIC_LIVEKIT_URL=${{ secrets.NEXT_PUBLIC_LIVEKIT_URL }}
             LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}
             LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}
