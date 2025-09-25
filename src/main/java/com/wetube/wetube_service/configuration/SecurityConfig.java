@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
-import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.wetube.wetube_service.security.CookieBearerTokenResolver;
 import com.wetube.wetube_service.security.ForbiddenEntryPoint;
@@ -73,9 +72,8 @@ public class SecurityConfig {
                         .bearerTokenResolver(cookieBearerTokenResolver)
                         .jwt(jwt -> jwt.decoder(NimbusJwtDecoder
                                 .withPublicKey(keyLoader.loadPublicKey()).build())))
-                .oauth2Login(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**","/oauth2/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
                         .requestMatchers("/api/posts/**").permitAll()
