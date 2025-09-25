@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,11 +34,30 @@ public class VideoDocument {
     @Field(type = FieldType.Keyword)
     private List<String> tags;
 
-    // Optional: support multiple categories per video
     @Field(type = FieldType.Keyword)
     private List<String> categories;
 
-    @Field(type = FieldType.Date, format = DateFormat.date)
-    private LocalDate createdAt;
+   @Field(type = FieldType.Date, format = DateFormat.date_time)
+private Instant createdAt;
 
+    // thêm các field còn thiếu
+    @Field(type = FieldType.Text)
+    private String thumbnailUrl;
+
+    @Field(type = FieldType.Text)
+    private String videoUrl;
+
+    @Field(type = FieldType.Integer)
+    private Integer totalView;
+
+    @Field(type = FieldType.Float)
+    private Float duration;
+
+    @Field(type = FieldType.Text)
+    private String name;   // tên user
+
+    @Field(type = FieldType.Text)
+    private String picture; // avatar user
 }
+
+

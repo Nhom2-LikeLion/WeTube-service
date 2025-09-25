@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.service.video.impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,8 +78,8 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public VideoDto createVideo(MultipartFile videoFile,
-                                MultipartFile thumbnailFile,
-                                VideoDto videoDto, UUID authenticatedUserId) throws Exception {
+            MultipartFile thumbnailFile,
+            VideoDto videoDto, UUID authenticatedUserId) throws Exception {
 
         if (videoFile == null || videoFile.isEmpty()) {
             throw new IllegalArgumentException("Video file is required");
@@ -125,17 +126,23 @@ public class VideoServiceImpl implements VideoService {
 
     private void indexToElasticsearch(Video video) {
         try {
-            VideoDocument doc = new VideoDocument(
-                    video.getId().toString(),
-                    video.getTitle(),
-                    video.getDescription(),
-                    video.getUser().getId().toString(),
-                    video.getVideoTags().stream()
-                            .map(vt -> vt.getTag().getName())
-                            .toList(),
-                    List.of(), // TODO: map categories nếu có
-                    video.getCreatedAt().toLocalDate()
-            );
+            VideoDocument doc = new VideoDocument();
+            doc.setId(video.getId().toString());
+            doc.setTitle(video.getTitle());
+            doc.setDescription(video.getDescription());
+            doc.setUserId(video.getUser().getId().toString());
+            doc.setTags(video.getVideoTags().stream()
+                    .map(vt -> vt.getTag().getName())
+                    .toList());
+            doc.setCategories(List.of());
+            doc.setCreatedAt(video.getCreatedAt().atZone(ZoneOffset.UTC).toInstant());
+            doc.setThumbnailUrl(video.getThumbnailUrl());
+            doc.setVideoUrl(video.getVideoUrl());
+            doc.setTotalView(video.getTotalView());
+            doc.setDuration(video.getDuration());
+            doc.setName(video.getUser().getName());
+            doc.setPicture(video.getUser().getPicture());
+
             videoSearchRepository.save(doc);
             log.info("Indexed video {} to Elasticsearch", video.getId());
         } catch (Exception e) {
@@ -309,20 +316,19 @@ public class VideoServiceImpl implements VideoService {
                 .build();
 
         var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
-                        tags.stream().map(TagDto::getName).toList(),
-                        videoId)
+                tags.stream().map(TagDto::getName).toList(),
+                videoId)
                 .stream()
                 .map(v -> new RecommendVideoDto(
                         v.getId(),
                         v.getTitle(),
                         v.getThumbnailUrl(),
                         Integer.valueOf(v.getTotalView()),
-                        v.getCreatedAt().toLocalDate(),
+                        v.getCreatedAt().atZone(ZoneOffset.UTC).toInstant(),
                         v.getUser().getName(),
                         (long) v.getDuration(),
                         v.getUser().getPicture(),
-                        v.getVideoUrl()
-                ))
+                        v.getVideoUrl()))
                 .toList();
 
         var recommend = RecommendResponseDto.builder()
@@ -370,8 +376,7 @@ public class VideoServiceImpl implements VideoService {
                             tag.getId(),
                             tag.getName(),
                             tag.getCreatedAt(),
-                            tag.getCount()
-                    );
+                            tag.getCount());
                 })
                 .collect(Collectors.toSet());
 
@@ -391,7 +396,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public VideoDto updateVideo(UUID videoId, VideoUpdateDto updateDto, MultipartFile thumbnailFile, UUID authenticatedUserId) {
+    public VideoDto updateVideo(UUID videoId, VideoUpdateDto updateDto, MultipartFile thumbnailFile,
+            UUID authenticatedUserId) {
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException(VIDEO, "id", videoId.toString()));
 
