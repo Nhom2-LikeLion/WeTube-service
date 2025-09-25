@@ -157,8 +157,6 @@ jobs:
             IMAGE_TAG_FRONTEND=latest
             
             # --- Frontend URL ---
-            CLIENT_URL=${{ secrets.CLIENT_URL }}
-            
             NEXT_PUBLIC_LIVEKIT_URL=${{ secrets.NEXT_PUBLIC_LIVEKIT_URL }}
             LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}
             LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}
