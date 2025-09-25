@@ -79,12 +79,10 @@ jobs:
           script: |
             cd ~/full-stack-app
 
-            cat > .env << EOF
+            cat > .env.backend << EOF
             
             IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
             IMAGE_TAG_BACKEND=${{ github.sha }}
-            IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
-            IMAGE_TAG_FRONTEND=latest
           
             # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
@@ -148,7 +146,14 @@ jobs:
             SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_INFO_URI }}
             SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_JWK_SET_URI=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_JWK_SET_URI }}
             SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_GOOGLE_USER_NAME_ATTRIBUTE }}
-  
+            
+            EOF
+            
+            cat > .env.frontend << EOF
+            
+            IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
+            IMAGE_TAG_FRONTEND=latest
+            
             # --- Frontend URL ---
             CLIENT_URL=${{ secrets.CLIENT_URL }}
             
@@ -158,6 +163,7 @@ jobs:
             LIVEKIT_WS_URL=${{ secrets.LIVEKIT_WS_URL }}
             NEXT_PUBLIC_API_BASE=${{ secrets.NEXT_PUBLIC_API_BASE }}
             NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+            
             EOF
             
             sudo docker-compose down
