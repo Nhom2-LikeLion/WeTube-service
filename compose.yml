@@ -2,6 +2,11 @@ services:
   backend:
     image: ${IMAGE_NAME}:${IMAGE_TAG}
     container_name: wetube-backend-container
+    depends_on:
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     ports:
     - 8080:8080
     env_file:
@@ -13,10 +18,10 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${secrets.DB_PASSWORD}
+      MYSQL_DATABASE: ${secrets.DB_NAME}
+      MYSQL_USER: ${secrets.DB_USERNAME}
+      MYSQL_PASSWORD: ${secrets.DB_PASSWORD}
     ports:
     - 3306:3306
     volumes:
