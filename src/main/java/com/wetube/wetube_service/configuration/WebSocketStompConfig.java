@@ -30,7 +30,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
 //                .setAllowedOrigins("http://localhost:3000")
-                .setAllowedOrigins("https://wetube-client-app.onrender.com")
+                .setAllowedOrigins("https://wetube.name.vn")
                 .withSockJS();
     }
 }

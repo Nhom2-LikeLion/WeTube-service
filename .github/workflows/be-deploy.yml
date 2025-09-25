@@ -1,15 +1,16 @@
-name: CI/CD pipeline for WeTube Backend Service
+name: CI/CD pipeline for WeTube Backend & Full Stack Deployment
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     name: Build Backend Service
     runs-on: ubuntu-latest
     outputs:
-      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
+#      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
 #      - name: Print Image Info
@@ -52,7 +53,7 @@ jobs:
           echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
 
   deploy:
-    name: Deploy to EC2 Instance
+    name: Deploy Full Stack to EC2 Instance
     runs-on: ubuntu-latest
     needs: [build]
 
@@ -66,79 +67,19 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          source: "compose.yml"
-          target: "WeTube-service"
+          source: "compose.yml,nginx/"
+          target: "~/full-stack-app"
 
       - name: Deploy with Docker Compose
         uses: appleboy/ssh-action@master
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          IMAGE_NAME: ${{ needs.build.outputs.IMAGE_NAME }}
-          IMAGE_TAG: ${{ needs.build.outputs.IMAGE_TAG }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Set environment variables explicitly with fallback
-            export IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wetube-service"
-            export IMAGE_TAG="${{ github.sha }}"
+            cd ~/full-stack-app
 
-            echo "Deploying with Image: $IMAGE_NAME:$IMAGE_TAG"
-
-            echo "Final deployment values:"
-            echo "IMAGE_NAME: $IMAGE_NAME"
-            echo "IMAGE_TAG: $IMAGE_TAG"
-
-            # Verify variables are set
-            if [[ -z "$IMAGE_NAME" || -z "$IMAGE_TAG" ]]; then
-              echo "❌ Environment variables not set correctly"
-              echo "IMAGE_NAME: '$IMAGE_NAME'"
-              echo "IMAGE_TAG: '$IMAGE_TAG'"
-              exit 1
-            fi
-
-            # Install Docker if not present
-            if ! command -v docker &> /dev/null; then
-              echo "Installing Docker..."
-              sudo yum update -y
-              sudo yum install docker -y
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -a -G docker $USER
-              echo "Docker installed successfully"
-            fi
-
-            # Install Docker Compose if not present
-            if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
-              echo "Installing Docker Compose..."
-              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
-              sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose  # For compatibility
-              echo "Docker Compose installed successfully"
-            fi
-
-            # Use sudo for Docker commands (user may not be in group yet; relogin needed otherwise)
-            echo "Checking Docker status..."
-            sudo docker --version
-            sudo docker-compose version || sudo docker-compose --version
-
-            # Navigate to project directory
-            cd WeTube-service
-
-            # Verify files were copied
-            echo "Checking copied files..."
-            ls -la
-            if [[ ! -f "compose.yml" ]]; then
-              echo "❌ compose.yml not found in target directory"
-              exit 1
-            fi
-
-            # Create .env file from GitHub secrets
-            echo "Creating production environment file..."
-            cat > .env.prod.properties << EOF
-            SPRING_PROFILES_ACTIVE=prod
+            cat > .env.backend << EOF
             
             # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
@@ -209,37 +150,24 @@ jobs:
             IMAGE_NAME=${IMAGE_NAME}
             IMAGE_TAG=${IMAGE_TAG}
             EOF
+            
+            cat > .env.frontend << EOF
+            NEXT_PUBLIC_LIVEKIT_URL=${{ secrets.NEXT_PUBLIC_LIVEKIT_URL }}
+            LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}
+            LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}
+            LIVEKIT_WS_URL=${{ secrets.LIVEKIT_WS_URL }}
+            NEXT_PUBLIC_API_BASE=${{ secrets.NEXT_PUBLIC_API_BASE }}
+            NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+            EOF
 
-            echo "✅ Environment file created"       
+            export IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
+            export IMAGE_TAG_BACKEND=${{ needs.build.outputs.image_tag }}
+            export IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
+            export IMAGE_TAG_FRONTEND=latest
             
             # Login to Docker Hub
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          
-            echo "✅ Dừng và xóa container cũ (nếu có)"
-            sudo docker-compose --env-file .env.prod down || true
             
-            echo "✅ Pull image mới"
-            sudo docker-compose --env-file .env.prod.properties pull
-            
-            echo "✅ Chạy container mới"
-            sudo docker-compose --env-file .env.prod.properties up -d --remove-orphans
-
-#            # Stop and remove existing containers
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose rm -f backend || true
-#
-#            # Create the external network if it doesn't exist (new addition to fix the error)
-#            sudo docker network create web-network || true
-#
-#            # Pull latest image
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose pull backend
-#
-#            # Start new containers
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose up -d --remove-orphans
-#
-#            # Show running containers
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose ps
-#
-#            # Show logs for debugging
-#            echo "Container logs:"
-#            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose logs backend --tail=50
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            sudo docker-compose pull
+            sudo docker-compose up -d --remove-orphans
