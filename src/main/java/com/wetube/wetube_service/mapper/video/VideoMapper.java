@@ -12,6 +12,9 @@ import com.wetube.wetube_service.dto.video.RecommendVideoDto;
 
 import org.mapstruct.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +23,27 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface VideoMapper {
 
-   
+
+    default RecommendVideoDto toRecommendDto(VideoDocument doc) {
+    if (doc == null) return null;
+    RecommendVideoDto dto = new RecommendVideoDto();
+    dto.setId(UUID.fromString(doc.getId()));
+    dto.setTitle(doc.getTitle());
+    dto.setThumbnailUrl(doc.getThumbnailUrl());
+    dto.setTotalView(doc.getTotalView());
+    dto.setCreateAt(doc.getCreatedAt());
+    dto.setDuration(doc.getDuration() != null ? doc.getDuration().longValue() : null);
+    dto.setVideoUrl(doc.getVideoUrl());
+    dto.setName(doc.getName());
+    dto.setPicture(doc.getPicture());
+    return dto;
+}
+
+default List<RecommendVideoDto> toRecommendDtoListFromDoc(List<VideoDocument> docs) {
+    return docs.stream().map(this::toRecommendDto).toList();
+}
+
+
     @Mapping(target = "tags", source = "videoTags")
     VideoDto toDto(Video entity);
 
@@ -51,6 +74,10 @@ public interface VideoMapper {
     @Mapping(target = "duration",    source = "duration")
     RecommendVideoDto toRecommendDto(Video entity);
 
+    default Instant map(LocalDateTime value) {
+        return value != null ? value.toInstant(ZoneOffset.UTC) : null;
+    }
+    
     default List<RecommendVideoDto> toRecommendDtoList(List<Video> entities) {
         if (entities == null || entities.isEmpty()) return Collections.emptyList();
         return entities.stream().map(this::toRecommendDto).toList();
