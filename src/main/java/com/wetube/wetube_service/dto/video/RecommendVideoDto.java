@@ -1,6 +1,6 @@
 package com.wetube.wetube_service.dto.video;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ public class RecommendVideoDto {
     private String title;
     private String thumbnailUrl;
     private Integer totalView;
-    private LocalDate createAt;
+    private Instant createAt;
     private String name;
     private Long duration;
     private String picture;
