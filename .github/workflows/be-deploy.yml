@@ -219,10 +219,10 @@ jobs:
             sudo docker-compose --env-file .env.prod down || true
             
             echo "✅ Pull image mới"
-            sudo docker-compose --env-file .env.prod pull
+            sudo docker-compose --env-file .env.prod.properties pull
             
             echo "✅ Chạy container mới"
-            sudo docker-compose --env-file .env.prod up -d --remove-orphans
+            sudo docker-compose --env-file .env.prod.properties up -d --remove-orphans
 
 #            # Stop and remove existing containers
 #            sudo IMAGE_NAME="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" docker-compose stop backend || true
