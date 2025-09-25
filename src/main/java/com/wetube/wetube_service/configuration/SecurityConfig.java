@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.wetube.wetube_service.security.CookieBearerTokenResolver;
 import com.wetube.wetube_service.security.ForbiddenEntryPoint;
@@ -53,15 +54,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
-//                .csrf(csrf -> csrf.disable()
+                .csrf(csrf -> csrf.disable()
                         // .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
 //                         .ignoringRequestMatchers(
 //                                 webCsrfConfiguration.csrfIgnoringRequestMatcher()
 // //                                authApiMatcher() // ignore CSRF for /api/auth/**
                         // )
-                .csrf(csrf -> csrf
-                                .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
-                                .ignoringRequestMatchers(webCsrfConfiguration.csrfIgnoringRequestMatcher())
+//                .csrf(csrf -> csrf
+//                                .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
+//                                .ignoringRequestMatchers(webCsrfConfiguration.csrfIgnoringRequestMatcher())
                         )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint) // 401
@@ -72,8 +73,9 @@ public class SecurityConfig {
                         .bearerTokenResolver(cookieBearerTokenResolver)
                         .jwt(jwt -> jwt.decoder(NimbusJwtDecoder
                                 .withPublicKey(keyLoader.loadPublicKey()).build())))
+                .oauth2Login(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**","/oauth2/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
                         .requestMatchers("/api/posts/**").permitAll()
