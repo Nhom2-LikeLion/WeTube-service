@@ -59,7 +59,8 @@ public class RoomController {
     @SendTo("/topic/rooms/addSong/{roomId}")
     public VideoRoom handleAddSong(
             @DestinationVariable String roomId,
-            @Payload String videoId) {
+            @Payload Map<String, String> body) {
+        String videoId = body.get("videoId");
         System.out.println("Received Video Add in room " + roomId + ": " + videoId);
         return roomService.addSong(roomId,videoId);
     }
