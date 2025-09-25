@@ -2,15 +2,22 @@ package com.wetube.wetube_service.service.watchRoom;
 
 
 import com.wetube.wetube_service.dto.room.Room;
+import com.wetube.wetube_service.dto.room.VideoRoom;
 import com.wetube.wetube_service.dto.room.WatchMember;
+import com.wetube.wetube_service.entity.video.Video;
+import com.wetube.wetube_service.exception.ResourceNotFoundException;
+import com.wetube.wetube_service.mapper.video.VideoMapper;
+import com.wetube.wetube_service.repository.video.VideoRepository;
+import com.wetube.wetube_service.service.video.VideoService;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,8 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Setter
 @Slf4j
+@AllArgsConstructor
 public class RoomService {
+    private final VideoRepository videoRepo;
     private final Map<String, Room> rooms = new ConcurrentHashMap<>();
+    private final VideoMapper videoMapper;
 
     public Room createRoom(WatchMember host) {
 
@@ -54,7 +64,6 @@ public class RoomService {
         return room;
     }
 
-
     private String generateFriendlyRoomId() {
         return generateRoomId(3) + "-" + generateRoomId(4) + "-" + generateRoomId(3);
     }
@@ -67,5 +76,26 @@ public class RoomService {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+    public VideoRoom addSong(String roomId, String videoId) {
+        Room room = rooms.get(roomId);
+        Video video =null;
+        try {
+            UUID uuid = UUID.fromString(videoId);
+            video = videoRepo.findByIdWithTags(uuid)
+                    .orElseThrow(() -> new ResourceNotFoundException("video", "id", videoId));
+            System.out.println("Valid UUID: " + uuid);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid UUID format: " + videoId);
+        }
+
+        VideoRoom videoRoom = videoMapper.toRoomDto(video);
+
+        room.getPlaylist().add(videoRoom);
+
+        log.debug("Video added to room {}: {}", roomId, room.getPlaylist());
+
+        return videoRoom;
     }
 }

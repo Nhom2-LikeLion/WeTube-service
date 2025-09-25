@@ -1,13 +1,12 @@
 package com.wetube.wetube_service.controller;
 
 
-import com.wetube.wetube_service.dto.room.JoinRoomRequest;
-import com.wetube.wetube_service.dto.room.Room;
-import com.wetube.wetube_service.dto.room.WatchMember;
+import com.wetube.wetube_service.dto.room.*;
 import com.wetube.wetube_service.service.watchRoom.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -35,46 +34,34 @@ public class RoomController {
         return ResponseEntity.ok(roomService.getRooms());
     }
 
-//    @MessageMapping("/room/create")
-//    @SendTo("/room/create")
-//    public void handleCreateRoom(@Payload String username,
-//                                 SimpMessageHeaderAccessor headerAccessor) {
-//        System.out.println("Received username: " + username);
-//
-//        WatchMember host = new WatchMember();
-//        host.setUsername(username);
-//        host.setHost(true);
-//
-//        Room room = roomService.createRoom(host);
-//
-//        String sessionId = headerAccessor.getSessionId();
-//        messagingTemplate.convertAndSendToUser(sessionId, "/queue/room/created", room);
-//
-////        // Gửi trực tiếp cho người tạo phòng
-////        messagingTemplate.convertAndSend(
-////                sessionId,
-////                "/queue/room/created",
-////                room,
-////                createHeaders(sessionId)
-////        );
-//    }
-@MessageMapping("/room/create")
-@SendTo("/topic/room/create")
-public Room handleCreateRoom(@Payload String username) {
-    System.out.println("Received username: " + username);
-    WatchMember host = new WatchMember();
+    @MessageMapping("/room/create")
+    @SendTo("/topic/room/create")
+    public Room handleCreateRoom(@Payload String username) {
+        System.out.println("Received username: " + username);
+        WatchMember host = new WatchMember();
         host.setUsername(username);
         host.setHost(true);
 
         Room room = roomService.createRoom(host);
-    return room;
-}
+        return room;
+    }
 
-    @MessageMapping("/hello") // client gửi lên /app/hello
-    @SendTo("/topic/greetings") // broadcast tới /topic/greetings
-    public String greeting(String message) throws Exception {
-        System.out.println("Received message: " + message);
-        return "Server received: " + message;
+    @MessageMapping("/chat/{roomId}")
+    @SendTo("/topic/rooms/chat/{roomId}")
+    public ClientChatMessage handleChat(
+            @DestinationVariable String roomId,
+            @Payload ClientChatMessage message) {
+        System.out.println("Received message in room " + roomId + ": " + message);
+        return message;
+    }
+
+    @MessageMapping("/room/addSong/{roomId}")
+    @SendTo("/topic/rooms/addSong/{roomId}")
+    public VideoRoom handleAddSong(
+            @DestinationVariable String roomId,
+            @Payload String videoId) {
+        System.out.println("Received Video Add in room " + roomId + ": " + videoId);
+        return roomService.addSong(roomId,videoId);
     }
 //    @MessageMapping("/room/join")
 //    @SendTo("/topic/room.{roomId}.members")
@@ -85,13 +72,6 @@ public Room handleCreateRoom(@Payload String username) {
 //        // Gửi thông tin room cập nhật cho tất cả client trong topic
 //        messagingTemplate.convertAndSend("/topic/room/" + request.getRoomId() + "/members", updatedRoom);
 //    }
-
-    private MessageHeaders createHeaders(String sessionId) {
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        headerAccessor.setSessionId(sessionId);
-        headerAccessor.setLeaveMutable(true);
-        return headerAccessor.getMessageHeaders();
-    }
 
 }
 

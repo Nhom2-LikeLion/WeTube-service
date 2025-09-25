@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.mapper.video;
 
+import com.wetube.wetube_service.dto.room.VideoRoom;
 import com.wetube.wetube_service.dto.video.TagDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
@@ -22,6 +23,18 @@ public interface VideoMapper {
    
     @Mapping(target = "tags", source = "videoTags")
     VideoDto toDto(Video entity);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "duration", target = "duration")
+    @Mapping(source = "thumbnailUrl", target = "thumbnailUrl")
+    @Mapping(source = "videoUrl", target = "videoUrl")
+    @Mapping(source = "user.name", target = "author")
+    @Mapping(source = "user.picture", target = "authorImg")
+    @Mapping(source = "totalView", target = "totalView")
+    @Mapping(target = "position", ignore = true)
+    @Mapping(source = "createdAt", target = "createdAt")
+    VideoRoom toRoomDto(Video entity);
 
     default List<VideoDto> toDtoList(List<Video> entities) {
         if (entities == null || entities.isEmpty()) return Collections.emptyList();
