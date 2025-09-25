@@ -55,19 +55,19 @@ public class AuthController {
     @Value("${CLIENT_URL}")
     private String clientUrl;
 
-    @GetMapping("/login/google")
-    public void redirectToGoogle(HttpServletResponse response) throws IOException {
-        String url = UriComponentsBuilder
-                .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
-                .queryParam("response_type", "code")
-                .queryParam("scope", "openid email profile")
-                .queryParam("access_type", "offline")
-                .queryParam("prompt", "consent")
-                .build().toUriString();
-        response.sendRedirect(url);
-    }
+//    @GetMapping("/login/google")
+//    public void redirectToGoogle(HttpServletResponse response) throws IOException {
+//        String url = UriComponentsBuilder
+//                .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
+//                .queryParam("client_id", clientId)
+//                .queryParam("redirect_uri", redirectUri)
+//                .queryParam("response_type", "code")
+//                .queryParam("scope", "openid email profile")
+//                .queryParam("access_type", "offline")
+//                .queryParam("prompt", "consent")
+//                .build().toUriString();
+//        response.sendRedirect(url);
+//    }
 
     @GetMapping("/login/google/callback")
     public void googleCallback(
