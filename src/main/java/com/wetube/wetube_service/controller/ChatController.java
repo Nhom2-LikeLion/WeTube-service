@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetube.wetube_service.dto.room.ClientChatMessage;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,12 +12,5 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
 
-    @MessageMapping("/chat.{roomId}")
-    @SendTo("/topic/rooms.chat.{roomId}")
-    public ClientChatMessage handleChat(
-            @DestinationVariable String roomId,
-            @Payload ClientChatMessage message) {
-        System.out.println("Received message in room " + roomId + ": " + message);
-        return message;
-    }
+
 }
