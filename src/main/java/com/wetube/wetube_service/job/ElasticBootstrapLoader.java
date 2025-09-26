@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneOffset;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,28 +24,34 @@ public class ElasticBootstrapLoader implements CommandLineRunner {
     }
 
     @Override
-    @Transactional(readOnly = true) 
+    @Transactional(readOnly = true)
     public void run(String... args) {
         System.out.println("🚀 Bắt đầu sync dữ liệu cũ MySQL → Elasticsearch...");
 
         var videos = videoRepository.findAll();
 
-        var docs = videos.stream().map(v -> new VideoDocument(
-                v.getId().toString(),
-                v.getTitle(),
-                v.getDescription(),
-                v.getUser().getId().toString(),
+        var docs = videos.stream().map(v -> {
+            var tags = v.getVideoTags().stream()
+                    .map(VideoTag::getTag)        
+                    .map(tag -> tag.getName())    
+                    .collect(Collectors.toList());
 
-                // lấy tên tag từ VideoTag
-                v.getVideoTags().stream()
-                        .map(VideoTag::getTag)        // lấy entity Tag
-                        .map(tag -> tag.getName())    // lấy tên Tag
-                        .collect(Collectors.toList()),
-
-                java.util.List.of(),
-
-                v.getCreatedAt().toLocalDate()
-        )).toList();
+            return new VideoDocument(
+                    v.getId().toString(),
+                    v.getTitle(),
+                    v.getDescription(),
+                    v.getUser().getId().toString(),
+                    tags,
+                    java.util.List.of(),          
+                    v.getCreatedAt().atZone(ZoneOffset.UTC).toInstant(),
+                    v.getThumbnailUrl(),
+                    v.getVideoUrl(),
+                    v.getTotalView(),
+                    v.getDuration(),
+                    v.getUser().getName(),
+                    v.getUser().getPicture()
+            );
+        }).toList();
 
         videoSearchRepository.saveAll(docs);
 

@@ -56,7 +56,8 @@ public class LivekitIngressService {
         // Lọc INACTIVE và xoá
         for (LivekitIngress.IngressInfo ingress : ingressList) {
             if (ingress.hasState()
-                    && ingress.getState().getStatus() == LivekitIngress.IngressState.Status.forNumber(0)) {
+                    && ( ingress.getState().getStatus() == LivekitIngress.IngressState.Status.forNumber(0)
+                    || ingress.getState().getStatus() == LivekitIngress.IngressState.Status.forNumber(3) )) {
 
                 inactiveIds.add(ingress.getIngressId());
 

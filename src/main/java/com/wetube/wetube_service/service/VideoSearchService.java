@@ -24,7 +24,6 @@ import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.search.VideoDocument;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,88 +33,109 @@ import static co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders.*;
 @RequiredArgsConstructor
 @Slf4j
 public class VideoSearchService {
-    private final ElasticsearchOperations elasticsearchOperations;
-    private final VideoRepository videoRepository;
-    private final VideoMapper videoMapper;
+        private final ElasticsearchOperations elasticsearchOperations;
+        private final VideoRepository videoRepository;
+        private final VideoMapper videoMapper;
 
-    private static final IndexCoordinates INDEX = IndexCoordinates.of("videos");
+        private static final IndexCoordinates INDEX = IndexCoordinates.of("videos");
 
-    // ================== SEARCH TRẢ VỀ ELASTIC DOCUMENT ==================
+        // ================== SEARCH TRẢ VỀ ELASTIC DOCUMENT ==================
 
-    public Page<VideoDocument> searchByTitle(String text, int page, int size) {
-        Instant start = Instant.now();
-        Pageable pageable = PageRequest.of(page, size);
+        public Page<VideoDocument> searchByTitle(String text, int page, int size) {
+                Instant start = Instant.now();
+                Pageable pageable = PageRequest.of(page, size);
 
-        NativeQuery query = new NativeQueryBuilder()
-                .withQuery(match(m -> m.field("title").query(text).operator(Operator.Or)))
-                .withPageable(pageable)
-                .build();
+                NativeQuery query = new NativeQueryBuilder()
+                                .withQuery(bool(b -> b
+                                                .should(wildcard(w -> w.field("title").value(text.toLowerCase() + "*")))
+                                                .should(multiMatch(m -> m
+                                                                .fields("title", "description")
+                                                                .query(text)
+                                                                .fuzziness("AUTO")))))
+                                .withPageable(pageable)
+                                .build();
 
-        Page<VideoDocument> results = search(query, pageable);
+                Page<VideoDocument> results = search(query, pageable);
 
-        log.info("[ELASTIC] Search by title='{}' found {} results in {}ms",
-                text, results.getTotalElements(), Duration.between(start, Instant.now()).toMillis());
+                log.info("[ELASTIC] Search by title='{}' found {} results in {}ms",
+                                text, results.getTotalElements(), Duration.between(start, Instant.now()).toMillis());
 
-        return results;
-    }
+                return results;
+        }
 
-    public VideoDocument searchExactTitle(String title) {
-        NativeQuery query = new NativeQueryBuilder()
-                .withQuery(term(t -> t.field("title.keyword").value(title)))
-                .build();
+        public VideoDocument searchExactTitle(String title) {
+                NativeQuery query = new NativeQueryBuilder()
+                                .withQuery(term(t -> t.field("title.keyword").value(title)))
+                                .build();
 
-        SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
-        return hits.hasSearchHits() ? hits.getSearchHits().get(0).getContent() : null;
-    }
+                SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
+                return hits.hasSearchHits() ? hits.getSearchHits().get(0).getContent() : null;
+        }
 
-    public List<String> suggestTitles(String prefix, int size) {
-        NativeQuery query = new NativeQueryBuilder()
-                .withQuery(prefix(p -> p.field("title").value(prefix)))
-                .withSourceFilter(new FetchSourceFilter(false, new String[]{"title"}, new String[]{}))
-                .withMaxResults(size)
-                .build();
+        public List<String> suggestTitles(String prefix, int size) {
+                NativeQuery query = new NativeQueryBuilder()
+                                .withQuery(bool(b -> b
+                                                .should(wildcard(w -> w.field("title")
+                                                                .value(prefix.toLowerCase() + "*")))
+                                                .should(wildcard(w -> w.field("description")
+                                                                .value(prefix.toLowerCase() + "*")))
+                                                .should(wildcard(
+                                                                w -> w.field("name").value(prefix.toLowerCase() + "*"))) // tên
+                                                                                                                         // channel
+                                                .should(wildcard(w -> w
+                                                                .field("tags").value(prefix.toLowerCase() + "*")))))
+                                .withSourceFilter(
+                                                new FetchSourceFilter(false, new String[] { "title" }, new String[] {}))
+                                .withMaxResults(size)
+                                .build();
 
-        SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
-        return hits.getSearchHits().stream()
-                .map(h -> h.getContent().getTitle())
-                .distinct()
-                .toList();
-    }
+                SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
+                return hits.getSearchHits().stream()
+                                .map(h -> h.getContent().getTitle())
+                                .distinct()
+                                .toList();
+        }
 
-    // ================== SEARCH TRẢ VỀ VIDEO DTO (LOAD FULL TỪ MYSQL) ==================
+        // ================== SEARCH TRẢ VỀ VIDEO DTO (LOAD FULL TỪ MYSQL)
+        // ==================
 
-    public Page<VideoDto> searchByTitleFull(String text, int page, int size) {
-        Instant start = Instant.now();
-        Pageable pageable = PageRequest.of(page, size);
+        public Page<VideoDto> searchByTitleFull(String text, int page, int size) {
+                Instant start = Instant.now();
+                Pageable pageable = PageRequest.of(page, size);
 
-        NativeQuery query = new NativeQueryBuilder()
-                .withQuery(match(m -> m.field("title").query(text)))
-                .withPageable(pageable)
-                .build();
+                NativeQuery query = new NativeQueryBuilder()
+                                .withQuery(bool(b -> b
+                                                .should(wildcard(w -> w.field("title").value(text.toLowerCase() + "*")))
+                                                .should(multiMatch(m -> m
+                                                                .fields("title", "description")
+                                                                .query(text)
+                                                                .fuzziness("AUTO")))))
+                                .withPageable(pageable)
+                                .build();
 
-        SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
+                SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
 
-        List<VideoDto> videos = hits.getSearchHits().stream()
-                .map(SearchHit::getContent)
-                .map(doc -> videoRepository.findById(UUID.fromString(doc.getId()))
-                                           .map(videoMapper::toDto)
-                                           .orElse(null))
-                .filter(Objects::nonNull)
-                .toList();
+                List<VideoDto> videos = hits.getSearchHits().stream()
+                                .map(SearchHit::getContent)
+                                .map(doc -> videoRepository.findById(UUID.fromString(doc.getId()))
+                                                .map(videoMapper::toDto)
+                                                .orElse(null))
+                                .filter(Objects::nonNull)
+                                .toList();
 
-        log.info("[ELASTIC+MYSQL] Search full by title='{}' found {} results in {}ms",
-                text, videos.size(), Duration.between(start, Instant.now()).toMillis());
+                log.info("[ELASTIC+MYSQL] Search full by title='{}' found {} results in {}ms",
+                                text, videos.size(), Duration.between(start, Instant.now()).toMillis());
 
-        return new PageImpl<>(videos, pageable, hits.getTotalHits());
-    }
+                return new PageImpl<>(videos, pageable, hits.getTotalHits());
+        }
 
-    // ================== HELPER ==================
+        // ================== HELPER ==================
 
-    private Page<VideoDocument> search(NativeQuery query, Pageable pageable) {
-        SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
-        List<VideoDocument> content = hits.getSearchHits().stream()
-                .map(SearchHit::getContent)
-                .toList();
-        return new PageImpl<>(content, pageable, hits.getTotalHits());
-    }
+        private Page<VideoDocument> search(NativeQuery query, Pageable pageable) {
+                SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
+                List<VideoDocument> content = hits.getSearchHits().stream()
+                                .map(SearchHit::getContent)
+                                .toList();
+                return new PageImpl<>(content, pageable, hits.getTotalHits());
+        }
 }
