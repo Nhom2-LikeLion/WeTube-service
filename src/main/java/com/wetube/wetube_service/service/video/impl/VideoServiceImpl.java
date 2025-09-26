@@ -272,6 +272,7 @@ public class VideoServiceImpl implements VideoService {
                 .picture(video.getUser().getPicture())
                 .like(likeInfo)
                 .totalSubscribers(totalSubscribers)
+                .channelId(video.getUser().getChannel().getId())
                 .subscribed(subscribed)
                 .comments(comments)
                 .build();

@@ -47,6 +47,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    implementation 'org.springframework.boot:spring-boot-starter-test'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //    implementation 'redis.clients:jedis'
     implementation "org.springframework.boot:spring-boot-starter-security"
@@ -56,6 +57,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1'
 
+    implementation 'org.bytedeco:ffmpeg:6.0-1.5.9'
 
     //Websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

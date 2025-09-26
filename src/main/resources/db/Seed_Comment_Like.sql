@@ -8,7 +8,7 @@ VALUES (
     '66666666-6666-6666-6666-666666666660',
     NULL,
     'Awesome AMV! 🔥🔥',
-    0,
+    0,video_tags
     NOW(), NOW(),
     'VIDEO',
     'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa'

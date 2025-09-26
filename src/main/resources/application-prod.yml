@@ -84,3 +84,9 @@ momo:
 
 elasticsearch:
   api-key: ${ELASTICSEARCH_API_KEY}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
