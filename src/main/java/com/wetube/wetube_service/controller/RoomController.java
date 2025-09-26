@@ -33,7 +33,8 @@ public class RoomController {
 
     @MessageMapping("/room/create")
     @SendTo("/topic/room/create")
-    public Room handleCreateRoom(@Payload String username) {
+    public Room handleCreateRoom(@Payload Map<String, String> payload) {
+        String username = payload.get("username");
         System.out.println("Received username: " + username);
         WatchMember host = new WatchMember();
         host.setUsername(username);
