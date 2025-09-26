@@ -10,5 +10,5 @@ import java.util.List;
 public class WatchMember {
     private String userId;
     private String username;
-    private boolean isHost;
+    private boolean host;
 }
