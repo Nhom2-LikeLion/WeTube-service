@@ -14,17 +14,24 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
 
+    //    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        registry.enableSimpleBroker("/topic", "/user");
+//        registry.setApplicationDestinationPrefixes("/app");
+//        registry.setUserDestinationPrefix("/user");
+//
+//    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/user");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
-
+        registry.setPreservePublishOrder(true); // giữ nguyên format destination
     }
 
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-//        messageConverters.add(new ProtobufMessageConverter());
+        messageConverters.add(new ProtobufMessageConverter());
         return true;
     }
 
