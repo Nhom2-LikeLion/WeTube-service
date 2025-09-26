@@ -40,6 +40,7 @@ public class RoomController {
         host.setUsername(username);
         host.setHost(true);
 
+
         Room room = roomService.createRoom(host);
         return room;
     }
