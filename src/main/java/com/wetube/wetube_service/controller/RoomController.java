@@ -4,25 +4,22 @@ package com.wetube.wetube_service.controller;
 import com.wetube.wetube_service.dto.room.*;
 import com.wetube.wetube_service.service.watchRoom.RoomService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
+@Slf4j
 @RequestMapping("/api/rooms")
 public class RoomController {
 
@@ -72,6 +69,22 @@ public class RoomController {
         String videoId = body.get("videoId");
         System.out.println("Received Video Add in room " + roomId + ": " + videoId);
         return roomService.addSong(roomId,videoId);
+    }
+
+    @MessageMapping("/room/mediaState/{roomId}")
+    @SendTo("/topic/rooms/mediaState/{roomId}")
+    public MediaPlayerState handlePickSong(
+            @DestinationVariable String roomId,
+            @Payload MediaPlayerState mediaState) {
+
+        log.debug("Received MediaState in room {}: {}", roomId, mediaState);
+
+        // Gọi service để xử lý và cập nhật trạng thái
+        MediaPlayerState updatedState = roomService.handleState(roomId, mediaState);
+
+        // Log trạng thái đã được cập nhật
+        log.debug("Updated MediaState in room {}: {}", roomId, updatedState);
+        return updatedState;
     }
 
 }

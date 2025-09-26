@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.service.watchRoom;
 
 
+import com.wetube.wetube_service.dto.room.MediaPlayerState;
 import com.wetube.wetube_service.dto.room.Room;
 import com.wetube.wetube_service.dto.room.VideoRoom;
 import com.wetube.wetube_service.dto.room.WatchMember;
@@ -8,7 +9,6 @@ import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.repository.video.VideoRepository;
-import com.wetube.wetube_service.service.video.VideoService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,5 +97,16 @@ public class RoomService {
         log.debug("Video added to room {}: {}", roomId, room.getPlaylist());
 
         return videoRoom;
+    }
+
+    @Transactional
+    public MediaPlayerState handleState(String roomId, MediaPlayerState mediaState) {
+        Room room = rooms.get(roomId);
+
+        room.setPlayerState(mediaState);;
+
+        log.debug("MediaPlayerState for room {} updated to: {}", roomId, room.getPlayerState());
+
+        return room.getPlayerState();
     }
 }

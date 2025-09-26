@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MediaPlayerState {
     private String roomId;
-    private boolean isPlaying;
+    private boolean playing;
     private long currentTimeMillis;
     private String currentSongId;
 }
