@@ -112,7 +112,7 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'FAILED', 'SKIPPED', 'PASSED'
-        exceptionFormat 'FULL'
+        exceptionFormat = 'FULL'
         showStandardStreams = false
     }
     finalizedBy jacocoTestReport         // run report after finalizing test

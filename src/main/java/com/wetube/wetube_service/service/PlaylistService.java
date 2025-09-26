@@ -6,10 +6,11 @@ import java.util.UUID;
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.PlaylistType;
-import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 
 public interface PlaylistService {
     UserPlaylistDto createPlaylist(CreatePlaylistRequest dto);
@@ -39,5 +40,7 @@ public interface PlaylistService {
     List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId);
 
     List<PlaylistVideoDto> getHistoryByUser(UUID userId);
+
+    List<PlaylistVideoDetailDto> addVideoToHistory(UUID userId, UUID videoId);
 
 }

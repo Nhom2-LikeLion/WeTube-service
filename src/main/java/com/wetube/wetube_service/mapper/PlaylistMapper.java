@@ -47,6 +47,7 @@ public interface PlaylistMapper {
     @Mapping(target = "videoUrl", source = "video.videoUrl")
     @Mapping(target = "thumbnailUrl", source = "video.thumbnailUrl")
     @Mapping(target = "historyDuration", source = "historyDuration")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     PlaylistVideoDto toPlaylistDto(PlaylistVideo pv);
 
     List<PlaylistVideoDto> toPlaylistDtoList(List<PlaylistVideo> playlistVideos);
