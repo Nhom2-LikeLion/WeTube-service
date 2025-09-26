@@ -10,8 +10,6 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,7 +20,7 @@ public class VideoDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "autocomplete", searchAnalyzer = "standard")
     private String title;
 
     @Field(type = FieldType.Text)
@@ -31,16 +29,15 @@ public class VideoDocument {
     @Field(type = FieldType.Keyword)
     private String userId;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Keyword, analyzer = "autocomplete", searchAnalyzer = "standard")
     private List<String> tags;
 
     @Field(type = FieldType.Keyword)
     private List<String> categories;
 
    @Field(type = FieldType.Date, format = DateFormat.date_time)
-private Instant createdAt;
-
-    // thêm các field còn thiếu
+   private Instant createdAt;
+   
     @Field(type = FieldType.Text)
     private String thumbnailUrl;
 
@@ -54,10 +51,10 @@ private Instant createdAt;
     private Float duration;
 
     @Field(type = FieldType.Text)
-    private String name;   // tên user
+    private String name;   
 
     @Field(type = FieldType.Text)
-    private String picture; // avatar user
+    private String picture; 
 }
 
 
