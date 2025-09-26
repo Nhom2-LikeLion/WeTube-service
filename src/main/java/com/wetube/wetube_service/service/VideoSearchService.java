@@ -24,7 +24,6 @@ import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.search.VideoDocument;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,7 +74,16 @@ public class VideoSearchService {
 
         public List<String> suggestTitles(String prefix, int size) {
                 NativeQuery query = new NativeQueryBuilder()
-                                .withQuery(wildcard(w -> w.field("title").value(prefix.toLowerCase() + "*")))
+                                .withQuery(bool(b -> b
+                                                .should(wildcard(w -> w.field("title")
+                                                                .value(prefix.toLowerCase() + "*")))
+                                                .should(wildcard(w -> w.field("description")
+                                                                .value(prefix.toLowerCase() + "*")))
+                                                .should(wildcard(
+                                                                w -> w.field("name").value(prefix.toLowerCase() + "*"))) // tên
+                                                                                                                         // channel
+                                                .should(wildcard(w -> w
+                                                                .field("tags").value(prefix.toLowerCase() + "*")))))
                                 .withSourceFilter(
                                                 new FetchSourceFilter(false, new String[] { "title" }, new String[] {}))
                                 .withMaxResults(size)
