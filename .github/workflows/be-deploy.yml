@@ -79,7 +79,7 @@ jobs:
           script: |
             cd ~/full-stack-app
 
-            cat > .env.backend << EOF
+            cat > .env << EOF
             
             IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
             IMAGE_TAG_BACKEND=${{ needs.build.outputs.IMAGE_TAG }}
@@ -149,9 +149,6 @@ jobs:
             
             CLIENT_URL=${{ secrets.CLIENT_URL }}
 
-            EOF
-            
-            cat > .env.frontend << EOF
             
             IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
             IMAGE_TAG_FRONTEND=latest

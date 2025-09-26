@@ -21,7 +21,7 @@ services:
   backend:
     image: ${IMAGE_NAME_BACKEND}:${IMAGE_TAG_BACKEND}
     container_name: wetube-backend-container
-    env_file: .env.backend
+    env_file: .env
     restart: always
     networks:
       - web-network
@@ -29,7 +29,7 @@ services:
   frontend:
     image: ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG_FRONTEND}
     container_name: wetube-frontend-container
-    env_file: .env.frontend
+    env_file: .env
     restart: always
     networks:
       - web-network
