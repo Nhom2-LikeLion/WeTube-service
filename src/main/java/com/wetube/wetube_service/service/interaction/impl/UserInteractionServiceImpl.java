@@ -25,10 +25,10 @@ public class UserInteractionServiceImpl {
     @Transactional
     public void saveInteraction(UUID userId, UUID videoId, InteractionType type) {
 
-        if (!videoRepo.existsById(videoId)) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.NOT_FOUND, "Video not found");
-        }
+        var video = videoRepo.findById(videoId).orElseThrow(() ->
+                new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Video not found")
+        );
 
         double delta = switch (type) {
             case VIEW -> 9.0;
@@ -37,6 +37,10 @@ public class UserInteractionServiceImpl {
             case SHARE -> 12.0;
             default -> 0.0;
         };
+
+        if (type == InteractionType.VIEW) {
+            video.setTotalView(video.getTotalView() + 1);
+            videoRepo.save(video);
 
         for (VideoTag vt : videoTagRepo.findByVideo_Id(videoId)) {
             UUID tagId = vt.getTag().getId();
@@ -61,4 +65,4 @@ public class UserInteractionServiceImpl {
             }
         }
     }
-}
+}}

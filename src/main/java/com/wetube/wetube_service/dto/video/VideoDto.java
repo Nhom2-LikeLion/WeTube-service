@@ -24,11 +24,14 @@ public class VideoDto {
     private String videoUrl;
     private String videosStatus;
     private float duration;
-    
+    private int totalView;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     private String tagsAsString;
     private Set<TagDto> tags;
     private UserDto user;
+
+    private AuthorDto author;
 }

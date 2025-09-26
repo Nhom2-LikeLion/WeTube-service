@@ -65,7 +65,6 @@ public class Video {
     private int totalView;
     private float duration;
 
-
     @CreationTimestamp
     private LocalDateTime createdAt;
     
