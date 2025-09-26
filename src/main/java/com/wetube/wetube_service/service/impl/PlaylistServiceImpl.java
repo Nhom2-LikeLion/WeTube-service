@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -232,18 +233,19 @@ public List<PlaylistVideoDetailDto> addVideoToHistory(UUID userId, UUID videoId)
             .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId.toString()));
 
     Optional<PlaylistVideo> existing = playlistVideoRepo.findByPlaylist_IdAndVideo_Id(history.getId(), videoId);
+
     if (existing.isPresent()) {
         PlaylistVideo pv = existing.get();
-        pv.setUpdatedAt(java.time.LocalDateTime.now());
+        pv.setUpdatedAt(LocalDateTime.now()); 
         playlistVideoRepo.save(pv);
     } else {
-        // thêm mới
-        PlaylistVideo pv = playlistMapper.toPlaylistVideo(
+        PlaylistVideo newPv = playlistMapper.toPlaylistVideo(
                 new PlaylistaddRequest(history.getId(), videoId, 0f),
                 history,
                 video
         );
-        playlistVideoRepo.save(pv);
+        newPv.setUpdatedAt(LocalDateTime.now()); 
+        playlistVideoRepo.save(newPv);
     }
 
     List<PlaylistVideo> playlistVideos = playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId());

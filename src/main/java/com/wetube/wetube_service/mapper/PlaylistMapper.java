@@ -76,11 +76,9 @@ public interface PlaylistMapper {
     @Mapping(target = "description", source = "video.description")
     @Mapping(target = "duration", source = "video.duration")
     @Mapping(target = "totalView", source = "video.totalView")
-    @Mapping(target = "createdAt", source = "video.createdAt")
-    @Mapping(target = "updatedAt", source = "video.updatedAt")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     PlaylistVideoDetailDto toPlaylistVideoDetailDto(PlaylistVideo playlistVideo);
 
     List<PlaylistVideoDetailDto> toPlaylistVideoDetailDtoList(List<PlaylistVideo> playlistVideos);
-
-
 }
