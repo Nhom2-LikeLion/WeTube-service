@@ -22,11 +22,11 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
 
     }
 
-//    @Override
-//    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+    @Override
+    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
 //        messageConverters.add(new ProtobufMessageConverter());
-//        return false;
-//    }
+        return true;
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
