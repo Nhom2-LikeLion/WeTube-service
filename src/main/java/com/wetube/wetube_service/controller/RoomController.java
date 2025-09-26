@@ -46,6 +46,15 @@ public class RoomController {
         return room;
     }
 
+    @MessageMapping("/room/join/{roomId}")
+    @SendTo("/topic/rooms/members/{roomId}")
+    public Room handleJoinRoom(@DestinationVariable String roomId,
+                               @Payload Map<String, String> body ) {
+        String username = body.get("username");
+        return roomService.addMember(roomId,username);
+        // TODO: Handle member + chat
+    }
+
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/rooms/chat/{roomId}")
     public ClientChatMessage handleChat(
@@ -64,15 +73,6 @@ public class RoomController {
         System.out.println("Received Video Add in room " + roomId + ": " + videoId);
         return roomService.addSong(roomId,videoId);
     }
-//    @MessageMapping("/room/join")
-//    @SendTo("/topic/room.{roomId}.members")
-//    public void handleJoinRoom(@Payload JoinRoomRequest request,
-//                               SimpMessageHeaderAccessor headerAccessor) {
-//        Room updatedRoom = roomService.addMember(request.getRoomId(), request.getUsername());
-//
-//        // Gửi thông tin room cập nhật cho tất cả client trong topic
-//        messagingTemplate.convertAndSend("/topic/room/" + request.getRoomId() + "/members", updatedRoom);
-//    }
 
 }
 

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class RoomService {
         }
         return sb.toString();
     }
-
+    @Transactional
     public VideoRoom addSong(String roomId, String videoId) {
         Room room = rooms.get(roomId);
         Video video =null;
