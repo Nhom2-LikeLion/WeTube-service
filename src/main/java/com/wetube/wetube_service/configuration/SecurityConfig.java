@@ -92,7 +92,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/customers/**").authenticated()
                         .requestMatchers("/api/uploads/**").permitAll()
                         .requestMatchers("/api/likes/**").permitAll()
-                        .requestMatchers("/api/comments/**").permitAll())
+                        .requestMatchers("/api/comments/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll())
 
                 .build();
     }
