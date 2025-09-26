@@ -10,13 +10,13 @@ jobs:
     name: Build Backend Service
     runs-on: ubuntu-latest
     outputs:
-#      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
+      #      IMAGE_NAME: ${{ steps.build-image.outputs.IMAGE_NAME }}
       IMAGE_TAG: ${{ steps.build-image.outputs.IMAGE_TAG }}
     steps:
-#      - name: Print Image Info
-#        run: |
-#          echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service, IMAGE_TAG=${{ github.sha }}"
-#          echo "IMAGE_NAME=$IMAGE_NAME, IMAGE_TAG=$IMAGE_TAG"
+      #      - name: Print Image Info
+      #        run: |
+      #          echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service, IMAGE_TAG=${{ github.sha }}"
+      #          echo "IMAGE_NAME=$IMAGE_NAME, IMAGE_TAG=$IMAGE_TAG"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
   deploy:
     name: Deploy Full Stack to EC2 Instance
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [ build ]
 
     steps:
       - name: Checkout code
@@ -82,8 +82,8 @@ jobs:
             cat > .env.backend << EOF
             
             IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
-            IMAGE_TAG_BACKEND=${{ github.sha }}
-          
+            IMAGE_TAG_BACKEND=${{ needs.build.outputs.IMAGE_TAG }}
+            
             # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
             DB_USERNAME=${{ secrets.DB_USERNAME }}
