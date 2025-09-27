@@ -81,7 +81,6 @@ public class RecServiceImpl implements RecService {
         return videoMapper.toRecommendDtoListFromDoc(topDocs);
     }
 
-
     private List<String> getUserFavoriteTags(UUID userId) {
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
         if (affinities.isEmpty()) {
