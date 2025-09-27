@@ -23,6 +23,7 @@ import com.wetube.wetube_service.dto.video.VideoDetailResponseDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.search.VideoDocument;
 import com.wetube.wetube_service.service.VideoSearchService;
+import com.wetube.wetube_service.service.client.TranslationClient;
 import com.wetube.wetube_service.service.video.VideoService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class VideoController {
 
     private final VideoService videoService;
     private final VideoSearchService searchService;
+    private final TranslationClient translationClient;
 
     private static final PolicyFactory SANITIZER_POLICY = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -46,7 +48,9 @@ public class VideoController {
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "duration", required = false) Float duration,
-            @RequestParam(value = "tags", required = false) String tags) {
+            @RequestParam(value = "tags", required = false) String tags,
+            @RequestParam(value = "targetLang", required = false) String targetLang
+            ) {
         try {
             UUID authenticatedUserId = UUID.fromString(jwt.getSubject());
 
@@ -63,6 +67,19 @@ public class VideoController {
 
             VideoDto createdVideo = videoService.createVideo(videoFile, thumbnailFile, meta, authenticatedUserId);
 
+            String Lang = (targetLang == null || targetLang.isBlank()) ? "en" : targetLang;
+
+             try {
+                translationClient.requestTranslation(
+                        createdVideo.getId(),
+                        createdVideo.getVideoUrl(),
+                        Lang
+                );
+            } catch (Exception ex) {
+                // Không chặn flow chính nếu microservice lỗi
+                System.err.println("⚠️ Translation service error: " + ex.getMessage());
+            }
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVideo);
 
         } catch (IllegalArgumentException e) {

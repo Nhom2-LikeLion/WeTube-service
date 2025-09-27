@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,6 +33,6 @@ public class VideoDto {
     private String tagsAsString;
     private Set<TagDto> tags;
     private UserDto user;
-
+    private List<VideoSubtitleDto> subtitles;
     private AuthorDto author;
 }
