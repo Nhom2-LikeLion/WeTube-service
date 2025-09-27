@@ -59,6 +59,9 @@ public class SecurityConfig {
 //                                 webCsrfConfiguration.csrfIgnoringRequestMatcher()
 // //                                authApiMatcher() // ignore CSRF for /api/auth/**
                         // )
+//                .csrf(csrf -> csrf
+//                                .csrfTokenRepository(webCsrfConfiguration.csrfTokenRepository())
+//                                .ignoringRequestMatchers(webCsrfConfiguration.csrfIgnoringRequestMatcher())
                         )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint) // 401
