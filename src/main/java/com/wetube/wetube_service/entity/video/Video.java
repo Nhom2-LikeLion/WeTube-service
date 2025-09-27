@@ -68,6 +68,9 @@ public class Video {
     private int totalView;
     private float duration;
 
+    @Column(nullable = false)
+    private boolean isShort;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
     
