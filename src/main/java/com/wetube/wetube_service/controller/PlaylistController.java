@@ -105,7 +105,7 @@ public class PlaylistController {
     }
 
     @GetMapping("/{userId}/history")
-    public ResponseEntity<List<PlaylistVideoDto>> getUserHistory(@PathVariable UUID userId) {
+    public ResponseEntity<List<PlaylistVideoDetailDto>> getUserHistory(@PathVariable UUID userId) {
         return ResponseEntity.ok(playlistService.getHistoryByUser(userId));
     }
 

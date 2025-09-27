@@ -39,7 +39,7 @@ public interface PlaylistService {
 
     List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId);
 
-    List<PlaylistVideoDto> getHistoryByUser(UUID userId);
+    List<PlaylistVideoDetailDto> getHistoryByUser(UUID userId);
 
     List<PlaylistVideoDetailDto> addVideoToHistory(UUID userId, UUID videoId);
 

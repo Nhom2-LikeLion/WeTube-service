@@ -207,7 +207,7 @@ public List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId
 }
 
 @Override
-public List<PlaylistVideoDto> getHistoryByUser(UUID userId) {
+public List<PlaylistVideoDetailDto> getHistoryByUser(UUID userId) {
     List<Playlist> histories = playlistRepo.findByUser_IdAndPlaylistType(userId, PlaylistType.HISTORY);
 
     if (histories.isEmpty()) {
@@ -215,10 +215,11 @@ public List<PlaylistVideoDto> getHistoryByUser(UUID userId) {
     }
     Playlist history = histories.get(0);
 
-    return playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId())
-            .stream()
-            .map(playlistMapper::toPlaylistDto)
-            .toList();
+    List<PlaylistVideo> playlistVideos = playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId());
+
+    List<PlaylistVideoDetailDto> videos = playlistMapper.toPlaylistVideoDetailDtoList(playlistVideos);
+
+            return playlistMapper.toPlaylistVideoDetailDtoList(playlistVideos);
 }
 
 @Override
