@@ -1,34 +1,33 @@
 package com.wetube.wetube_service.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
-import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
-import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
-import com.wetube.wetube_service.entity.channel.Channel;
-import com.wetube.wetube_service.exception.DuplicatePlaylistTitleException;
-import com.wetube.wetube_service.repository.channel.ChannelRepository;
-import com.wetube.wetube_service.repository.video.VideoRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
 import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.entity.video.Video;
+import com.wetube.wetube_service.entity.channel.Channel;
 import com.wetube.wetube_service.entity.playlist.Playlist;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
+import com.wetube.wetube_service.entity.video.Video;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
 import com.wetube.wetube_service.mapper.PlaylistMapper;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
+import com.wetube.wetube_service.repository.channel.ChannelRepository;
+import com.wetube.wetube_service.repository.video.VideoRepository;
 import com.wetube.wetube_service.service.PlaylistService;
 
 import lombok.RequiredArgsConstructor;
@@ -208,7 +207,7 @@ public List<PlaylistVideo> findByPlaylist_IdOrderByUpdatedAtDesc(UUID playlistId
 }
 
 @Override
-public List<PlaylistVideoDto> getHistoryByUser(UUID userId) {
+public List<PlaylistVideoDetailDto> getHistoryByUser(UUID userId) {
     List<Playlist> histories = playlistRepo.findByUser_IdAndPlaylistType(userId, PlaylistType.HISTORY);
 
     if (histories.isEmpty()) {
@@ -216,13 +215,42 @@ public List<PlaylistVideoDto> getHistoryByUser(UUID userId) {
     }
     Playlist history = histories.get(0);
 
-    return playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId())
-            .stream()
-            .map(playlistMapper::toPlaylistDto)
-            .toList();
+    List<PlaylistVideo> playlistVideos = playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId());
+
+    List<PlaylistVideoDetailDto> videos = playlistMapper.toPlaylistVideoDetailDtoList(playlistVideos);
+
+            return playlistMapper.toPlaylistVideoDetailDtoList(playlistVideos);
 }
 
+@Override
+public List<PlaylistVideoDetailDto> addVideoToHistory(UUID userId, UUID videoId) {
+    List<Playlist> histories = playlistRepo.findByUser_IdAndPlaylistType(userId, PlaylistType.HISTORY);
+    if (histories.isEmpty()) {
+        throw new ResourceNotFoundException("Playlist", "type", "HISTORY");
+    }
+    Playlist history = histories.get(0);
 
+    Video video = videoRepo.findById(videoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId.toString()));
 
+    Optional<PlaylistVideo> existing = playlistVideoRepo.findByPlaylist_IdAndVideo_Id(history.getId(), videoId);
+
+    if (existing.isPresent()) {
+        PlaylistVideo pv = existing.get();
+        pv.setUpdatedAt(LocalDateTime.now()); 
+        playlistVideoRepo.save(pv);
+    } else {
+        PlaylistVideo newPv = playlistMapper.toPlaylistVideo(
+                new PlaylistaddRequest(history.getId(), videoId, 0f),
+                history,
+                video
+        );
+        newPv.setUpdatedAt(LocalDateTime.now()); 
+        playlistVideoRepo.save(newPv);
+    }
+
+    List<PlaylistVideo> playlistVideos = playlistVideoRepo.findByPlaylist_IdOrderByUpdatedAtDesc(history.getId());
+    return playlistMapper.toPlaylistVideoDetailDtoList(playlistVideos);
+}
 
 }

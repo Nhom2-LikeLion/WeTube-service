@@ -29,7 +29,6 @@ spring:
     connection-timeout: 5s
     socket-timeout: 10s
 
-
   servlet:
     multipart:
       enabled: true
@@ -56,3 +55,4 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
+debug: true
