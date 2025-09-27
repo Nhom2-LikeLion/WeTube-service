@@ -10,4 +10,5 @@ import org.springframework.data.domain.Pageable;
 public interface RecService {
 //    List<RecommendVideoDto> recommendVideos (UUID userId, int limit);
     Page<RecommendVideoDto> recommendVideos(UUID userId, Pageable pageable);
+    List<RecommendVideoDto> findTopRankedVideos(UUID userId, int poolSize, int topN);
 }
