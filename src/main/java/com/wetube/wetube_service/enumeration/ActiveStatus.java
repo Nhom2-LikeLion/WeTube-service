@@ -6,5 +6,4 @@ public enum ActiveStatus {
     PENDING,
     ACTIVE,
     PUBLIC
-
 }
