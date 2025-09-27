@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class TranslationClient {
     private final RestTemplate restTemplate;
 
-    @Value("${translator.service.url:http://localhost:8888/api/translate}")
+    @Value("${translator.service.url:http://localhost:10000/api/translate}")
     private String translatorServiceBaseUrl;
 
     /**
