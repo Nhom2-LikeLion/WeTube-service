@@ -16,20 +16,23 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "/user");
         registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
+        registry.setPreservePublishOrder(true);
     }
 
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         messageConverters.add(new ProtobufMessageConverter());
-        return false;
+        return true;
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")
+//                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOrigins("https://wetube.name.vn")
                 .withSockJS();
     }
 }
