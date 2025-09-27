@@ -19,9 +19,6 @@ public class GeminiClient {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
-
     public GeminiClient(@Value("${gemini.api-key}") String geminiApiKey) {
         this.geminiApiKey = geminiApiKey;
     }
@@ -42,7 +39,7 @@ public class GeminiClient {
         );
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(GEMINI_URL + geminiApiKey))
+                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + geminiApiKey))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();

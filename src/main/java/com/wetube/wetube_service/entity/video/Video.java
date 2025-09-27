@@ -37,7 +37,9 @@ public class Video {
 
     @Column(nullable = false)
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
+
     private String thumbnailUrl;
     private String videoUrl;
     @Enumerated(EnumType.STRING)

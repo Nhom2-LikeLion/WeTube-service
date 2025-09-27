@@ -1,5 +1,6 @@
 package com.wetube.wetube_service.controller;
 
+import com.wetube.wetube_service.dto.ai.DescriptionRequest;
 import com.wetube.wetube_service.dto.ai.TranscriptRequest;
 import com.wetube.wetube_service.service.AI.AIService;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,9 @@ public class AIController {
     }
 
     @PostMapping("/description")
-    public Map<String, String> generateDescription(@RequestBody Map<String, String> body) {
-        String title = body.get("title");
-        String tags = body.get("tags");
-        String description = aiService.generateVideoDescription(title, tags);
-        return Map.of("description", description);
+    public ResponseEntity<?> generateDescription(@RequestBody DescriptionRequest request) {
+        String result = aiService.generateVideoDescription(request.getTitle(), request.getTags());
+        return ResponseEntity.ok(Map.of("description", result));
     }
 
     @PostMapping("/transcript")
