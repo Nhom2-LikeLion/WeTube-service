@@ -27,7 +27,8 @@ public class VideoDetailDto {
     private String picture;
     private LikeDto like;
     private int totalSubscribers;
-    private boolean subscribed; 
+    private boolean subscribed;
+    private UUID channelId;
     private List<CommentResponseDto> comments;
     private List<VideoSubtitleDto> subtitles; 
 }

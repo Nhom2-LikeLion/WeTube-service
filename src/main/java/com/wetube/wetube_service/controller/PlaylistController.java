@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wetube.wetube_service.dto.request.CreatePlaylistRequest;
 import com.wetube.wetube_service.dto.request.PlaylistaddRequest;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistDetailDto;
+import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDetailDto;
 import com.wetube.wetube_service.dto.response.playlist.PlaylistVideoDto;
 import com.wetube.wetube_service.dto.response.playlist.UserPlaylistDto;
 import com.wetube.wetube_service.enumeration.PlaylistType;
@@ -104,7 +105,15 @@ public class PlaylistController {
     }
 
     @GetMapping("/{userId}/history")
-    public ResponseEntity<List<PlaylistVideoDto>> getUserHistory(@PathVariable UUID userId) {
+    public ResponseEntity<List<PlaylistVideoDetailDto>> getUserHistory(@PathVariable UUID userId) {
         return ResponseEntity.ok(playlistService.getHistoryByUser(userId));
     }
+
+    @PostMapping("/{userId}/history/add/{videoId}")
+    public ResponseEntity<List<PlaylistVideoDetailDto>> addToHistory(
+            @PathVariable UUID userId,
+            @PathVariable UUID videoId) {
+        return ResponseEntity.ok(playlistService.addVideoToHistory(userId, videoId));
+    }
+
 }

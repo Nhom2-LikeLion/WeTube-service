@@ -12,5 +12,5 @@ import java.util.UUID;
 public class SubscriptionRequest {
     private UUID subscriberId;
     private UUID channelId;
-    private UUID tierId;    //Nullable
+    private UUID tierId;   
 }

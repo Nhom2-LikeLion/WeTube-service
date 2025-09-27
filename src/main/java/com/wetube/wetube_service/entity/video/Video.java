@@ -1,9 +1,5 @@
 package com.wetube.wetube_service.entity.video;
 
-import com.wetube.wetube_service.entity.AppUser;
-import com.wetube.wetube_service.enumeration.ActiveStatus;
-import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,9 +9,33 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+import com.wetube.wetube_service.entity.AppUser;
 import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
+import com.wetube.wetube_service.enumeration.ActiveStatus;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -46,10 +66,10 @@ public class Video {
     private int totalView;
     private float duration;
 
-
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @CreationTimestamp
+    
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @PrePersist
