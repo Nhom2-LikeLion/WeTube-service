@@ -30,4 +30,5 @@ public class RecommendationController {
             Pageable pageable) {
         return ResponseEntity.ok(recommendationService.recommendVideos(userId, pageable));
     }
+
 }
