@@ -47,6 +47,7 @@ import com.wetube.wetube_service.search.VideoDocument;
 import com.wetube.wetube_service.service.CloudinaryService;
 import com.wetube.wetube_service.service.interaction.LikeService;
 import com.wetube.wetube_service.service.video.VideoService;
+import com.wetube.wetube_service.service.video.VideoSubtitleService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,6 +63,7 @@ public class VideoServiceImpl implements VideoService {
     private final CommentMapper commentMapper;
     private final CloudinaryService cloudinaryService;
     private final VideoSearchRepository videoSearchRepository;
+    private final VideoSubtitleService videoSubtitleService;
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
@@ -300,6 +302,9 @@ public class VideoServiceImpl implements VideoService {
         if (userId != null) {
             subscribed = subscriptionRepository.existsById_Subscriber_IdAndId_Tier_Channel_Id(userId, channelId);
         }
+
+        var subtitles = videoSubtitleService.getSubtitlesByVideo(videoId);
+
         var detail = VideoDetailDto.builder()
                 .id(video.getId())
                 .title(video.getTitle())
@@ -313,6 +318,7 @@ public class VideoServiceImpl implements VideoService {
                 .totalSubscribers(totalSubscribers)
                 .subscribed(subscribed)
                 .comments(comments)
+                .subtitles(subtitles)
                 .build();
 
         var relatedVideos = videoRepository.findDistinctByVideoTags_Tag_NameInAndIdNot(
