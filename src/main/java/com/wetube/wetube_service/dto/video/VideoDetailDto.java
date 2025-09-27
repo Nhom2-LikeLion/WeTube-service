@@ -29,4 +29,5 @@ public class VideoDetailDto {
     private int totalSubscribers;
     private boolean subscribed; 
     private List<CommentResponseDto> comments;
+    private List<VideoSubtitleDto> subtitles; 
 }
