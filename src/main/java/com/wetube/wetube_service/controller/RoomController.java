@@ -45,12 +45,25 @@ public class RoomController {
     }
 
     @MessageMapping("/room/join/{roomId}")
-    @SendTo("/topic/rooms/members/{roomId}")
+    @SendTo("/topic/rooms/join/{roomId}")
     public Room handleJoinRoom(@DestinationVariable String roomId,
                                @Payload Map<String, String> body ) {
         String username = body.get("username");
         return roomService.addMember(roomId,username);
         // TODO: Handle member + chat
+    }
+
+    @MessageMapping("/room/member/{roomId}")
+    @SendTo("/topic/rooms/member/{roomId}")
+    public WatchMember handleMemberRoom(@DestinationVariable String roomId,
+                               @Payload Map<String, String> body ) {
+        String username = body.get("username");
+        WatchMember member = new WatchMember();
+        member.setUsername(username);
+        member.setHost(false);
+        roomService.addMember(roomId,username);
+        System.out.println("Received member in room " + roomId + ": " + member);
+        return member;
     }
 
     @MessageMapping("/chat/{roomId}")
