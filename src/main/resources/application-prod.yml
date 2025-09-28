@@ -1,6 +1,6 @@
 spring:
   config:
-#    import: optional:file:.env.prod.properties
+    import: optional:file:.env.prod.properties
     activate:
       on-profile: prod
 
@@ -92,3 +92,6 @@ momo:
 
 elasticsearch:
   api-key: ${ELASTICSEARCH_API_KEY}
+
+gemini:
+  api-key: ${GEMINI_API_KEY}

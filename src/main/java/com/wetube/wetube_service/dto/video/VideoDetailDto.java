@@ -30,5 +30,6 @@ public class VideoDetailDto {
     private boolean subscribed;
     private UUID channelId;
     private List<CommentResponseDto> comments;
-    private List<VideoSubtitleDto> subtitles; 
+    private List<VideoSubtitleDto> subtitles;
+    private boolean isShort;
 }

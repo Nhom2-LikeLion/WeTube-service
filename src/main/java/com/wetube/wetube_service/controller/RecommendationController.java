@@ -31,4 +31,11 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.recommendVideos(userId, pageable));
     }
 
+    @GetMapping("/scout/{userId}")
+    public ResponseEntity<List<RecommendVideoDto>> getTopRankedVideos(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "100") int poolSize,
+            @RequestParam(defaultValue = "5") int topN) {
+        return ResponseEntity.ok(recommendationService.findTopRankedVideos(userId, poolSize, topN));
+    }
 }

@@ -59,6 +59,28 @@ public class RecServiceImpl implements RecService {
         return new PageImpl<>(dtoList, pageable, hits.getTotalHits());
     }
 
+    @Override
+    public List<RecommendVideoDto> findTopRankedVideos(UUID userId, int poolSize, int topN){
+        List<String> userTags = getUserFavoriteTags(userId);
+        if (userTags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        SearchHits<VideoDocument> hits = searchVideosInElasticsearch(userTags, Pageable.ofSize(poolSize));
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<VideoDocument> wideViewDocs = hits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .toList();
+
+        List<VideoDocument> sortedDocs = scoreAndSortVideos(wideViewDocs, userTags);
+
+        List<VideoDocument> topDocs = sortedDocs.stream().limit(topN).toList();
+
+        return videoMapper.toRecommendDtoListFromDoc(topDocs);
+    }
+
     private List<String> getUserFavoriteTags(UUID userId) {
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
         if (affinities.isEmpty()) {
