@@ -149,6 +149,7 @@ jobs:
             
             CLIENT_URL=${{ secrets.CLIENT_URL }}
 
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             
             IMAGE_NAME_FRONTEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-client-app
             IMAGE_TAG_FRONTEND=latest
