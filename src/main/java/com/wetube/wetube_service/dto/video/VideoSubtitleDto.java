@@ -6,13 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class VideoDetailResponseDto {
-    private VideoDetailDto detail;
-    private RecommendResponseDto recommend;
- 
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class VideoSubtitleDto {
+    private String language;
+    private String subtitleUrl;
 }
 

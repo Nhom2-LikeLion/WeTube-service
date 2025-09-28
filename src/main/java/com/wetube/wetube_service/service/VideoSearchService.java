@@ -74,24 +74,19 @@ public class VideoSearchService {
 
         public List<String> suggestTitles(String prefix, int size) {
                 NativeQuery query = new NativeQueryBuilder()
-                                .withQuery(bool(b -> b
-                                                .should(wildcard(w -> w.field("title")
-                                                                .value(prefix.toLowerCase() + "*")))
-                                                .should(wildcard(w -> w.field("description")
-                                                                .value(prefix.toLowerCase() + "*")))
-                                                .should(wildcard(
-                                                                w -> w.field("name").value(prefix.toLowerCase() + "*"))) // tên
-                                                                                                                         // channel
-                                                .should(wildcard(w -> w
-                                                                .field("tags").value(prefix.toLowerCase() + "*")))))
-                                .withSourceFilter(
-                                                new FetchSourceFilter(false, new String[] { "title" }, new String[] {}))
+                                .withQuery(multiMatch(m -> m
+                                                .fields("title", "description", "tags", "name")
+                                                .query(prefix)
+                                                .fuzziness("AUTO")))
+                                .withSourceFilter(new FetchSourceFilter(true, new String[]{"title"}, new String[]{}))
                                 .withMaxResults(size)
                                 .build();
 
                 SearchHits<VideoDocument> hits = elasticsearchOperations.search(query, VideoDocument.class, INDEX);
+
                 return hits.getSearchHits().stream()
                                 .map(h -> h.getContent().getTitle())
+                                .filter(Objects::nonNull)
                                 .distinct()
                                 .toList();
         }

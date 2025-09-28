@@ -63,7 +63,8 @@ public class PaymentController {
                 );
             }
 
-            String redirectUrl = "http://localhost:3000/?paymentStatus=" + resultCode + "&orderId=" + orderId;
+//            String redirectUrl = "http://localhost:3000/?paymentStatus=" + resultCode + "&orderId=" + orderId;
+         String redirectUrl = "https://wetube.name.vn/?paymentStatus=" + resultCode + "&orderId=" + orderId;
             response.sendRedirect(redirectUrl); 
         }
 

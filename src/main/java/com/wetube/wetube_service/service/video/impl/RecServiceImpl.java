@@ -1,6 +1,7 @@
 package com.wetube.wetube_service.service.video.impl;
 
 import com.wetube.wetube_service.dto.video.RecommendVideoDto;
+import com.wetube.wetube_service.entity.video.Tag;
 import com.wetube.wetube_service.entity.video.UserTag;
 import com.wetube.wetube_service.mapper.video.VideoMapper;
 import com.wetube.wetube_service.repository.video.TagRepository;
@@ -20,7 +21,10 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -33,92 +37,111 @@ public class RecServiceImpl implements RecService {
     private final VideoMapper videoMapper;
 
     @Override
-    public List<RecommendVideoDto> recommendVideos(UUID userId, int limit) {
-        limit = Math.max(1, Math.min(50, limit));
+    public Page<RecommendVideoDto> recommendVideos(UUID userId, Pageable pageable) {
+        List<String> userTags = getUserFavoriteTags(userId);
+        if (userTags.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
-        // lấy toàn bộ affinity
+        SearchHits<VideoDocument> hits = searchVideosInElasticsearch(userTags, pageable);
+        if (hits.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        List<VideoDocument> docsOnPage = hits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .toList();
+
+        List<VideoDocument> sortedDocs = scoreAndSortVideos(docsOnPage, userTags);
+
+        List<RecommendVideoDto> dtoList = videoMapper.toRecommendDtoListFromDoc(sortedDocs);
+
+        return new PageImpl<>(dtoList, pageable, hits.getTotalHits());
+    }
+
+    @Override
+    public List<RecommendVideoDto> findTopRankedVideos(UUID userId, int poolSize, int topN){
+        List<String> userTags = getUserFavoriteTags(userId);
+        if (userTags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        SearchHits<VideoDocument> hits = searchVideosInElasticsearch(userTags, Pageable.ofSize(poolSize));
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<VideoDocument> wideViewDocs = hits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .toList();
+
+        List<VideoDocument> sortedDocs = scoreAndSortVideos(wideViewDocs, userTags);
+
+        List<VideoDocument> topDocs = sortedDocs.stream().limit(topN).toList();
+
+        return videoMapper.toRecommendDtoListFromDoc(topDocs);
+    }
+
+    private List<String> getUserFavoriteTags(UUID userId) {
         List<UserTag> affinities = userTagRepo.findAllByUserIdOrderByPointDesc(userId);
         if (affinities.isEmpty()) {
-            log.info("User {} chưa có tag nào → không recommend được", userId);
-            return List.of();
+            log.info("User {} has no tag affinities, cannot recommend.", userId);
+            return Collections.emptyList();
         }
 
-        // resolve tagId -> tagName
-        List<String> userTags = affinities.stream()
+        return affinities.stream()
                 .map(ut -> tagRepo.findById(ut.getTagId())
-                        .map(t -> t.getName())
+                        .map(Tag::getName)
                         .orElse(null))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
+    }
 
-        if (userTags.isEmpty()) {
-            log.info("User {} có UserTag nhưng không resolve được tagName", userId);
-            return List.of();
-        }
+    private SearchHits<VideoDocument> searchVideosInElasticsearch(List<String> userTags, Pageable pageable) {
+        log.debug("Searching videos with tags: {}", userTags);
 
-        log.debug("User {} có tag affinities: {}", userId, userTags);
-
-        // xây criteria query thay cho QueryBuilders
         Criteria criteria = new Criteria("tags").in(userTags)
                 .or(new Criteria("title").matches(String.join(" ", userTags)))
                 .or(new Criteria("description").matches(String.join(" ", userTags)));
 
         CriteriaQuery query = new CriteriaQuery(criteria);
-        query.setMaxResults(limit * 3);
+        query.setPageable(pageable);
         query.addSort(Sort.by(Sort.Order.desc("_score")));
         query.addSort(Sort.by(Sort.Order.desc("createdAt")));
 
-        SearchHits<VideoDocument> hits = elasticOps.search(query, VideoDocument.class);
-        if (hits.isEmpty()) {
-            log.info("Không tìm thấy video phù hợp trong Elasticsearch cho user {}", userId);
-            return List.of();
-        }
+        return elasticOps.search(query, VideoDocument.class);
+    }
 
-        List<VideoDocument> docs = hits.getSearchHits().stream()
-                .map(SearchHit::getContent)
-                .collect(Collectors.toList());
-
-        // tính điểm bổ sung
-        double maxTagSum = 1.0;
+    private List<VideoDocument> scoreAndSortVideos(List<VideoDocument> docs, List<String> userTags) {
         Map<String, Double> videoTagSum = new HashMap<>();
+        double maxTagSum = 1.0;
         for (VideoDocument v : docs) {
             double sum = 0;
             if (v.getTags() != null) {
-                for (String t : v.getTags()) {
-                    if (userTags.contains(t))
-                        sum += 1;
-                }
+                sum = v.getTags().stream().filter(userTags::contains).count();
             }
             videoTagSum.put(v.getId(), sum);
-            if (sum > maxTagSum)
+            if (sum > maxTagSum) {
                 maxTagSum = sum;
+            }
         }
 
-        record Scored(VideoDocument v, double score) {
-        }
-        List<Scored> scored = new ArrayList<>();
-        for (VideoDocument v : docs) {
-            double tagAffinity = videoTagSum.getOrDefault(v.getId(), 0.0) / maxTagSum;
+        record ScoredVideo(VideoDocument video, double score) {}
 
+        double finalMaxTagSum = maxTagSum;
+        List<ScoredVideo> scoredList = docs.stream().map(v -> {
+            double tagAffinity = videoTagSum.getOrDefault(v.getId(), 0.0) / finalMaxTagSum;
             double freshness = 0.5;
             if (v.getCreatedAt() != null) {
                 long ageDays = Duration.between(v.getCreatedAt(), Instant.now()).toDays();
-
                 freshness = Math.exp(-0.08 * Math.max(0, ageDays));
             }
+            double finalScore = 0.70 * tagAffinity + 0.30 * freshness;
+            return new ScoredVideo(v, finalScore);
+        }).toList();
 
-            double score = 0.70 * tagAffinity + 0.30 * freshness;
-            scored.add(new Scored(v, score));
-        }
-
-        // sort giảm dần
-        scored.sort((a, b) -> Double.compare(b.score, a.score));
-
-        List<VideoDocument> top = scored.stream()
-                .limit(limit)
-                .map(Scored::v)
+        return scoredList.stream()
+                .sorted(Comparator.comparingDouble(ScoredVideo::score).reversed())
+                .map(ScoredVideo::video)
                 .toList();
-
-        return videoMapper.toRecommendDtoListFromDoc(top);
     }
 }

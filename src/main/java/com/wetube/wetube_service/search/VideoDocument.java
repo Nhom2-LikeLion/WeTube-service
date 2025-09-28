@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "videos")
+@Document(indexName = "videos", createIndex = false)
 public class VideoDocument {
     @Id
     private String id;
@@ -23,21 +23,21 @@ public class VideoDocument {
     @Field(type = FieldType.Text, analyzer = "autocomplete", searchAnalyzer = "standard")
     private String title;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "autocomplete", searchAnalyzer = "standard")
     private String description;
 
     @Field(type = FieldType.Keyword)
     private String userId;
 
-    @Field(type = FieldType.Keyword, analyzer = "autocomplete", searchAnalyzer = "standard")
+    @Field(type = FieldType.Keyword)
     private List<String> tags;
 
     @Field(type = FieldType.Keyword)
     private List<String> categories;
 
-   @Field(type = FieldType.Date, format = DateFormat.date_time)
-   private Instant createdAt;
-   
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    private Instant createdAt;
+
     @Field(type = FieldType.Text)
     private String thumbnailUrl;
 
@@ -51,10 +51,8 @@ public class VideoDocument {
     private Float duration;
 
     @Field(type = FieldType.Text)
-    private String name;   
+    private String name;
 
     @Field(type = FieldType.Text)
-    private String picture; 
+    private String picture;
 }
-
-

@@ -3,6 +3,9 @@ package com.wetube.wetube_service.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.wetube.wetube_service.dto.video.RecommendVideoDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +25,17 @@ public class RecommendationController {
     private final RecService recommendationService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<RecommendVideoDto>> recommendVideos(
+    public ResponseEntity<Page<RecommendVideoDto>> recommendVideos(
             @PathVariable UUID userId,
-            @RequestParam(defaultValue = "30") int limit) {
-        return ResponseEntity.ok(recommendationService.recommendVideos(userId, limit));
+            Pageable pageable) {
+        return ResponseEntity.ok(recommendationService.recommendVideos(userId, pageable));
+    }
+
+    @GetMapping("/scout/{userId}")
+    public ResponseEntity<List<RecommendVideoDto>> getTopRankedVideos(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "100") int poolSize,
+            @RequestParam(defaultValue = "5") int topN) {
+        return ResponseEntity.ok(recommendationService.findTopRankedVideos(userId, poolSize, topN));
     }
 }
