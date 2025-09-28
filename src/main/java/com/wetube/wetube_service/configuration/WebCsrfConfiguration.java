@@ -41,7 +41,8 @@ public class WebCsrfConfiguration {
                 new RegexRequestMatcher("^/api/uploads(/.*)?$", null),
                 new RegexRequestMatcher("^/api/likes(/.*)?$", null),
                 new RegexRequestMatcher("^/api/comments(/.*)?$", null),
-                new RegexRequestMatcher("^/api/users(/.*)?$", null)
+                new RegexRequestMatcher("^/api/users(/.*)?$", null),
+                new RegexRequestMatcher("^/api/ai(/.*)?$", null)
 
         );
     }
