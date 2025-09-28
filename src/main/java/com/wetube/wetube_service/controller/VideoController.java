@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.cloudinary.api.ApiResponse;
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
+import com.wetube.wetube_service.dto.response.SearchResponseDto;
 import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
 import com.wetube.wetube_service.dto.video.VideoUpdateDto;
 import org.owasp.html.PolicyFactory;
@@ -152,12 +154,12 @@ public class VideoController {
     }
 
     // Suggest autocomplete
-    @GetMapping("/search/videos/suggest")
-    public List<String> suggest(@RequestParam String prefix,
+    @GetMapping("/search/suggest")
+    public ResponseEntity<SearchResponseDto<List<String>>> suggest(
+            @RequestParam String prefix,
             @RequestParam(defaultValue = "5") int size) {
-        return searchService.suggestTitles(prefix, size);
+        return ResponseEntity.ok(SearchResponseDto.ok(searchService.suggestTitles(prefix, size)));
     }
-
     // ===================== Detail + Update =====================
 
     @GetMapping("/{id}/form-details")
