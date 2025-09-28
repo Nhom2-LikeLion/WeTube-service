@@ -144,4 +144,5 @@ public class RecServiceImpl implements RecService {
                 .map(ScoredVideo::video)
                 .toList();
     }
+
 }
