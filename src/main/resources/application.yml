@@ -56,3 +56,7 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
 debug: true
+
+myapp:
+  recommendation:
+    pool-size: 200

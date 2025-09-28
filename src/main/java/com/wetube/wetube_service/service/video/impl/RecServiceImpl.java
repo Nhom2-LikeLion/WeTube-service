@@ -10,6 +10,8 @@ import com.wetube.wetube_service.search.VideoDocument;
 import com.wetube.wetube_service.service.video.RecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,27 +39,44 @@ public class RecServiceImpl implements RecService {
     private final ElasticsearchOperations elasticOps;
     private final VideoMapper videoMapper;
 
+    @Value("${myapp.recommendation.pool-size}")
+    private int poolSize;
+
     @Override
     public Page<RecommendVideoDto> recommendVideos(UUID userId, Pageable pageable) {
+        List<String> sortedVideoIds = getSortedRecommendedIdsForUser(userId);
+
+        long startOffset = pageable.getOffset();
+        if (startOffset >= sortedVideoIds.size()) {
+            return Page.empty(pageable);
+        }
+
+        long endOffset = startOffset + pageable.getPageSize() - 1;
+        long toIndex = Math.min(endOffset + 1, sortedVideoIds.size());
+        List<String> pageVideoIds = sortedVideoIds.subList((int) startOffset, (int) toIndex);
+
+        List<RecommendVideoDto> dtoList = findVideosByIdsAndPreserveOrder(pageVideoIds);
+
+        return new PageImpl<>(dtoList, pageable, sortedVideoIds.size());
+    }
+
+    @Cacheable(value = "recommendations", key = "#userId")
+    public List<String> getSortedRecommendedIdsForUser(UUID userId) {
+        log.info("CACHE MISS! Generating new recommendation list for user {} with pool size {}.", userId, poolSize);
+
         List<String> userTags = getUserFavoriteTags(userId);
-        if (userTags.isEmpty()) {
-            return Page.empty(pageable);
-        }
+        if (userTags.isEmpty()) return Collections.emptyList();
 
-        SearchHits<VideoDocument> hits = searchVideosInElasticsearch(userTags, pageable);
-        if (hits.isEmpty()) {
-            return Page.empty(pageable);
-        }
+        SearchHits<VideoDocument> hits = searchVideosInElasticsearch(userTags, Pageable.ofSize(this.poolSize));
+        if (hits.isEmpty()) return Collections.emptyList();
 
-        List<VideoDocument> docsOnPage = hits.getSearchHits().stream()
+        List<VideoDocument> poolOfDocs = hits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .toList();
 
-        List<VideoDocument> sortedDocs = scoreAndSortVideos(docsOnPage, userTags);
+        List<VideoDocument> sortedDocs = scoreAndSortVideos(poolOfDocs, userTags);
 
-        List<RecommendVideoDto> dtoList = videoMapper.toRecommendDtoListFromDoc(sortedDocs);
-
-        return new PageImpl<>(dtoList, pageable, hits.getTotalHits());
+        return sortedDocs.stream().map(VideoDocument::getId).toList();
     }
 
     @Override
@@ -145,4 +165,24 @@ public class RecServiceImpl implements RecService {
                 .toList();
     }
 
+    private List<RecommendVideoDto> findVideosByIdsAndPreserveOrder(List<String> ids) {
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Criteria criteria = new Criteria("id").in(ids);
+        CriteriaQuery query = new CriteriaQuery(criteria);
+        SearchHits<VideoDocument> hits = elasticOps.search(query, VideoDocument.class);
+
+        Map<String, VideoDocument> docMap = hits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toMap(VideoDocument::getId, doc -> doc));
+
+        List<VideoDocument> orderedDocs = ids.stream()
+                .map(docMap::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        return videoMapper.toRecommendDtoListFromDoc(orderedDocs);
+    }
 }
