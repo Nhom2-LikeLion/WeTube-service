@@ -7,12 +7,12 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-  web:
-    cors:
-      allowed-origins: "https://wetube.name.vn"
-      allowed-methods: "*"
-      allowed-headers: "*"
-      allow-credentials: true
+  # web:
+  #   cors:
+  #     allowed-origins: "https://wetube.name.vn"
+  #     allowed-methods: "*"
+  #     allowed-headers: "*"
+  #     allow-credentials: true
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
