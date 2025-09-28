@@ -83,6 +83,10 @@ public class UserServiceImpl implements UserService {
 //        }
 
         AppUser user = findOrCreateUserForGoogleLogin(googleUser);
+        if (user.getId() == null) {
+            userRepository.saveAndFlush(user);
+        }
+
         ensureHasRole(user);
         upsertOAuthAccount(googleUser, scopes, user);
         AppUser savedUser = userRepository.save(user);
