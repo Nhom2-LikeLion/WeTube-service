@@ -34,6 +34,14 @@ services:
     networks:
       - web-network
 
+  translator:
+    image: taplamdev/wetube-ai-translator:4.0.0
+    container_name: wetube-ai-translator
+    env_file: .env
+    restart: always
+    networks:
+      - web-network
+
   nginx:
     image: nginx:latest
     container_name: wetube-nginx-proxy
@@ -46,6 +54,7 @@ services:
     depends_on:
       - backend
       - frontend
+      - translator
     restart: always
     networks:
       - web-network

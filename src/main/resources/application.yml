@@ -60,3 +60,7 @@ debug: true
 myapp:
   recommendation:
     pool-size: 200
+
+translator:
+  service:
+    url: https://wetube.name.vn/translator/api/translate
