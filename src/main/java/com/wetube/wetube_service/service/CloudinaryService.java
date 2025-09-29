@@ -125,4 +125,25 @@ public class CloudinaryService {
     }
 
 
+        public void deleteVideo(String videoUrl) {
+        try {
+            // Tách publicId từ URL (Cloudinary lưu video dưới dạng <folder>/<publicId>)
+            String publicId = extractPublicId(videoUrl);
+
+            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("resource_type", "video"));
+            if ("ok".equals(result.get("result"))) {
+                System.out.println("Xoá video thành công trên Cloudinary: " + publicId);
+            } else {
+                System.err.println("Không xoá được video trên Cloudinary: " + publicId + " - " + result);
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi xoá video Cloudinary: " + e.getMessage());
+        }
+    }
+
+
+    private String extractPublicId(String url) {
+        String withoutExtension = url.substring(0, url.lastIndexOf('.'));
+        return withoutExtension.substring(withoutExtension.indexOf("/upload/") + 8);
+    }
 }
