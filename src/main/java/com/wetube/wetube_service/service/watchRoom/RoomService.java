@@ -63,6 +63,22 @@ public class RoomService {
         log.debug("Member added: {} to room {}", username, roomId);
         return room;
     }
+    public Room removeMember(String roomId, String username) {
+        Room room = rooms.get(roomId);
+        if (room == null) return null;
+
+        boolean removed = room.getMembers().removeIf(
+                m -> m.getUsername().equals(username)
+        );
+
+        if (removed) {
+            log.debug("Member removed: {} from room {}", username, roomId);
+        } else {
+            log.debug("Member {} not found in room {}", username, roomId);
+        }
+
+        return room;
+    }
 
     private String generateFriendlyRoomId() {
         return generateRoomId(3) + "-" + generateRoomId(4) + "-" + generateRoomId(3);
