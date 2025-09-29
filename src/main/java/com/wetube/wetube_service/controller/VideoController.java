@@ -3,6 +3,7 @@ package com.wetube.wetube_service.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
 import com.wetube.wetube_service.dto.response.SearchResponseDto;
@@ -52,16 +53,16 @@ public class VideoController {
             @RequestParam(value = "tags", required = false) String tags,
             @RequestParam(value = "targetLang", required = false) String targetLang) {
         try {
-        // 🟢 Debug log toàn bộ dữ liệu FE gửi sang
-        System.out.println("========== FE gửi lên ==========");
-        System.out.println("📂 videoFile: " + (videoFile != null ? videoFile.getOriginalFilename() : "null"));
-        System.out.println("🖼 thumbnailFile: " + (thumbnailFile != null ? thumbnailFile.getOriginalFilename() : "null"));
-        System.out.println("📝 title: " + title);
-        System.out.println("📝 description: " + description);
-        System.out.println("🏷 tags: " + tags);
-        System.out.println("⏱ duration: " + duration);
-        System.out.println("🌍 targetLang: " + targetLang);
-        System.out.println("================================");
+            // 🟢 Debug log toàn bộ dữ liệu FE gửi sang
+            System.out.println("========== FE gửi lên ==========");
+            System.out.println("📂 videoFile: " + (videoFile != null ? videoFile.getOriginalFilename() : "null"));
+            System.out.println("🖼 thumbnailFile: " + (thumbnailFile != null ? thumbnailFile.getOriginalFilename() : "null"));
+            System.out.println("📝 title: " + title);
+            System.out.println("📝 description: " + description);
+            System.out.println("🏷 tags: " + tags);
+            System.out.println("⏱ duration: " + duration);
+            System.out.println("🌍 targetLang: " + targetLang);
+            System.out.println("================================");
 
             UUID authenticatedUserId = UUID.fromString(jwt.getSubject());
 
@@ -83,15 +84,17 @@ public class VideoController {
 
             // 🔥 Nếu targetLang khác null/blank và khác "none" thì mới gọi dịch
             if (targetLang != null && !targetLang.isBlank() && !"none".equalsIgnoreCase(targetLang)) {
-                try {
-                    translationClient.requestTranslation(
-                            createdVideo.getId(),
-                            createdVideo.getVideoUrl(),
-                            targetLang);
-                } catch (Exception ex) {
-                    // Không chặn flow chính nếu microservice lỗi
-                    System.err.println("⚠️ Translation service error: " + ex.getMessage());
-                }
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        translationClient.requestTranslation(
+                                createdVideo.getId(),
+                                createdVideo.getVideoUrl(),
+                                targetLang);
+                    } catch (Exception ex) {
+                        // Không chặn flow chính nếu microservice lỗi
+                        System.err.println("⚠️ Translation service error: " + ex.getMessage());
+                    }
+                });
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVideo);
@@ -146,8 +149,8 @@ public class VideoController {
     // Search gần đúng theo title → chỉ trả về VideoDocument
     @GetMapping("/search/videos")
     public Page<VideoDocument> searchByTitle(@RequestParam String title,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
         return searchService.searchByTitle(title, page, size);
     }
 
@@ -160,8 +163,8 @@ public class VideoController {
     // Search đầy đủ (ES + load lại từ MySQL) → trả về VideoDto đầy đủ
     @GetMapping("/search/full")
     public Page<VideoDto> searchByTitleFull(@RequestParam String title,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
         return searchService.searchByTitleFull(title, page, size);
     }
 
