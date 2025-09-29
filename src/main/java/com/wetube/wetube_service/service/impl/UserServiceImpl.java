@@ -180,7 +180,6 @@ public class UserServiceImpl implements UserService {
 //        return newAuthAccount;
 //    }
 
-
     private void ensureHasRole(AppUser user) {
         boolean hasRole = user.getUserRoles().stream()
                 .anyMatch(ur -> UserServiceImpl.DEFAULT_ROLE.equals(ur.getRole().getCode()));
