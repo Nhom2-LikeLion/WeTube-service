@@ -84,6 +84,8 @@ jobs:
             IMAGE_NAME_BACKEND=${{ secrets.DOCKERHUB_USERNAME }}/wetube-service
             IMAGE_TAG_BACKEND=${{ needs.build.outputs.IMAGE_TAG }}
             
+            TRANSLATOR_SERVICE_URL=http://translator:8888/api/translate
+            
             # --- Database ---
             DB_URL=${{ secrets.DB_URL }}
             DB_USERNAME=${{ secrets.DB_USERNAME }}

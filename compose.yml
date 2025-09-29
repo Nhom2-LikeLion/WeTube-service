@@ -54,7 +54,6 @@ services:
     depends_on:
       - backend
       - frontend
-      - translator
     restart: always
     networks:
       - web-network

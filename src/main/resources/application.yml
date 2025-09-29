@@ -63,4 +63,4 @@ myapp:
 
 translator:
   service:
-    url: https://wetube.name.vn/translator/api/translate
+    url: http://translator:8888/api/translate
