@@ -64,3 +64,4 @@ myapp:
 translator:
   service:
     url: http://translator:8888/api/translate
+    
