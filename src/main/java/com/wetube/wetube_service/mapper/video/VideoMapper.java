@@ -2,6 +2,7 @@ package com.wetube.wetube_service.mapper.video;
 
 import com.wetube.wetube_service.dto.room.VideoRoom;
 import com.wetube.wetube_service.dto.video.TagDto;
+import com.wetube.wetube_service.dto.video.VideoDetailDto;
 import com.wetube.wetube_service.dto.video.VideoDto;
 import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
 import com.wetube.wetube_service.dto.video.VideoSubtitleDto;
@@ -95,6 +96,12 @@ public interface VideoMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Video toEntity(VideoDto dto);
+
+    @Mapping(target = "subtitles", expression = "java(mapSubtitles(entity.getSubtitles()))")
+    @Mapping(target = "createAt", source = "createdAt")
+    @Mapping(target = "name", source = "user.name")
+    @Mapping(target = "picture", source = "user.picture")
+    VideoDetailDto toDetailDto(Video entity);
 
     @Named("videoTagToTagDto")
     @Mapping(target = "id", source = "tag.id")

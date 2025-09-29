@@ -15,6 +15,7 @@ import com.wetube.wetube_service.entity.playlist.PlaylistVideo;
 import com.wetube.wetube_service.enumeration.ActiveStatus;
 import com.wetube.wetube_service.enumeration.PlaylistType;
 import com.wetube.wetube_service.exception.ResourceNotFoundException;
+import com.wetube.wetube_service.exception.UploadFailedException;
 import com.wetube.wetube_service.repository.PlaylistRepository;
 import com.wetube.wetube_service.repository.PlaylistVideoRepository;
 import com.wetube.wetube_service.repository.UserRepository;
@@ -77,54 +78,75 @@ public class VideoServiceImpl implements VideoService {
     private static final String ID_NOT_FOUND = "Video not found with id: ";
     private static final String VIDEO = "video";
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public VideoDto createVideo(MultipartFile videoFile,
-            MultipartFile thumbnailFile,
-            VideoDto videoDto, UUID authenticatedUserId) throws Exception {
+@Override
+@Transactional(rollbackFor = Exception.class)
+public VideoDto createVideo(MultipartFile videoFile,
+        MultipartFile thumbnailFile,
+        VideoDto videoDto, UUID authenticatedUserId) throws Exception {
 
-        if (videoFile == null || videoFile.isEmpty()) {
-            throw new IllegalArgumentException("Video file is required");
+    if (videoFile == null || videoFile.isEmpty()) {
+        throw new IllegalArgumentException("Video file is required");
+    }
+
+    AppUser user = userRepository.findById(authenticatedUserId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + authenticatedUserId));
+
+    String videoUrl;
+    try {
+        videoUrl = cloudinaryService.uploadVideo(videoFile);
+    } catch (Exception e) {
+        log.error("❌ Upload video lên Cloudinary thất bại: {}", e.getMessage(), e);
+        throw new UploadFailedException("Upload video thất bại, vui lòng thử lại sau.", e);
+    }
+
+    String thumbnailUrl = null;
+    if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+        try {
+            thumbnailUrl = cloudinaryService.uploadThumbnail(thumbnailFile);
+        } catch (Exception e) {
+            log.warn("⚠️ Upload thumbnail thất bại: {}", e.getMessage());
+            // tuỳ bạn: hoặc tiếp tục flow, hoặc throw new UploadFailedException(...)
         }
+    }
 
-        AppUser user = userRepository.findById(authenticatedUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + authenticatedUserId));
+    Video entity = videoMapper.toEntity(videoDto);
+    entity.setUser(user);
+    entity.setVideoUrl(videoUrl);
+    entity.setThumbnailUrl(thumbnailUrl);
+    entity.setVideosStatus(ActiveStatus.ACTIVE);
 
-        String videoUrl = cloudinaryService.uploadVideo(videoFile);
-        String thumbnailUrl = (thumbnailFile != null && !thumbnailFile.isEmpty())
-                ? cloudinaryService.uploadThumbnail(thumbnailFile)
-                : null;
+    LocalDateTime now = LocalDateTime.now();
+    if (entity.getCreatedAt() == null) entity.setCreatedAt(now);
+    entity.setUpdatedAt(now);
 
-        Video entity = videoMapper.toEntity(videoDto);
-
-        entity.setUser(user);
-        entity.setVideoUrl(videoUrl);
-        entity.setThumbnailUrl(thumbnailUrl);
-        entity.setVideosStatus(ActiveStatus.ACTIVE);
-        LocalDateTime now = LocalDateTime.now();
-        if (entity.getCreatedAt() == null)
-            entity.setCreatedAt(now);
-        entity.setUpdatedAt(now);
-
+    try {
         Video savedVideo = videoRepository.save(entity);
         videoRepository.flush();
 
         addVideoToUserUploadedPlaylist(savedVideo);
 
         String tagsAsString = videoDto.getTagsAsString();
-        VideoDto resultDto;
-        if (tagsAsString != null && !tagsAsString.isBlank()) {
-            log.info("Adding tags to new video {}: {}", savedVideo.getId(), tagsAsString);
-            resultDto = this.addTags(savedVideo.getId(), tagsAsString);
-        } else {
-            resultDto = videoMapper.toDto(savedVideo);
+        VideoDto resultDto = (tagsAsString != null && !tagsAsString.isBlank())
+                ? this.addTags(savedVideo.getId(), tagsAsString)
+                : videoMapper.toDto(savedVideo);
+
+        indexToElasticsearch(savedVideo);
+        return resultDto;
+
+    } catch (Exception e) {
+        log.error("❌ Lỗi khi lưu video vào DB: {}", e.getMessage(), e);
+
+        // rollback Cloudinary nếu DB save fail
+        try {
+            cloudinaryService.deleteVideo(videoUrl);
+            log.info("Đã rollback, xoá video {} khỏi Cloudinary", videoUrl);
+        } catch (Exception ex) {
+            log.warn("⚠️ Không thể xoá video trên Cloudinary sau khi DB rollback: {}", ex.getMessage());
         }
 
-        // đồng bộ sang Elasticsearch
-        indexToElasticsearch(savedVideo);
-
-        return resultDto;
+        throw new UploadFailedException("Lưu video thất bại, vui lòng thử lại.", e);
     }
+}
 
     private void indexToElasticsearch(Video video) {
         try {

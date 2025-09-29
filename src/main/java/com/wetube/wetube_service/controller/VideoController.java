@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.cloudinary.api.ApiResponse;
 import com.wetube.wetube_service.dto.response.CustomPageResponse;
 import com.wetube.wetube_service.dto.response.SearchResponseDto;
 import com.wetube.wetube_service.dto.video.VideoFormDetailDto;
@@ -51,15 +50,27 @@ public class VideoController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "duration", required = false) Float duration,
             @RequestParam(value = "tags", required = false) String tags,
-            @RequestParam(value = "targetLang", required = false) String targetLang
-            ) {
+            @RequestParam(value = "targetLang", required = false) String targetLang) {
         try {
+        // 🟢 Debug log toàn bộ dữ liệu FE gửi sang
+        System.out.println("========== FE gửi lên ==========");
+        System.out.println("📂 videoFile: " + (videoFile != null ? videoFile.getOriginalFilename() : "null"));
+        System.out.println("🖼 thumbnailFile: " + (thumbnailFile != null ? thumbnailFile.getOriginalFilename() : "null"));
+        System.out.println("📝 title: " + title);
+        System.out.println("📝 description: " + description);
+        System.out.println("🏷 tags: " + tags);
+        System.out.println("⏱ duration: " + duration);
+        System.out.println("🌍 targetLang: " + targetLang);
+        System.out.println("================================");
+
             UUID authenticatedUserId = UUID.fromString(jwt.getSubject());
 
+            // Sanitize input
             String sanitizedTitle = SANITIZER_POLICY.sanitize(title);
             String sanitizedDescription = (description != null) ? SANITIZER_POLICY.sanitize(description) : null;
             String sanitizedTags = (tags != null) ? SANITIZER_POLICY.sanitize(tags) : null;
 
+            // Meta info
             VideoDto meta = VideoDto.builder()
                     .title(sanitizedTitle)
                     .description(sanitizedDescription)
@@ -67,21 +78,22 @@ public class VideoController {
                     .tagsAsString(sanitizedTags)
                     .build();
 
+            // Tạo video chính
             VideoDto createdVideo = videoService.createVideo(videoFile, thumbnailFile, meta, authenticatedUserId);
 
-            String Lang = (targetLang == null || targetLang.isBlank()) ? "en" : targetLang;
-
-             try {
-                translationClient.requestTranslation(
-                        createdVideo.getId(),
-                        createdVideo.getVideoUrl(),
-                        Lang
-                );
-            } catch (Exception ex) {
-                // Không chặn flow chính nếu microservice lỗi
-                System.err.println("⚠️ Translation service error: " + ex.getMessage());
+            // 🔥 Nếu targetLang khác null/blank và khác "none" thì mới gọi dịch
+            if (targetLang != null && !targetLang.isBlank() && !"none".equalsIgnoreCase(targetLang)) {
+                try {
+                    translationClient.requestTranslation(
+                            createdVideo.getId(),
+                            createdVideo.getVideoUrl(),
+                            targetLang);
+                } catch (Exception ex) {
+                    // Không chặn flow chính nếu microservice lỗi
+                    System.err.println("⚠️ Translation service error: " + ex.getMessage());
+                }
             }
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVideo);
 
         } catch (IllegalArgumentException e) {
